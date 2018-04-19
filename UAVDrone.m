@@ -1,5 +1,5 @@
 classdef UAVDrone
-    %UNTITLED Summary of this class goes here
+    %UAVDrone A 
     %   Detailed explanation goes here
     
     properties
@@ -16,8 +16,14 @@ classdef UAVDrone
             obj.flightTime=time;
             obj.speed=sp;
         end
-        function addRequest(place,priority,time)
-            
+        
+        function obj = addRequest(obj,req)
+            obj.requests(length(obj.requests)+1)=req;
+        end
+        function [eta,fistReq]= choosePath(obj)
+            % Compute shortest humanitarian distance traveled and choose
+            % which request to go to first
+        end
     end
     
 end

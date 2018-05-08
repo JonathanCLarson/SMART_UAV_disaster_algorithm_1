@@ -2,19 +2,25 @@ classdef UAVDrone
     %UAVDrone A 
     %   Detailed explanation goes here
     
+    
+    
     properties
         
         position
         request
         maxRange
+        maxCargo
         speed 
         distTravelled
+        cargo        
         basePosition
         distBuffer
         base % a request object for the base location
     end
     
     methods
+        % Constructor, object is initialized to 0 distance travelled, full
+        % cargo
         function obj = UAVDrone(pos,req,range,sp,base)
             obj.position=pos;
             obj.request=req;
@@ -28,17 +34,18 @@ classdef UAVDrone
         function obj = changeRequest(obj,req)
             obj.request=req;
         end
-        %function [eta,fistReq]= choosePath(obj)
-            % Compute shortest humanitarian distance traveled and choose
-            % which request to go to first
-       % end
+
         function obj = deliver(obj)
+            if(obj.request.position == obj.base.position)
+                cargo = maxCargo;
+            end
             obj.request.complete(); 
             % get next request
             
             if (obj.distTravelled+Distance(pos,obj.request.position)+obj.distBuffer >=obj.maxRange)
                 obj.returnToBase();
             else
+                
             
             end
         end

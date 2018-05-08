@@ -16,9 +16,9 @@ classdef Request
             obj.priority = pri;
             obj.status = st;
         end
-        function obj = complete(obj)
-            obj.status = 0;
-        end
+        function obj = complete()
+            status = 0;
+            
     end
     
 end

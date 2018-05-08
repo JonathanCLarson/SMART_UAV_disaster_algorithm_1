@@ -37,16 +37,16 @@ classdef UAVDrone
 
         function obj = deliver(obj)
             if(obj.request.position == obj.base.position)
-                cargo = maxCargo;
+                obj.cargo = obj.maxCargo;
+                obj.distTravelled = 0;
             end
             obj.request.complete(); 
             % get next request
             
             if (obj.distTravelled+Distance(pos,obj.request.position)+obj.distBuffer >=obj.maxRange)
                 obj.returnToBase();
-            else
-                
-            
+            else if(obj.distTravelled+obj.distBuffer>= obj.maxRange)
+                obj.returnToBase();
             end
         end
         % Function to 

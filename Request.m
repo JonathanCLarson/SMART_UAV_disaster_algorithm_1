@@ -1,4 +1,4 @@
-classdef Request
+classdef Request 
     %Request  class to simulate requests for aid in the UAV simulation
         % Stores priority, time needed to fulfill requests, etc.
     properties
@@ -20,6 +20,7 @@ classdef Request
         % Determine if the request was met.
         function obj = complete(obj)
             obj.status = 0;
+            disp("Task Completed")
         end
     end
     

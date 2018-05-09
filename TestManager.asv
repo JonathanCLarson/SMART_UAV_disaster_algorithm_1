@@ -1,0 +1,33 @@
+%%  TestManager
+% manages tests for the driver class
+classdef TestManager < handle
+    
+    properties
+
+    requestList
+    index
+    end
+    methods
+        function obj = TestManager(list)
+            obj.requestList = list;
+            obj.index = 1;
+        end
+    end
+    
+        
+    methods (Static)
+        %Constructor
+        
+        
+        function uav = assign(obj, uav)
+            uav.request = obj.requestList(obj.index);
+            obj.index = obj.index + 1;
+        end
+        
+    end
+    
+end
+
+            
+
+

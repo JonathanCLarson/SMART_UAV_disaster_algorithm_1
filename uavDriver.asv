@@ -18,13 +18,10 @@ req3=Request(0,[200,100],0,1);
 plot(req3.position(1),req3.position(2),'b.','MarkerSize',15)
 
 req4=Request(0,[50,150],0,1);
-plot(req4.position(1),req4.position(2),'b.','MarkerSize',15)
-
-req5=Request(0,[200*rand,200*rand],0,1);
-plot(req5.position(1),req5.position(2),'b.','MarkerSize',15)
 
 
-reqList = [req1, req2,req3,req4,req5];
+
+reqList = [req1, req2,req3];
 manager = TestManager(reqList);
 
 
@@ -32,7 +29,7 @@ manager = TestManager(reqList);
 
 uav1 = UAVDrone(base.position,reqList(1),2000,3,25,base,manager);
 % Simulate time step
-for c=1:20
+for c=1:17
     uav1=uav1.refresh(c);
 end
 

@@ -30,9 +30,9 @@ manager = TestManager(reqList);
 
 
 
-uav1 = UAVDrone(base.position,reqList(1),800,8,25,base,manager);
+uav1 = UAVDrone(base.position,reqList(1),2000,3,25,base,manager);
 % Simulate time step
-for c=1:25
+for c=1:30
     uav1=uav1.refresh(c);
 end
 

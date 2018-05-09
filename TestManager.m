@@ -1,6 +1,6 @@
 %%  TestManager
 % manages tests for the driver class
-classdef TestManager < n handle
+classdef TestManager < handle
     
     properties
 

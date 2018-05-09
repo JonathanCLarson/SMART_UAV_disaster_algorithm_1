@@ -1,7 +1,8 @@
-classdef UAVDrone
-    %UAVDrone A 
+classdef UAVDroneHandle < handle
+    %UAVDrone Handle edition 
     %   UAV objects to simulate the distribution of aid after a disaster in
     %   Puerto Rico
+    % UAV is a handle object
        
     properties % (instance variables)        
         position % current (last known) position of the UAV

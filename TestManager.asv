@@ -8,20 +8,18 @@ classdef TestManager < handle
     index
     end
     methods
-        function obj = TestManager(list)
-            obj.requestList = list;
-            obj.index = 1;
+        % Constructor, initialize index to 1 to assign first request
+        
+        function obj = TestManager(reqList)
+            obj.requestList = reqList;
+            obj.index = 2;
         end
-    end
-    
         
-    methods (Static)
-        %Constructor
-        
-        
-        function uav = assign(obj, uav)
-            uav.request = obj.requestList(obj.index);
-            obj.index = obj.index + 1;
+        % Assignment function
+        function uav = assign(manager,uav)
+            nextRequest = manager.requestList(manager.index);
+            uav.request=nextRequest;
+            manager.index = manager.index + 1;
         end
         
     end

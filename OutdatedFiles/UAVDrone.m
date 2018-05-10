@@ -1,8 +1,7 @@
-classdef UAVDrone < handle
-    %UAVDrone Handle edition 
+classdef UAVDrone
+    %UAVDrone A 
     %   UAV objects to simulate the distribution of aid after a disaster in
     %   Puerto Rico
-    % UAV is a handle object
        
     properties % (instance variables)        
         position % current (last known) position of the UAV
@@ -17,25 +16,24 @@ classdef UAVDrone < handle
         base % a request object for the base location
         time % time elapsed
         manager % The manager object
-        color % the color of the uav's path
     end
 
     methods
         % Constructor, object is initialized to 0 distance travelled, full
         % cargo
-        function obj = UAVDrone(pos,color,range,maxCargo,sp,base,manager)
+        function obj = UAVDrone(pos,req,range,maxCargo,sp,base,manager)
             obj.position=pos;
-            obj.color= color;
+            
             obj.maxRange=range;
             obj.maxCargo = maxCargo;
             obj.cargo = maxCargo;
             obj.speed=sp;
             obj.distTravelled = 0;
             obj.base = base;
-            obj.distBuffer = 0.05*obj.maxRange; % UAV should reach base with up to 5% of max fuel remaining
+            obj.distBuffer = 0.05*obj.maxRange;
             obj.time = 0;
             obj.manager=manager;
-            obj.request=obj.manager.assign();
+            obj.request=req;
         end
         %% Mutator Methods
         % Mutator method to change the request
@@ -51,18 +49,16 @@ classdef UAVDrone < handle
         %% Action methods
         % Function to simulate delivery of aid to a request
         function obj = deliver(obj)
-            if(Distance(obj.position, obj.base.position) <= 0.01)
+            if(obj.position == obj.base.position)
                 obj.cargo = obj.maxCargo;
                 obj.distTravelled = 0;
                 disp("refuelled at " + obj.time)
-             
             else
                 % Complete the request by delivering cargo
                 obj.cargo = obj.cargo - 1;
-               obj.request.complete(obj.time); 
-            end
+                obj.request = obj.request.complete(); 
                 % get next request
-                obj.request=obj.manager.assign();
+                obj=obj.manager.assign(obj);
                 disp("new assignment received at "+ obj.time)
                 % Return to base if necessary
                 if (obj.distTravelled+Distance(obj.position,obj.request.position)+Distance(obj.base.position,obj.request.position)+obj.distBuffer >=obj.maxRange)
@@ -73,21 +69,21 @@ classdef UAVDrone < handle
                     disp("Cargo empty at " + obj.time)
                     obj=obj.returnToBase();
                 end
+            end
         end
         % Function to return the UAV to base
         function obj = returnToBase(obj)
-            obj.request.status = 2;
             disp("Returning to base at " + obj.time)
-            obj.request= obj.base;
+           obj.request= obj.base;
            
         end
         % Refresh the UAV's position, check if another should be assigned
         function obj = refresh(obj,newTime)
                 % Find new position of the UAV
                 newPos = obj.position+(obj.request.position-obj.position).*obj.speed.*(newTime-obj.time)./Distance(obj.position,obj.request.position);
-                % Execute a delivery if the UAV reached the request
+                % If the UAV reached its location, perform a delivery
                 if(Distance(newPos,obj.request.position)<=0.01)
-                    plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+                    plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)],'LineWidth',1.5)
 
                     obj.position=newPos;
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
@@ -97,7 +93,7 @@ classdef UAVDrone < handle
                 else
                 hold on
                 % Plot the change in position
-                plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+                plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)],'LineWidth',1.5)
                 % Move the UAV forward
                 obj.position=newPos;
                 plot(obj.position(1),obj.position(2),'r*')

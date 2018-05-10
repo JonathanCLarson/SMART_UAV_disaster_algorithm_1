@@ -1,7 +1,6 @@
-classdef Request < handle
+classdef Request 
     %Request  class to simulate requests for aid in the UAV simulation
         % Stores priority, time needed to fulfill requests, etc.
-        % This version is a handle class.
     properties
         timeRequested % when the request was made
         timeElapsed % time since the request was made
@@ -19,11 +18,9 @@ classdef Request < handle
             obj.status = st;
         end
         % Determine if the request was met.
-        function obj = complete(obj,time)
+        function obj = complete(obj)
             obj.status = 0;
             disp("Task Completed")
-            obj.timeElapsed = time-obj.timeRequested;
-            
         end
     end
     

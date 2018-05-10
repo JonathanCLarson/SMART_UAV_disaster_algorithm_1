@@ -23,15 +23,14 @@ classdef UAVDroneHandle < handle
         % Constructor, object is initialized to 0 distance travelled, full
         % cargo
         function obj = UAVDrone(pos,req,range,maxCargo,sp,base,manager)
-            obj.position=pos;
-            
+            obj.position=pos;            
             obj.maxRange=range;
             obj.maxCargo = maxCargo;
             obj.cargo = maxCargo;
             obj.speed=sp;
             obj.distTravelled = 0;
             obj.base = base;
-            obj.distBuffer = 0.05*obj.maxRange;
+            obj.distBuffer = 0.05*obj.maxRange; % UAV should reach base with up to 5% of max fuel remaining
             obj.time = 0;
             obj.manager=manager;
             obj.request=req;
@@ -82,6 +81,7 @@ classdef UAVDroneHandle < handle
         function obj = refresh(obj,newTime)
                 % Find new position of the UAV
                 newPos = obj.position+(obj.request.position-obj.position).*obj.speed.*(newTime-obj.time)./Distance(obj.position,obj.request.position);
+                % Execute a delivery if the UAV reached the request
                 if(Distance(newPos,obj.request.position)<=0.01)
                     plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)],'LineWidth',1.5)
 

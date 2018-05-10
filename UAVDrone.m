@@ -81,6 +81,7 @@ classdef UAVDrone
         function obj = refresh(obj,newTime)
                 % Find new position of the UAV
                 newPos = obj.position+(obj.request.position-obj.position).*obj.speed.*(newTime-obj.time)./Distance(obj.position,obj.request.position);
+                % If the UAV reached its location, perform a delivery
                 if(Distance(newPos,obj.request.position)<=0.01)
                     plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)],'LineWidth',1.5)
 

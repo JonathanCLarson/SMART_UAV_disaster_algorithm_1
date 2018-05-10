@@ -36,11 +36,11 @@ manager = TestManager(reqList);
 
 color = ['y', 'g','m'];
 
-uav1 = UAVDrone(base.position,color(1),1000,3,25,base,manager);
-uav2 = UAVDrone(base.position,color(2),1000,3,25,base,manager);
-uav3 = UAVDrone(base.position,color(3),1000,3,25,base,manager);
+uav1 = UAVDrone(base.position,color(1),10,3,25,base,manager);
+uav2 = UAVDrone(base.position,color(2),10,3,25,base,manager);
+uav3 = UAVDrone(base.position,color(3),10,3,25,base,manager);
 % Simulate time step
-for c=1:30
+for c=1:35
     uav1.refresh(c);
     uav2.refresh(c);
     uav3.refresh(c);

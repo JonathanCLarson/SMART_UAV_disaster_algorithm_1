@@ -17,13 +17,12 @@ classdef UAVDrone < handle
         distTravelled % Total distance travelled by the UAV
         timeLeft % Flight time remaining before recharge is needed
         cargo % Amount of cargo remaining
-        basePosition % Location of resupply
         timeBuffer % Distance the drone should be able to fly after returning to base
         base % a request object for the base location
         time % time elapsed since beginning of simulation
         manager % The manager object
         color % the color of the uav's path
-        
+        numAssigned % The number of requests assigned to the UAV
     end
 
     methods
@@ -40,11 +39,13 @@ classdef UAVDrone < handle
             obj.distTravelled = 0;
             obj.base = base;
             obj.position= base.position;
-            obj.timeBuffer = 0.05*obj.maxTime; % UAV should reach base with up to 5% of max fuel remaining
+            obj.timeBuffer = 0.005*obj.maxTime; % UAV should reach base with up to 5% of max fuel remaining
             obj.time = 0;
             obj.manager=manager;
             obj.request=obj.manager.assign();
             obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
+            obj.requestsMet = 0;
+            obj.numAssigned = 1;
         end        
         %% Action methods
         % Function to simulate delivery of aid to a request
@@ -56,11 +57,12 @@ classdef UAVDrone < handle
             if(Distance(obj.position, obj.base.position) <= 0.001)
                 obj.cargo = obj.maxCargo;
                 obj.timeLeft = obj.maxTime;
-                %disp("refuelled at " + obj.time)
+                disp("Refilled at " + obj.time)
              
             else
                 % Complete the request by delivering cargo
                 obj.cargo = obj.cargo - 1;
+                obj.requestsMet = obj.requestsMet + 1;
                 obj.request.complete(obj.time); 
             end
                 % Get the next request from the manager
@@ -71,23 +73,41 @@ classdef UAVDrone < handle
                 if (obj.timeToRequest+(Distance(obj.base.position,obj.request.zone.position)/obj.speed)+obj.timeBuffer >=obj.timeLeft)
                     %disp("Fuel empty at " + obj.time)
                     obj.returnToBase();
+                    disp("Fuel low at " + obj.time)
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                 end
                 % Return to base if there is not enough cargo to complete the
                 % next request
                 if(obj.cargo<1)
-                    %disp("Cargo empty at " + obj.time)
+                    disp("Cargo empty at " + obj.time)
                     obj.returnToBase();
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                 end
+               
+                
+                
+                    
+                end
+    
+          
+        % Check if the UAV can meet all of the zone's requests
+        function checkZone(obj,zone)
+                if (zone.numUnassigned <= obj.cargo)
+                    for i = 1:zone.numUnassigned
+                        zone.requestList(i).status = 1;
+                        obj.numAssigned = obj.numAssigned + 1;
+                        
+                    end
+                    zone.numUnassigned=zone.numUnassigned-obj.numAssigned;
+                end
         end
+        
         % Function to return the UAV to base
         %   Replaces the current request with the base
         %   Marks the request as unassigned
         function  returnToBase(obj)
             obj.request.status = 2;
-            %disp("Returning to base at " + obj.time)
-            obj.request= obj.base;
+            obj.request= obj.base.requestList;
            
         end
         
@@ -133,9 +153,10 @@ classdef UAVDrone < handle
                     t = obj.time+ (Distance(obj.position,obj.request.zone.position)/obj.speed);
                     obj.refresh(t);
                 end
-                end
+                
             
-        end
+                end
     
+        end
     end
 end

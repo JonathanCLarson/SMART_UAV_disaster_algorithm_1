@@ -1,3 +1,4 @@
+%% Request object class
 classdef Request < handle
     %Request  class to simulate requests for aid in the UAV simulation
         % Stores priority, time needed to fulfill requests, etc.
@@ -8,6 +9,7 @@ classdef Request < handle
         priority % 1 (hi) or 1000 (low)
         status % 2 if unassigned, 1 if assigned, 0 if fulfilled or expired
         zone % the zone (1 of 3) in which the request takes place
+        timeExpire % Time at which a high priority request will expire
     end
     
     methods
@@ -27,6 +29,13 @@ classdef Request < handle
             disp("Task Completed")
             obj.timeElapsed = time-obj.timeRequested;
             
+        end
+        function refresh(obj,time)
+            obj.timeElapsed = time-obj.timeRequested;
+            if(obj.priority == 1000 && obj.timeElapsed >=obj.timeExpire)
+                obj.status=0;
+                obj.zone.expired = obj.zone.expired +1;
+            end
         end
     end
     

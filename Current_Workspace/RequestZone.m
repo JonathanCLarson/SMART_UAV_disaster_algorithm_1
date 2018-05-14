@@ -9,7 +9,9 @@ classdef RequestZone < handle
         requestList % List of the currently active requests in that zone
         probNew % Probability of the new 
         probHi % Probability of a high priority request
-        
+        expired % Number of expired requests
+        numUnassigned% Number of unassigned requests
+        manager;
     end
     
     methods
@@ -22,6 +24,9 @@ classdef RequestZone < handle
             obj.probNew = probNew;
             obj.probHi = probHi;
             obj.requestList=Request.empty;
+            expired = 0;
+            numUnassigned = 0;
+            manager=Manager1.empty;
         end
         
         % Refresh function to be called every few hours
@@ -34,10 +39,21 @@ classdef RequestZone < handle
                 else
                     priority=1000;
                 end
-                    obj.requestList.add(Request(time,priority, obj));
+                newreq = Request(time,priority, obj);
+                obj.requestList(length(obj.requestList)+1) = newreq;
+                    
+               obj.manager.requestList(length(obj.manager.requestList)+1) = newreq; 
             end
-         
+         obj.numUnassigned = obj.getUnassigned();
         end
-            
+        function c = getUnassigned(obj)
+            c = 0;
+            for i = 1:length(obj.requestList)
+                if (obj.requestList(i).status == 2)
+                    c = c+1;
+                end
+            end
+        end
     end
 end
+

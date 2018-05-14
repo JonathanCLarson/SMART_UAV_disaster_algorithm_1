@@ -1,6 +1,8 @@
 %%  Manager1
 % Jonathan Larson and Gabe Flores
 % manages tests for the driver class
+%   Assigns UAV's to deliver supplies to request zones, and refreshes the
+%   status of the fleet
 % 5/10/2018
 
 classdef Manager1 < handle
@@ -11,6 +13,7 @@ classdef Manager1 < handle
         uavList % List of uav's in the fleet
         time % Stores the current time
         base % the base for the UAV's 
+        requestsMet % to keep track of the requests met
     end
     methods
         % Constructor, initialize index to 1 to assign first request
@@ -22,6 +25,18 @@ classdef Manager1 < handle
             obj.time=0;
             obj.uavList=UAVDrone.empty;
             obj.base = base;
+            obj.requestList=Request.empty;
+            obj.requestsMet = 0;
+            i=1; % Index counter
+            % Loop through each request zone and combine all requests into
+            % one list
+            for c=1:length(obj.requestZones)
+                obj.requestZones(c).manager=obj; % Assign the manager to each zone
+                for k=1:length(obj.requestZones(c).requestList)
+                    obj.requestList(i)=obj.requestZones(c).requestList(k);
+                    i=i+1;
+                end
+            end
         end
         % Adds uav to the manager's list of uav's 
         function addUAV(obj, uav)
@@ -32,42 +47,48 @@ classdef Manager1 < handle
        function refresh(obj, time)
             for c=1:length(obj.uavList)
                 obj.uavList(c).refresh(time);
+                
             end
             for k=1:length(obj.requestZones)
-                requestZone(k).refresh(time);
-            end                
-        end
+                obj.requestZones(k).refresh(time);
+            end
+            obj.requestsMet=0;
+            % Set number of requests to 0 and recalculate
+            for i = 1:length(obj.uavList)
+                obj.requestsMet = obj.requestsMet + obj.uavList(i).requestsMet;
+            end
+       end
+        
+       
         % Assignment function, which can also set the status of the request 
-        function request = assign(manager)
+        %   Output: the request assignment for the UAV
+        function request = assign(obj)
+            % Counter variables
             c = 1;
-            k = 1;
             assigned = 0; % the request starts off unassigned
-            while (c <= length(manager.requestZones))
-                while (k <= length (manager.requestZones(c).requestList))
-                    if (manager.requestZones(c).requestList(k).status > 1)
-                    nextRequest = manager.requestZones(c).requestList(k);
-                    assigned = 1;
-                    % exit the loop by skipping to the end
-                    k = length(manager.requestZones(c).requestList);
-                    c = length(manager.requestZones);
-                    end
-                    k=k+1;
-                    
+            % Find the first unassigned request
+            while (c <= length(obj.requestList))
+                if (obj.requestList(c).status > 1)
+                        nextRequest = obj.requestList(c);
+                        assigned = 1;
+                        % exit the loop by skipping to the end
+                        c = length(obj.requestList);
                 end
                c = c + 1;
             end
-            if(assigned==1) % if the request is assigned, it will change the status so the drones can attend to it
+            % Check for if a request was assigned
+            % if the request is assigned, it will change the status so the drones do not attend to it
+            if(assigned==1) % if the request is assigned, it will change the status so the drones do not attend to it
                 request=nextRequest;
                 request.status=1;
             else 
-                request = manager.base.requestList(1);
+                request = obj.base.requestList(1);
+                disp("No new requests")
             end
         end
+        
+        
         
     end
     
 end
-
-            
-
-

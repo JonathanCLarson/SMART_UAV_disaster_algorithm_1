@@ -5,18 +5,21 @@ classdef Request < handle
     properties
         timeRequested % when the request was made
         timeElapsed % time since the request was made
-        position % location on the map
-        priority % 0 (hi) or 0 (low)
+        priority % 1 (hi) or 1000 (low)
         status % 2 if unassigned, 1 if assigned, 0 if fulfilled or expired
+        zone % the zone (1 of 3) in which the request takes place
     end
     
     methods
         % Constructor
-        function obj = Request(t,pos,pri,st)
+        % Initializes the time, starts the status of the request at 2
+        % and gets the priority status(high or low) in order to start
+        % mission
+        function obj = Request(t,pri,zone)
             obj.timeRequested = t;
-            obj.position = pos;
             obj.priority = pri;
-            obj.status = st;
+            obj.status = 2;
+            obj.zone = zone;
         end
         % Determine if the request was met.
         function obj = complete(obj,time)

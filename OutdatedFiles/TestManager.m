@@ -5,21 +5,31 @@ classdef TestManager < handle
     properties
 
     requestList
-    index
+    
     end
     methods
         % Constructor, initialize index to 1 to assign first request
         
         function obj = TestManager(reqList)
             obj.requestList = reqList;
-            obj.index = 2;
+            
         end
         
         % Assignment function
-        function uav = assign(manager,uav)
-            nextRequest = manager.requestList(manager.index);
-            uav.request=nextRequest;
-            manager.index = manager.index + 1;
+        function request = assign(manager)
+            c = 1;
+            while (c <= length(manager.requestList))
+               if (manager.requestList(c).status > 1)
+                nextRequest = manager.requestList(c);
+                % exit the loop by skipping to the end
+                c = length(manager.requestList);
+               end
+               c = c + 1;
+            end
+          request=nextRequest;
+          request.status=1;
+            
+            %manager.index = manager.index + 1;
         end
         
     end

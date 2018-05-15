@@ -66,7 +66,9 @@ classdef UAVDrone < handle
                 obj.request.complete(obj.time); 
             end
                 % Get the next request from the manager
-                obj.request=obj.manager.assign();
+%                 if(~isEmpty(obj.manager.requestList))
+%                    obj.request=obj.manager.assign();
+%                 end
                 %disp("new assignment received at "+ obj.time)
                 % Return to base if there is not enough fuel to reach the
                 % next request
@@ -82,6 +84,12 @@ classdef UAVDrone < handle
                     disp("Cargo empty at " + obj.time)
                     obj.returnToBase();
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
+                end
+                
+                % Instantly perform a delivery if the new request is at the
+                % current UAV location (same zone as the previous request)
+                if(Distance(obj.request.zone.position,obj.position)<=.001)
+                    obj.deliver();
                 end
                
                 

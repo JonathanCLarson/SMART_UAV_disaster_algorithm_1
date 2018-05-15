@@ -71,33 +71,39 @@ classdef Manager2 < handle
        
         % Assignment function, which can also set the status of the request 
         %   Output: the request assignment for the UAV
-        function request = assign(obj)
-            % Counter variables
-            c = 1;
-            assigned = 0; % the request starts off unassigned
-            % Find the first unassigned request
-            while (c <= length(obj.requestList))
-                if (obj.requestList(c).status > 1)
-                        nextRequest = obj.requestList(c);
-                        assigned = 1;
-                        % exit the loop by skipping to the end
-                        c = length(obj.requestList);
-                end
-               c = c + 1;
-            end
-            % Check for if a request was assigned
-            % if the request is assigned, it will change the status so the drones do not attend to it
-            if(assigned==1) % if the request is assigned, it will change the status so the drones do not attend to it
-                request=nextRequest;
-                request.status=1;
-            else 
-                request = obj.base.requestList(1);
-                disp("No new requests")
-            end
+        function request = assign(obj,uav)
+           nextRequest = Manager2.chooseRequest(obj.requestList,uav);
+           nextRequest.status=1;
+           request=nextRequest;    
         end
-        
-        
-        
+    end
+    
+    methods (Static)
+        % Function to determine the optimum UAV destination
+        % Inputs:   uav = the UAV to assign
+        %           reqList = the requestList
+        % Output:   req = the selected request
+        function req = chooseRequest(reqList,uav) 
+            k=1;
+            
+            for c=1:length(reqList)
+                if(reqList(c).status==2)
+                    % Create a list of requests to choose from
+                    chooseList(k)=reqList(c);
+                    dist(k)=Distance(chooseList(k).zone.position,uav.position);
+                    k=k+1;
+                end
+            end
+            
+            if k==1
+                disp("No unassigned requests")
+                req = uav.base.requestList(1);
+            else
+                [~,index]=min(dist);
+                req=chooseList(index);
+            end         
+            
+        end
     end
     
 end

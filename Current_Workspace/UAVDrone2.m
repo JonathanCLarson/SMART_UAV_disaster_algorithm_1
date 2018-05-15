@@ -23,6 +23,8 @@ classdef UAVDrone2 < handle
         manager % The manager object
         color % the color of the uav's path
         numAssigned % The number of requests assigned to the UAV
+        resupplyCounter
+        refuelCounter
     end
 
     methods
@@ -42,10 +44,12 @@ classdef UAVDrone2 < handle
             obj.timeBuffer = 0.005*obj.maxTime; % UAV should reach base with up to 5% of max fuel remaining
             obj.time = 0;
             obj.manager=manager;
-            obj.request=obj.manager.assign();
+            obj.request=obj.manager.assign(obj);
             obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
             obj.requestsMet = 0;
             obj.numAssigned = 1;
+            obj.resupplyCounter = 0;
+            obj.refuelCounter = 0;
         end        
         %% Action methods
         % Function to simulate delivery of aid to a request
@@ -67,7 +71,7 @@ classdef UAVDrone2 < handle
             end
                 % Get the next request from the manager
 %            
-                   obj.request=obj.manager.assign();
+                   obj.request=obj.manager.assign(obj);
 %                 end
                 %disp("new assignment received at "+ obj.time)
                 % Return to base if there is not enough fuel to reach the
@@ -76,12 +80,14 @@ classdef UAVDrone2 < handle
                     %disp("Fuel empty at " + obj.time)
                     obj.returnToBase();
                     disp("Fuel low at " + obj.time)
+                    obj.refuelCounter = obj.refuelCounter + 1;
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                 end
                 % Return to base if there is not enough cargo to complete the
                 % next request
                 if(obj.cargo<1)
                     disp("Cargo empty at " + obj.time)
+                    obj.resupplyCounter = obj.resupplyCounter + 1;
                     obj.returnToBase();
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                 end

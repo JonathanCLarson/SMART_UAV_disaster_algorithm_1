@@ -32,12 +32,13 @@ classdef Request2 < handle
             
         end
         function refresh(obj,time)
-            obj.timeElapsed = time-obj.timeRequested;
-            if(obj.priority == 1000 && obj.timeElapsed >=obj.timeExpire)
+            
+            if(obj.priority == 1000 && obj.status>0&&(time-obj.timeRequested >=obj.timeExpire))
                 obj.status=0;
                 obj.zone.expired = obj.zone.expired +1;
             end
         end
+        
     end
     
 end

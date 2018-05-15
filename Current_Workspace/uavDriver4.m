@@ -8,7 +8,8 @@ close all; clear; format long;
 numUAVs = 3; % The number of UAV's in the fleet
 timeExp = 50; % Time at which high priority requests expire 
 uavSpeed = 15; % in mph
-uavFlightTime = 4; % in hrs
+uavFlightTime = 3; % in hrs
+uavCap = 3; % Drone capacity 
 
 feetToPix = @(ft) ft/16.7;
 pixToFeet = @(pix) pix * 16.7;
@@ -27,12 +28,12 @@ hold on
 % reqList(c) = Request(0,[1100*rand,700*rand],0,2);
 % plot(reqList(c).position(1),reqList(c).position(2),'b.','MarkerSize',15);
 % end
-dZone1 = RequestZone2([510,660],0.4,.5,20); % Request object for drop zone 1
-dZone2 = RequestZone2([785,580],0.4,0.2,20); % Request object for drop zone 2
-dZone3 = RequestZone2([1080,170],0.4,.4,20); % Request object for drop zone 3
-dZone4 = RequestZone2([886, 68], 0.4, .1, 20); % Request object for drop zone 4
-dZone5 = RequestZone2([716, 235], 0.4, .2, 20); % Request object for drop zone 5
-dZone6 = RequestZone2([826, 328], 0.4, .3, 20); % Request object for drop zone 6
+dZone1 = RequestZone2([510,660],0.05,.5,20); % Request object for drop zone 1
+dZone2 = RequestZone2([785,580],0.08,0.2,20); % Request object for drop zone 2
+dZone3 = RequestZone2([1080,170],0.1,.4,20); % Request object for drop zone 3
+dZone4 = RequestZone2([886, 68], 0.05, .1, 20); % Request object for drop zone 4
+dZone5 = RequestZone2([716, 235], 0.05, .2, 20); % Request object for drop zone 5
+dZone6 = RequestZone2([826, 328], 0.05, .3, 20); % Request object for drop zone 6
 
 
 zoneList = [dZone1,dZone2,dZone3, dZone4,dZone5,dZone6];
@@ -54,7 +55,7 @@ color = ['y', 'g','m'];
 
 % Assign UAV's 
  for k=1:numUAVs
-        uavArray(k)=UAVDrone2(color(k),uavFlightTime,3,feetToPix(uavSpeed * 5280),base,manager);
+        uavArray(k)=UAVDrone2(color(k),uavFlightTime,uavCap,feetToPix(uavSpeed * 5280),base,manager);
         manager.addUAV(uavArray(k));
  end
  
@@ -67,3 +68,5 @@ title('UAV simulation test')
 
 disp(manager.requestsMet + " Requests met")
 disp(manager.expired + " Requests expired")
+
+disp(analyze(manager));

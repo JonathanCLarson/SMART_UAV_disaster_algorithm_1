@@ -1,4 +1,4 @@
-classdef UAVDrone < handle
+classdef UAVDrone2 < handle
     %UAVDrone Handle edition 
     %   UAV objects to simulate the distribution of aid after a disaster in
     %   Puerto Rico
@@ -30,7 +30,7 @@ classdef UAVDrone < handle
         % cargo and its time starts off at 0
         % The color is used to distiguish between the many drones we use
         % The manager assigns the requests to the drone
-        function obj = UAVDrone(color,maxTime,maxCargo,sp,base,manager)
+        function obj = UAVDrone2(color,maxTime,maxCargo,sp,base,manager)
             obj.color= color;
             obj.maxTime=maxTime;
             obj.maxCargo = maxCargo;
@@ -66,8 +66,8 @@ classdef UAVDrone < handle
                 obj.request.complete(obj.time); 
             end
                 % Get the next request from the manager
-%                 if(~isEmpty(obj.manager.requestList))
-%                    obj.request=obj.manager.assign();
+%            
+                   obj.request=obj.manager.assign();
 %                 end
                 %disp("new assignment received at "+ obj.time)
                 % Return to base if there is not enough fuel to reach the
@@ -88,7 +88,7 @@ classdef UAVDrone < handle
                 
                 % Instantly perform a delivery if the new request is at the
                 % current UAV location (same zone as the previous request)
-                if(Distance(obj.request.zone.position,obj.position)<=.001)
+                if(Distance(obj.request.zone.position,obj.position)<=.001 && (obj.request.priority ~= 'B'))
                     obj.deliver();
                 end
                
@@ -157,7 +157,7 @@ classdef UAVDrone < handle
             
                 % If the UAV is close to its target, perform a shorter time
                 % step so that it can refresh at the goal location
-                if((Distance(obj.position,obj.request.zone.position)/obj.speed) <1)
+                if((Distance(obj.position,obj.request.zone.position)/obj.speed) <1/60)
                     t = obj.time+ (Distance(obj.position,obj.request.zone.position)/obj.speed);
                     obj.refresh(t);
                 end

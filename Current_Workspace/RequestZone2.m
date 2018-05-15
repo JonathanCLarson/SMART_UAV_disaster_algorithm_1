@@ -1,5 +1,5 @@
 %% RequestZone object class
-classdef RequestZone1 < handle
+classdef RequestZone2 < handle
     %RequestZone  class to simulate requests for aid in the UAV simulation
         % Stores location, probability of requests, probability of high/low
         % priority, time needed to fulfill requests, etc.
@@ -20,14 +20,14 @@ classdef RequestZone1 < handle
         % This tells what the position of the request is. It also tells
         % what the probability of a new request is and what the probability
         % of a high priority request is
-        function obj = RequestZone1(pos,probNew,probHi,expTime)
+        function obj = RequestZone2(pos,probNew,probHi,expTime)
             obj.position = pos;
             obj.probNew = probNew;
             obj.probHi = probHi;
-            obj.requestList=Request1.empty;
+            obj.requestList=Request2.empty;
             obj.expired = 0;
             obj.numUnassigned = 0;
-            obj.manager=Manager1.empty;
+            obj.manager=Manager2.empty;
             obj.expTime = expTime;
             
         end
@@ -47,7 +47,7 @@ classdef RequestZone1 < handle
                 else
                     priority=1000;
                 end
-                newreq = Request1(time,priority, obj,obj.expTime);
+                newreq = Request2(time,priority, obj,obj.expTime);
                 obj.requestList(length(obj.requestList)+1) = newreq;
                     
                obj.manager.requestList(length(obj.manager.requestList)+1) = newreq; 

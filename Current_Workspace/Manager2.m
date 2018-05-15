@@ -5,7 +5,7 @@
 %   status of the fleet
 % 5/10/2018
 
-classdef Manager1 < handle
+classdef Manager2 < handle
     
     properties
         requestZones % list of the request zones
@@ -21,12 +21,12 @@ classdef Manager1 < handle
         % Initializes the time at 0, starts off with an empty drone list,
         % and gets the request zones and the base
         
-        function obj = Manager1(zones, base)
+        function obj = Manager2(zones, base)
             obj.requestZones = zones;
             obj.time=0;
-            obj.uavList=UAVDrone1.empty;
+            obj.uavList=UAVDrone2.empty;
             obj.base = base;
-            obj.requestList=Request1.empty;
+            obj.requestList=Request2.empty;
             obj.requestsMet = 0;
             obj.expired = 0;
             % Create the requestList

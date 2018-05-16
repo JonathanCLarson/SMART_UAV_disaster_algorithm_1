@@ -90,13 +90,21 @@ classdef Manager2 < handle
                 if(reqList(c).status==2)
                     % Create a list of requests to choose from
                     chooseList(k)=reqList(c);
-                    dist(k)=Distance(chooseList(k).zone.position,uav.position);
+                    % The Humanitarian distance function version
+                    % This version makes use of the humanitarian distance
+                    % function in order to show how the UAV behaves when
+                    % commanded to go to the high priority requests first
+                    %dist(k)= HumanitarianDistance(chooseList(k),uav);
+                    % The Standard distance function version
+                    % This version will get the requests based on the zones
+                    % that they are in regardless of priority
+                    dist(k) = Distance(chooseList(k).zone.position,uav.position);
                     k=k+1;
                 end
             end
             
             if k==1
-                disp("No unassigned requests")
+                %disp("No unassigned requests")
                 req = uav.base.requestList(1);
             else
                 [~,index]=min(dist);

@@ -27,12 +27,12 @@ classdef Request2 < handle
         % Determine if the request was met.
         function obj = complete(obj,time)
             obj.status = 0;
-            disp("Task Completed")
+            %disp("Task Completed")
             obj.timeElapsed = time-obj.timeRequested;
             
         end
         function refresh(obj,time)
-            
+            obj.timeElapsed=time-obj.timeRequested;
             if(obj.priority == 1000 && obj.status>0&&(time-obj.timeRequested >=obj.timeExpire))
                 obj.status=0;
                 obj.zone.expired = obj.zone.expired +1;

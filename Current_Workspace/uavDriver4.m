@@ -6,9 +6,9 @@ close all; clear; format long;
 
 % Parameters
 numUAVs = 3; % The number of UAV's in the fleet
-timeExp = 50; % Time at which high priority requests expire 
+timeExp = 2; % Time at which high priority requests expire 
 uavSpeed = 15; % in mph
-uavFlightTime = 3; % in hrs
+uavFlightTime = .5; % in hrs
 uavCap = 3; % Drone capacity 
 
 feetToPix = @(ft) ft/16.7;
@@ -28,20 +28,20 @@ hold on
 % reqList(c) = Request(0,[1100*rand,700*rand],0,2);
 % plot(reqList(c).position(1),reqList(c).position(2),'b.','MarkerSize',15);
 % end
-dZone1 = RequestZone2([510,660],0.05,.5,20); % Request object for drop zone 1
-dZone2 = RequestZone2([785,580],0.08,0.2,20); % Request object for drop zone 2
-dZone3 = RequestZone2([1080,170],0.1,.4,20); % Request object for drop zone 3
-dZone4 = RequestZone2([886, 68], 0.05, .1, 20); % Request object for drop zone 4
-dZone5 = RequestZone2([716, 235], 0.05, .2, 20); % Request object for drop zone 5
-dZone6 = RequestZone2([826, 328], 0.05, .3, 20); % Request object for drop zone 6
+dZone1 = RequestZone2([510,660],0.1,.5,20); % Request object for drop zone 1
+dZone2 = RequestZone2([785,580],0.12,0.3,20); % Request object for drop zone 2
+dZone3 = RequestZone2([1080,170],0.1,.6,20); % Request object for drop zone 3
+dZone4 = RequestZone2([886, 68], 0.08, .4, 20); % Request object for drop zone 4
+dZone5 = RequestZone2([716, 235], 0.07, .5, 20); % Request object for drop zone 5
+dZone6 = RequestZone2([826, 328], 0.09, .3, 20); % Request object for drop zone 6
 
 
 zoneList = [dZone1,dZone2,dZone3, dZone4,dZone5,dZone6];
 zoneList(1).requestList = [Request2(0,1000, zoneList(1),timeExp) Request2(0,1,zoneList(1),timeExp)];%,Request(0,1, zoneList(1)),Request(0,1, zoneList(1)),Request(0,1,zoneList(1))];
-zoneList(2).requestList = [Request2(0,1, zoneList(2),timeExp) Request2(0,1,zoneList(2),timeExp)];%,Request(0,1000, zoneList(2))];
+zoneList(2).requestList = [Request2(0,1, zoneList(2),timeExp) Request2(0,1000,zoneList(2),timeExp)];%,Request(0,1000, zoneList(2))];
 zoneList(3).requestList = [Request2(0,1000, zoneList(3),timeExp), Request2(0, 1, zoneList(3),timeExp)];%,Request(0,1000, zoneList(3))];
 zoneList(4).requestList = [Request2(0,1000, zoneList(4),timeExp) Request2(0,1,zoneList(4),timeExp)];%,Request(0,1, zoneList(1)),Request(0,1, zoneList(1)),Request(0,1,zoneList(1))];
-zoneList(5).requestList = [Request2(0,1, zoneList(5),timeExp) Request2(0,1,zoneList(5),timeExp)];%,Request(0,1000, zoneList(2))];
+zoneList(5).requestList = [Request2(0,1, zoneList(5),timeExp) Request2(0,1000,zoneList(5),timeExp)];%,Request(0,1000, zoneList(2))];
 zoneList(6).requestList = [Request2(0,1000, zoneList(6),timeExp), Request2(0, 1, zoneList(6),timeExp)];%,Request(0,1000, zoneList(3))];
 
 manager = Manager2(zoneList, base); % Create a manager to receive and assign requests
@@ -59,14 +59,17 @@ color = ['y', 'g','m'];
         manager.addUAV(uavArray(k));
  end
  
-% Simulate time step each is 1/2 hr
-for c=1:600
+% Simulate time step, each is 1 minute
+for c=1:1200
         manager.refresh(c/60);    
 end
 
 title('UAV simulation test')
 
-disp(manager.requestsMet + " Requests met")
+%disp(manager.requestsMet + " Requests met")
 disp(manager.expired + " Requests expired")
 
-disp(analyze(manager));
+[overallTable,uavTable,zoneTable]=analyze(manager);
+disp(zoneTable)
+disp(uavTable)
+disp(overallTable)

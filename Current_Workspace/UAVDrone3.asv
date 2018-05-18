@@ -1,4 +1,4 @@
-classdef UAVDrone2 < handle
+classdef UAVDrone3 < handle
     %UAVDrone Handle edition 
     %   UAV objects to simulate the distribution of aid after a disaster in
     %   Puerto Rico
@@ -23,8 +23,9 @@ classdef UAVDrone2 < handle
         manager % The manager object
         color % the color of the uav's path
         numAssigned % The number of requests assigned to the UAV
-        restockCounter
-        refuelCounter
+        emptyCounter % The number of times the UAV refills its cargo
+        lowChargeCounter % The number of times the UAV becomes low on charge
+        rechargeCounter % The number of times the batteries are replaced
     end
 
     methods
@@ -32,9 +33,10 @@ classdef UAVDrone2 < handle
         % cargo and its time starts off at 0
         % The color is used to distiguish between the many drones we use
         % The manager assigns the requests to the drone
-        function obj = UAVDrone2(color,maxTime,maxCargo,sp,base,manager)
+        function obj = UAVDrone3(color,maxTime,maxCargo,sp,base,manager)
             obj.color= color;
             obj.maxTime=maxTime;
+            obj.timeLeft = maxTime;
             obj.maxCargo = maxCargo;
             obj.cargo = maxCargo;
             obj.speed=sp;
@@ -48,8 +50,9 @@ classdef UAVDrone2 < handle
             obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
             obj.requestsMet = 0;
             obj.numAssigned = 1;
-            obj.restockCounter = 0;
-            obj.refuelCounter = 0;
+            obj.emptyCounter = 0;
+            obj.lowChargeCounter = 0;
+            obj.rechargeCounter = 0;
         end        
         %% Action methods
         % Function to simulate delivery of aid to a request
@@ -60,8 +63,11 @@ classdef UAVDrone2 < handle
         function obj = deliver(obj)
             if(Distance(obj.position, obj.base.position) <= 0.001)
                 obj.cargo = obj.maxCargo;
-                obj.timeLeft = obj.maxTime;
                 %disp("Refilled at " + obj.time)
+                if (obj.timeLeft < obj.maxTime * 0)
+                    obj.timeLeft = obj.maxTime;
+                    obj.rechargeCounter = obj.rechargeCounter + 1;
+                end
              
             else
                 % Complete the request by delivering cargo
@@ -77,17 +83,17 @@ classdef UAVDrone2 < handle
                 % Return to base if there is not enough fuel to reach the
                 % next request
                 if (obj.timeToRequest+(Distance(obj.base.position,obj.request.zone.position)/obj.speed)+obj.timeBuffer >=obj.timeLeft)
+                    obj.lowChargeCounter = obj.lowChargeCounter + 1;
                     %disp("Fuel empty at " + obj.time)
                     obj.returnToBase();
                     %disp("Fuel low at " + obj.time)
-                    obj.refuelCounter = obj.refuelCounter + 1;
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                 end
                 % Return to base if there is not enough cargo to complete the
                 % next request
                 if(obj.cargo<1)
                     %disp("Cargo empty at " + obj.time)
-                    obj.restockCounter = obj.restockCounter + 1;
+                    obj.emptyCounter = obj.emptyCounter + 1;
                     obj.returnToBase();
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                 end
@@ -137,6 +143,7 @@ classdef UAVDrone2 < handle
         function  refresh(obj,newTime)
                 % Find new position of the UAV
                 if(Distance(obj.position, obj.base.position) < 0.0001 && obj.request.priority =='B')
+                    obj.timeLeft = obj.timeLeft - (newTime - obj.time);
                     obj.time=newTime;
                     obj.request=obj.manager.assign(obj);
 %                     disp('Idle')
@@ -151,6 +158,7 @@ classdef UAVDrone2 < handle
 
                     obj.position=newPos;
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
+                    obj.timeLeft = obj.timeLeft - (newTime - obj.time);
                     obj.time = newTime;
                     obj.deliver();
                    
@@ -164,6 +172,7 @@ classdef UAVDrone2 < handle
                 % plot(obj.position(1),obj.position(2),'k.')
                 obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
                 obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
+                obj.timeLeft = obj.timeLeft - (newTime - obj.time);
                 obj.time = newTime;
             
                 % If the UAV is close to its target, perform a shorter time

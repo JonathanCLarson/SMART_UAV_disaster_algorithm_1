@@ -2,14 +2,16 @@
 % Test driver for the UAVDrone class
 % Simulates the UAV over Puerto Rico
 % Creates requests for the drone to fulfill
-close all; clear; format long;
+%close all;
+clear; format long;
 
 % Parameters
 numUAVs = 2; % The number of UAV's in the fleet
-timeExp = 1; % Time at which high priority requests expire 
-uavSpeed = 12; % in mph
+timeExp = 2; % Time at which high priority requests expire 
+uavSpeed = 15; % in mph
 uavFlightTime = 1; % in hrs
 uavCap = 3; % Drone capacity 
+duration = 12;
 
 feetToPix = @(ft) ft/16.7;
 pixToFeet = @(pix) pix * 16.7;
@@ -18,8 +20,8 @@ pixToFeet = @(pix) pix * 16.7;
 MAP=imread('TestRun2Map.png'); image(MAP);
 axis=[0 900 100 450];
 hold on
-base = RequestZone2([130,285],1,1,0);
-base.requestList=Request2('B','B',base,0);
+base = RequestZone3([130,285],1,1,0);
+base.requestList=Request3('B','B',base,0);
 plot(base.position(1),base.position(2),'k.','MarkerSize',15)
 
 hold on
@@ -28,12 +30,12 @@ hold on
 % reqList(c) = Request(0,[1100*rand,700*rand],0,2);
 % plot(reqList(c).position(1),reqList(c).position(2),'b.','MarkerSize',15);
 % end
-dZone1 = RequestZone2([510,660],0.1,.5,20); % Request object for drop zone 1
-dZone2 = RequestZone2([785,580],0.12,0.3,20); % Request object for drop zone 2
-dZone3 = RequestZone2([1080,170],0.1,.6,20); % Request object for drop zone 3
-dZone4 = RequestZone2([886, 68], 0.08, .4, 20); % Request object for drop zone 4
-dZone5 = RequestZone2([716, 235], 0.07, .5, 20); % Request object for drop zone 5
-dZone6 = RequestZone2([826, 328], 0.09, .3, 20); % Request object for drop zone 6
+dZone1 = RequestZone3([510,660],0.05,.5,timeExp); % Request object for drop zone 1
+dZone2 = RequestZone3([785,580],0.05,0.4,timeExp); % Request object for drop zone 2
+dZone3 = RequestZone3([1080,170],0.05,.6,timeExp); % Request object for drop zone 3
+dZone4 = RequestZone3([886, 68], 0.05, .4, timeExp); % Request object for drop zone 4
+dZone5 = RequestZone3([716, 235], 0.05, .5, timeExp); % Request object for drop zone 5
+dZone6 = RequestZone3([826, 328], 0.05, .4, timeExp); % Request object for drop zone 6
 
 
 zoneList = [dZone1,dZone2,dZone3, dZone4,dZone5,dZone6];
@@ -44,7 +46,7 @@ zoneList = [dZone1,dZone2,dZone3, dZone4,dZone5,dZone6];
 % zoneList(5).requestList = [Request2(0,1, zoneList(5),timeExp) Request2(0,1000,zoneList(5),timeExp)];%,Request(0,1000, zoneList(2))];
 % zoneList(6).requestList = [Request2(0,1000, zoneList(6),timeExp), Request2(0, 1, zoneList(6),timeExp)];%,Request(0,1000, zoneList(3))];
 
-manager = Manager2(zoneList, base); % Create a manager to receive and assign requests
+manager = Manager3(zoneList, base); % Create a manager to receive and assign requests
 
 color = ['y', 'g','m'];
 
@@ -55,12 +57,12 @@ color = ['y', 'g','m'];
 
 % Assign UAV's 
  for k=1:numUAVs
-        uavArray(k)=UAVDrone2(color(k),uavFlightTime,uavCap,feetToPix(uavSpeed * 5280),base,manager);
+        uavArray(k)=UAVDrone3(color(k),uavFlightTime,uavCap,feetToPix(uavSpeed * 5280),base,manager);
         manager.addUAV(uavArray(k));
  end
  
 % Simulate time step, each is 1 minute
-for c=1:600
+for c=1:60*duration
         manager.refresh(c/60);    
 end
 
@@ -70,6 +72,6 @@ disp(manager.requestsMet + " Requests met")
 disp(manager.expired + " Requests expired")
 
 [overallTable,uavTable,zoneTable]=analyze(manager);
-%disp(zoneTable)
-% disp(uavTable)
-% disp(overallTable)
+disp(zoneTable)
+disp(uavTable)
+disp(overallTable)

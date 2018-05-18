@@ -1,4 +1,4 @@
-function  [numComp, perComp, numExp, wait, waitHi] = analyze(manager)
+function  [tableOver, tableZone, tableUAV] = analyze(manager)
 % Analyze function for UAV simulation
 %   returns numerical results of the UAV simulation
 %   for some of the variables, including the high priority requests
@@ -52,9 +52,11 @@ function  [numComp, perComp, numExp, wait, waitHi] = analyze(manager)
     restock = 0; % The total number of restocks
     refill = 0; % The total number of refills
     refuel = 0; % The total number of refuels
+    recharge = 0; % The total number of recharges
     for c = 1:length(manager.uavList)
-        restock = restock + manager.uavList(c).restockCounter;
-        refuel = refuel + manager.uavList(c).refuelCounter;
+        restock = restock + manager.uavList(c).emptyCounter;
+        refuel = refuel + manager.uavList(c).lowChargeCounter;
+        recharge = recharge + manager.uavList(c).rechargeCounter;
         
     end
         refill = refuel + restock;
@@ -62,12 +64,14 @@ function  [numComp, perComp, numExp, wait, waitHi] = analyze(manager)
         %% The loops to get the information for the individual UAV's
         restockuav = zeros(length(manager.uavList), 1); % The total number of restocks per UAV
     refilluav = zeros(length(manager.uavList), 1); % The total number of refills per UAV
+    rechargeuav = zeros(length(manager.uavList), 1); % The total number of recharges per UAV
     refueluav = zeros(length(manager.uavList), 1); % The total number of refuels per UAV
     requestsMetUAV = zeros(length(manager.uavList), 1);
     for c = 1:length(manager.uavList)
         
-        restockuav(c) = manager.uavList(c).restockCounter;
-        refueluav(c) = manager.uavList(c).refuelCounter;
+        restockuav(c) = manager.uavList(c).emptyCounter;
+        refueluav(c) = manager.uavList(c).lowChargeCounter;
+        rechargeuav(c) = manager.uavList(c).rechargeCounter;
         requestsMetUAV(c) = manager.uavList(c).requestsMet;
     end
         refilluav = refueluav + restockuav;
@@ -104,14 +108,14 @@ function  [numComp, perComp, numExp, wait, waitHi] = analyze(manager)
     
     
     
-    %     labels1 = {'Completed_Requests','Number_Expired','High_Priority_Requests','Low_Priority_Requests', 'Unfinished_Requests', 'Percent_Completed', 'Average_Wait', 'High_Priority_Average_Wait','High_Requests_Met', 'Low_Requests_Met', 'Refuel', 'Restock', 'Refill'};
-%     labels2 = {'Zone','Completed_Requests','High_Priority_Requests','Low_Priority_Requests', 'Unfinished_Requests', 'Average_Wait'};
-%     labels3 = {'Refuel', 'Restock', 'Refill', 'RequestsMet'};
-%     tableOver = table(manager.requestsMet,manager.expired, numHi, numLow, unfinished, completedPer, averageTime, hiAverage, hiMet, loMet, refuel, restock, refill, 'VariableNames', labels1);
-% 
-%     tableZone = table(zoneNum,completedRequestZ, hiPriZ, loPriZ, unfinishedRequestZ, averageTimeZ, 'VariableNames', labels2);
-%     
-%     tableUAV = table(refueluav, restockuav, refilluav, requestsMetUAV, 'VariableNames', labels3);
+        labels1 = {'Completed_Requests','Number_Expired','High_Priority_Requests','Low_Priority_Requests', 'Unfinished_Requests', 'Percent_Completed', 'Average_Wait', 'High_Priority_Average_Wait','High_Requests_Met', 'Low_Requests_Met', 'Recharge', 'Refuel', 'Restock', 'Refill'};
+    labels2 = {'Zone','Completed_Requests','High_Priority_Requests','Low_Priority_Requests', 'Unfinished_Requests', 'Average_Wait'};
+    labels3 = {'Recharge','Low_Charge', 'Empty', 'Refill', 'RequestsMet'};
+    tableOver = table(manager.requestsMet,manager.expired, numHi, numLow, unfinished, completedPer, averageTime, hiAverage, hiMet, loMet, recharge, refuel, restock, refill, 'VariableNames', labels1);
+
+    tableZone = table(zoneNum,completedRequestZ, hiPriZ, loPriZ, unfinishedRequestZ, averageTimeZ, 'VariableNames', labels2);
+    
+    tableUAV = table(rechargeuav, refueluav, restockuav, refilluav, requestsMetUAV, 'VariableNames', labels3);
 end
 
 

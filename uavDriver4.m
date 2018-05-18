@@ -5,10 +5,10 @@
 close all; clear; format long;
 
 % Parameters
-numUAVs = 2; % The number of UAV's in the fleet
+numUAVs = 3; % The number of UAV's in the fleet
 timeExp = 1; % Time at which high priority requests expire 
-uavSpeed = 12; % in mph
-uavFlightTime = 1; % in hrs
+uavSpeed = 15; % in mph
+uavFlightTime = .5; % in hrs
 uavCap = 3; % Drone capacity 
 
 feetToPix = @(ft) ft/16.7;
@@ -66,10 +66,10 @@ end
 
 title('UAV simulation test')
 
-disp(manager.requestsMet + " Requests met")
+%disp(manager.requestsMet + " Requests met")
 disp(manager.expired + " Requests expired")
 
 [overallTable,uavTable,zoneTable]=analyze(manager);
 %disp(zoneTable)
-% disp(uavTable)
-% disp(overallTable)
+disp(uavTable)
+disp(overallTable)

@@ -48,10 +48,14 @@ classdef Manager2 < handle
             
        % Function to refresh the UAV's and requests
        function refresh(obj, time)
+            % Update manager time
+            obj.time=time;
+            % refresh all UAV's
             for c=1:length(obj.uavList)
                 obj.uavList(c).refresh(time);
                 
             end
+            % Refresh all request zones
             for k=1:length(obj.requestZones)
                 obj.requestZones(k).refresh(time);
             end
@@ -66,6 +70,7 @@ classdef Manager2 < handle
             for i=1:length(obj.requestZones)
                 obj.expired = obj.expired + obj.requestZones(i).expired;
             end
+         
        end
         
        
@@ -104,7 +109,7 @@ classdef Manager2 < handle
             end
             
             if k==1
-                %disp("No unassigned requests")
+                disp("No unassigned requests")
                 req = uav.base.requestList(1);
             else
                 [~,index]=min(dist);

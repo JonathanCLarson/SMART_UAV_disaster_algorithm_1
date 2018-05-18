@@ -20,8 +20,8 @@ pixToFeet = @(pix) pix * 16.7;
 MAP=imread('TestRun2Map.png'); image(MAP);
 axis=[0 900 100 450];
 hold on
-base = RequestZone3([130,285],1,1,0);
-base.requestList=Request3('B','B',base,0);
+base = RequestZone4([130,285],1,1,0);
+base.activeList=Request4('B','B',base,0, 1);
 plot(base.position(1),base.position(2),'k.','MarkerSize',15)
 
 hold on
@@ -30,12 +30,12 @@ hold on
 % reqList(c) = Request(0,[1100*rand,700*rand],0,2);
 % plot(reqList(c).position(1),reqList(c).position(2),'b.','MarkerSize',15);
 % end
-dZone1 = RequestZone3([510,660],0.05,.5,timeExp); % Request object for drop zone 1
-dZone2 = RequestZone3([785,580],0.05,0.4,timeExp); % Request object for drop zone 2
-dZone3 = RequestZone3([1080,170],0.05,.6,timeExp); % Request object for drop zone 3
-dZone4 = RequestZone3([886, 68], 0.05, .4, timeExp); % Request object for drop zone 4
-dZone5 = RequestZone3([716, 235], 0.05, .5, timeExp); % Request object for drop zone 5
-dZone6 = RequestZone3([826, 328], 0.05, .4, timeExp); % Request object for drop zone 6
+dZone1 = RequestZone4([510,660],0.05,.5,timeExp); % Request object for drop zone 1
+dZone2 = RequestZone4([785,580],0.05,0.4,timeExp); % Request object for drop zone 2
+dZone3 = RequestZone4([1080,170],0.05,.6,timeExp); % Request object for drop zone 3
+dZone4 = RequestZone4([886, 68], 0.05, .4, timeExp); % Request object for drop zone 4
+dZone5 = RequestZone4([716, 235], 0.05, .5, timeExp); % Request object for drop zone 5
+dZone6 = RequestZone4([826, 328], 0.05, .4, timeExp); % Request object for drop zone 6
 
 
 zoneList = [dZone1,dZone2,dZone3, dZone4,dZone5,dZone6];
@@ -46,7 +46,7 @@ zoneList = [dZone1,dZone2,dZone3, dZone4,dZone5,dZone6];
 % zoneList(5).requestList = [Request2(0,1, zoneList(5),timeExp) Request2(0,1000,zoneList(5),timeExp)];%,Request(0,1000, zoneList(2))];
 % zoneList(6).requestList = [Request2(0,1000, zoneList(6),timeExp), Request2(0, 1, zoneList(6),timeExp)];%,Request(0,1000, zoneList(3))];
 
-manager = Manager3(zoneList, base); % Create a manager to receive and assign requests
+manager = Manager4(zoneList, base); % Create a manager to receive and assign requests
 
 color = ['y', 'g','m'];
 
@@ -57,7 +57,7 @@ color = ['y', 'g','m'];
 
 % Assign UAV's 
  for k=1:numUAVs
-        uavArray(k)=UAVDrone3(color(k),uavFlightTime,uavCap,feetToPix(uavSpeed * 5280),base,manager);
+        uavArray(k)=UAVDrone4(color(k),uavFlightTime,uavCap,feetToPix(uavSpeed * 5280),base,manager);
         manager.addUAV(uavArray(k));
  end
  
@@ -71,7 +71,7 @@ title('UAV simulation test')
 disp(manager.requestsMet + " Requests met")
 disp(manager.expired + " Requests expired")
 
-[overallTable,uavTable,zoneTable]=analyze(manager);
-disp(zoneTable)
-disp(uavTable)
-disp(overallTable)
+% [overallTable,zoneTable,uavTable]=analyze(manager);
+% disp(uavTable)
+% %disp(zoneTable)
+% disp(overallTable)

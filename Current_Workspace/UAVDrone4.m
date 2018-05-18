@@ -1,4 +1,4 @@
-classdef UAVDrone3 < handle
+classdef UAVDrone4 < handle
     %UAVDrone Handle edition 
     %   UAV objects to simulate the distribution of aid after a disaster in
     %   Puerto Rico
@@ -33,7 +33,7 @@ classdef UAVDrone3 < handle
         % cargo and its time starts off at 0
         % The color is used to distiguish between the many drones we use
         % The manager assigns the requests to the drone
-        function obj = UAVDrone3(color,maxTime,maxCargo,sp,base,manager)
+        function obj = UAVDrone4(color,maxTime,maxCargo,sp,base,manager)
             obj.color= color;
             obj.maxTime=maxTime;
             obj.timeLeft = maxTime;
@@ -67,13 +67,15 @@ classdef UAVDrone3 < handle
                 if (obj.timeLeft < obj.maxTime * 0.4)
                     obj.timeLeft = obj.maxTime;
                     obj.rechargeCounter = obj.rechargeCounter + 1;
+                    
                 end
              
             else
                 % Complete the request by delivering cargo
                 obj.cargo = obj.cargo - 1;
                 obj.requestsMet = obj.requestsMet + 1;
-                obj.request.complete(obj.time); 
+                obj.request.complete(obj.time);
+                obj.manager.completedList(length(obj.manager.completedList) + 1) = obj.request; 
             end
                 % Get the next request from the manager
 %            

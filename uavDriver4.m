@@ -70,6 +70,6 @@ title('UAV simulation test')
 disp(manager.expired + " Requests expired")
 
 [overallTable,uavTable,zoneTable]=analyze(manager);
-%disp(zoneTable)
+disp(zoneTable)
 disp(uavTable)
 disp(overallTable)

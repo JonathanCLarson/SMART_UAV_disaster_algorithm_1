@@ -101,7 +101,7 @@ classdef Manager4 < handle
             if k==1
                 %disp("No unassigned requests")
                 req = uav.base.activeList;
-                if(Distance(uav.position,req.zone.position)<.001)
+                if(Distance(uav.position,req.zone.position)<.001))
                     uav.idleCounter = 3;
                 end
             else

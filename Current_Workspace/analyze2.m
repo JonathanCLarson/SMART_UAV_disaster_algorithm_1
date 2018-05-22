@@ -11,15 +11,15 @@ function  [numComp, perComp, numExp, wait, waitHi] = analyze2(manager)
     unfinished = 0; % number of unfinished requests
     waitTime = 0; % The total amount of time waited
     
-    for c=1:length(manager.requestList)
-        if(manager.requestList(c).priority==1)
+    for c=1:length(manager.completedList)
+        if(manager.completedList(c).priority==1)
             numHi=numHi+1;
             
         end
-        if (manager.requestList(c).status > 0)
+        if (manager.completedList(c).status > 0)
             unfinished = unfinished + 1;
         else
-            waitTime = waitTime + manager.requestList(c).timeElapsed;
+            waitTime = waitTime + manager.completedList(c).timeElapsed;
         end
         
     end
@@ -33,19 +33,19 @@ function  [numComp, perComp, numExp, wait, waitHi] = analyze2(manager)
     averageTimeZ = zeros(length(manager.requestZones), 1); % The average time waited per zone
     zoneNum = zeros(length(manager.requestZones), 1); % The zone number
     for c = 1:length(manager.requestZones)
-        for k = 1:length(manager.requestZones(c).requestList)
-        if (manager.requestZones(c).requestList(k).priority == 1)
+        for k = 1:length(manager.requestZones(c).activeList)
+        if (manager.requestZones(c).activeList(k).priority == 1)
             hiPriZ(c) = hiPriZ(c) + 1;
         end 
-        if (manager.requestZones(c).requestList(k).status == 0)
+        if (manager.requestZones(c).activeList(k).status == 0)
             completedRequestZ(c) = completedRequestZ(c) + 1;
-            waitTimeZ(c) = waitTimeZ(c) + manager.requestZones(c).requestList(k).timeElapsed;
+            waitTimeZ(c) = waitTimeZ(c) + manager.requestZones(c).activeList(k).timeElapsed;
         end
         end
         zoneNum(c) = c;
-        unfinishedRequestZ(c) = length(manager.requestZones(c).requestList) - completedRequestZ(c); 
-        loPriZ(c) = length(manager.requestZones(c).requestList) - hiPriZ(c); 
-        averageTimeZ(c) = waitTimeZ(c)./length(manager.requestZones(c).requestList);
+        unfinishedRequestZ(c) = length(manager.requestZones(c).activeList) - completedRequestZ(c); 
+        loPriZ(c) = length(manager.requestZones(c).activeList) - hiPriZ(c); 
+        averageTimeZ(c) = waitTimeZ(c)./length(manager.requestZones(c).activeList);
     end
     
     %% The loop to get the refuel information for all the UAV's
@@ -83,11 +83,11 @@ function  [numComp, perComp, numExp, wait, waitHi] = analyze2(manager)
         loMet = 0; % The number of Low Priority Requests met
         hiWait = 0; % The time Waited by high Priority requests
         
-        for c = 1:length(manager.requestList)
-            if((manager.requestList(c).priority == 1) && (manager.requestList(c).status == 0))
+        for c = 1:length(manager.completedList)
+            if((manager.completedList(c).priority == 1) && (manager.completedList(c).status == 0))
                 hiMet = hiMet + 1;
-                hiWait = hiWait + manager.requestList(c).timeElapsed;
-            elseif(manager.requestList(c).priority == 1000 && manager.requestList(c).status == 0) 
+                hiWait = hiWait + manager.completedList(c).timeElapsed;
+            elseif(manager.completedList(c).priority == 1000 && manager.completedList(c).status == 0) 
                 loMet = loMet + 1;
             end
     
@@ -97,9 +97,9 @@ function  [numComp, perComp, numExp, wait, waitHi] = analyze2(manager)
         
                 
     %% This is where all of the information is stored to make the table for the analysis
-    completedPer = (manager.requestsMet/length(manager.requestList)) * 100;
-    numLow=length(manager.requestList)-numHi; % The Number of Low Priorty requests met
-    averageTime = waitTime/length(manager.requestList); % The average wait time between requests
+    completedPer = (manager.requestsMet/length(manager.completedList)) * 100;
+    numLow=length(manager.completedList)-numHi; % The Number of Low Priorty requests met
+    averageTime = waitTime/length(manager.completedList); % The average wait time between requests
     numComp = manager.requestsMet;
     perComp = completedPer;
     numExp = manager.expired;

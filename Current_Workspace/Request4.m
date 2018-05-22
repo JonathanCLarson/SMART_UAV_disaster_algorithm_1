@@ -8,7 +8,7 @@ classdef Request4 < handle
         timeRequested % when the request was made
         timeElapsed % time since the request was made
         priority % 1 (hi) or 1000 (low)
-        status % 2 if unassigned, 1 if assigned, 0 if fulfilled or expired
+        status % 2 if unassigned, 1 if assigned, 0 if fulfilled, or (-1) if expired
         zone % the zone (1 of 3) in which the request takes place
         exprTime % Time at which a high priority request will expire
         index % The index in the active request list
@@ -32,15 +32,16 @@ classdef Request4 < handle
             obj.status = 0;
             obj.timeElapsed = time-obj.timeRequested;
             obj.zone.remove(obj.index);
-            obj.index = -1;
+            obj.index = 1000;
             
         end
         function refresh(obj,time)
             obj.timeElapsed=time-obj.timeRequested;
-            if(obj.priority == 1000 && obj.status>0&&(time-obj.timeRequested >=obj.exprTime))
-                obj.status=0;
+            if(obj.priority == 1 && obj.status>0&&(obj.timeElapsed >=obj.exprTime))
+                obj.status=-1;
                 obj.zone.expired = obj.zone.expired +1;
                 obj.zone.remove(obj.index);
+                obj.zone.manager.completedList(length(obj.zone.manager.completedList)+1)=obj;
             end
         end
         

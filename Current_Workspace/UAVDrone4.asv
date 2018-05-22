@@ -158,7 +158,6 @@ classdef UAVDrone4 < handle
                     obj.timeLeft = obj.timeLeft - (newTime - obj.time);
                     obj.time=newTime;
                     obj.idleCounter=obj.idleCounter-1;
-                    obj.idleTotal = obj.idleTotal + 1;
                     if(obj.idleCounter==0)
                         obj.deliver();
                     end                                           
@@ -177,6 +176,7 @@ classdef UAVDrone4 < handle
                     obj.timeLeft = obj.timeLeft - (newTime - obj.time);
                     obj.time = newTime;
                     obj.idleCounter = 5;
+                   
                 else
                 %hold on
                 % Plot the change in position

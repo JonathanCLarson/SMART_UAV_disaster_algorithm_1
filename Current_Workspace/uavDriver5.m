@@ -32,13 +32,13 @@ hold on
 % end
 dZone1 = RequestZone4([510,660],0.05,.5,timeExp); % Request object for drop zone 1
 dZone2 = RequestZone4([785,580],0.05,0.4,timeExp); % Request object for drop zone 2
-dZone3 = RequestZone4([1080,170],0.05,.6,timeExp); % Request object for drop zone 3
-dZone4 = RequestZone4([886, 68], 0.05, .4, timeExp); % Request object for drop zone 4
-dZone5 = RequestZone4([716, 235], 0.05, .5, timeExp); % Request object for drop zone 5
-dZone6 = RequestZone4([826, 328], 0.05, .4, timeExp); % Request object for drop zone 6
+% dZone3 = RequestZone4([1080,170],0.05,.6,timeExp); % Request object for drop zone 3
+% dZone4 = RequestZone4([886, 68], 0.05, .4, timeExp); % Request object for drop zone 4
+% dZone5 = RequestZone4([716, 235], 0.05, .5, timeExp); % Request object for drop zone 5
+% dZone6 = RequestZone4([826, 328], 0.05, .4, timeExp); % Request object for drop zone 6
 
 
-zoneList = [dZone1,dZone2,dZone3, dZone4,dZone5,dZone6];
+zoneList = [dZone1,dZone2];%,dZone3, dZone4,dZone5,dZone6];
 % zoneList(1).requestList = [Request2(0,1000, zoneList(1),timeExp) Request2(0,1,zoneList(1),timeExp)];%,Request(0,1, zoneList(1)),Request(0,1, zoneList(1)),Request(0,1,zoneList(1))];
 % zoneList(2).requestList = [Request2(0,1, zoneList(2),timeExp) Request2(0,1000,zoneList(2),timeExp)];%,Request(0,1000, zoneList(2))];
 % zoneList(3).requestList = [Request2(0,1000, zoneList(3),timeExp), Request2(0, 1, zoneList(3),timeExp)];%,Request(0,1000, zoneList(3))];
@@ -63,7 +63,8 @@ color = ['y', 'g','m'];
  
 % Simulate time step, each is 1 minute
 for c=1:60*duration
-        manager.refresh(c/60);    
+        manager.refresh(c/60); 
+        
 end
 
 title('UAV simulation test')

@@ -11,13 +11,13 @@ classdef UAVDrone4 < handle
         request % The next request to fill
         timeToRequest % The time until the UAV reaches the request
         requestsMet % The number of requests met by the UAV
-        maxTime % Maximum flight time of the UAV
+        maxRange % Maximum flight time of the UAV
         maxCargo % Maximum carrying capacity
         speed  % Velocity of the drone (assumed constant)
         distTravelled % Total distance travelled by the UAV
-        timeLeft % Flight time remaining before recharge is needed
+        rangeLeft % Flight time remaining before recharge is needed
         cargo % Amount of cargo remaining
-        timeBuffer % Distance the drone should be able to fly after returning to base
+        rangeBuffer % Distance the drone should be able to fly after returning to base
         base % a request object for the base location
         time % time elapsed since beginning of simulation
         manager % The manager object
@@ -35,17 +35,17 @@ classdef UAVDrone4 < handle
         % cargo and its time starts off at 0
         % The color is used to distiguish between the many drones we use
         % The manager assigns the requests to the drone
-        function obj = UAVDrone4(color,maxTime,maxCargo,sp,base,manager)
+        function obj = UAVDrone4(color,maxRange,maxCargo,sp,base,manager)
             obj.color= color;
-            obj.maxTime=maxTime;
-            obj.timeLeft = maxTime;
+            obj.maxRange=maxRange;
+            obj.rangeLeft = maxRange;
             obj.maxCargo = maxCargo;
             obj.cargo = maxCargo;
             obj.speed=sp;
             obj.distTravelled = 0;
             obj.base = base;
             obj.position= base.position;
-            obj.timeBuffer = 0.005*obj.maxTime; % UAV should reach base with up to 5% of max fuel remaining
+            obj.range = 0.005*obj.maxRange; % UAV should reach base with up to 5% of max fuel remaining
             obj.time = 0;
             obj.manager=manager;
             obj.request=obj.manager.assign(obj);
@@ -69,8 +69,8 @@ classdef UAVDrone4 < handle
             if(Distance(obj.position, obj.base.position) <= 0.001)
                 obj.cargo = obj.maxCargo;
                 %disp("Refilled at " + obj.time)
-                if (obj.timeLeft < obj.maxTime * 0.4)
-                    obj.timeLeft = obj.maxTime;
+                if (obj.rangeLeft < obj.maxRange * 0.4)
+                    obj.rangeLeft = obj.maxRange;
                     obj.rechargeCounter = obj.rechargeCounter + 1;
                     
                 end
@@ -95,7 +95,7 @@ classdef UAVDrone4 < handle
                 %disp("new assignment received at "+ obj.time)
                 % Return to base if there is not enough fuel to reach the
                 % next request
-                if (obj.timeToRequest+(Distance(obj.base.position,obj.request.zone.position)/obj.speed)+obj.timeBuffer >=obj.timeLeft)
+                if (obj.timeToRequest+(Distance(obj.base.position,obj.request.zone.position)/obj.speed)+obj.rangeBuffer >=obj.rangeLeft)
                     obj.lowChargeCounter = obj.lowChargeCounter + 1;
                     %disp("Fuel empty at " + obj.time)
                     obj.returnToBase();
@@ -158,6 +158,7 @@ classdef UAVDrone4 < handle
                     obj.timeLeft = obj.timeLeft - (newTime - obj.time);
                     obj.time=newTime;
                     obj.idleCounter=obj.idleCounter-1;
+                    obj.idleTotal = obj.idleTotal + 1;
                     if(obj.idleCounter==0)
                         obj.deliver();
                     end                                           
@@ -176,7 +177,6 @@ classdef UAVDrone4 < handle
                     obj.timeLeft = obj.timeLeft - (newTime - obj.time);
                     obj.time = newTime;
                     obj.idleCounter = 5;
-                   
                 else
                 %hold on
                 % Plot the change in position

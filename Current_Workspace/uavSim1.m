@@ -1,9 +1,9 @@
-function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zones, baseLocation, priFac, duration,ftToPix)
+function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zones, baseLocation, priFac, duration,kmToPix)
 % Simulates a uav fleet responding to a disaster
 % Runs a simulation and returns the results for analysis
 % Inputs:
-%   UAV: A vector of [number of UAVs in the fleet, speed of the UAVs, and
-%       maximum cargo load for the drones]
+%   UAV: A vector of [number of UAVs in the fleet, speed of the UAVs, 
+%      maximum cargo load for the drones, and range]
 %   exprTime: The amount of time that can pass before a high priority
 %       request "expires" (The victim dies)
 %   zones: A vector of RequestZone4 objects that the fleet will respond to
@@ -11,7 +11,7 @@ function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zone
 %   priFac: The priority factor which tells the rate comparing low to high
 %       priority requests
 %   duration: The duration of the simulation (hours)
-%   ftToPix: The ratio of feet to pixels on the map (used to convert to
+%   kmToPix: The ratio of kilometers to pixels on the map (used to convert to
 %       speed from mph)
 
 
@@ -27,12 +27,12 @@ function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zone
 
 % Parameters
 numUAVs = UAV(1); % The number of UAV's in the fleet
-uavSpeed = UAV(2); % in mph
-uavFlightTime = UAV(4); % in hrs
+uavSpeed = UAV(2); % in km/h
+uavRange = UAV(4); % in km
 uavCap = UAV(3); % Drone capacity 
 
-feetToPix = @(ft) ft/ftToPix;
-pixToFeet = @(pix) pix * f2px;
+km2Pix = @(ft) ft/kmToPix;
+pix2km = @(pix) pix * km2px;
 
 
 base = RequestZone4(baseLocation,1,1,0);
@@ -54,7 +54,7 @@ color = ['y', 'g','m','c','b','r','k','w'];
 
 % Assign UAV's 
  for k=1:numUAVs
-        uavArray(k)=UAVDrone4(color(k),uavFlightTime,uavCap,feetToPix(uavSpeed * 5280),base,manager);
+        uavArray(k)=UAVDrone4(color(k),uavRange,uavCap,km2Pix(uavSpeed),base,manager);
         manager.addUAV(uavArray(k));
  end
  

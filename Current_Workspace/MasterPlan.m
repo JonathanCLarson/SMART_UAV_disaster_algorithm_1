@@ -3,8 +3,8 @@
 
 %Parameters:
 clear; close all;
-feet2pixRatio = 16.7; % The ratio for converting feet to pixels
-uav = [3, 20, 3, 1]; % [number of UAV's, speed(mph),cargo load, flight time]
+km2pixRatio = 0.00509; % The ratio for converting feet to pixels
+uav = [3, 40, 3, 15]; % [number of UAV's, speed(km/h),cargo load, range]
 exprTime = 1; % How long it takes for the high priority request to expire
 priFac = 1000; % The priority factory by which low priority requests are
 % reduced compared to high priority requests
@@ -24,7 +24,7 @@ color = ['r', 'b', 'k','m','g','y','c','w']; % The colors to mark the lines
 symbol = ['o','*','s','p','^','d','x','+','.']; % The symbols used to mark the graph
 
    
-[numMet, per, numExp, wait, waitHi,manager]=uavSim1(uav, zones, base, priFac, duration,feet2pixRatio);
+[numMet, per, numExp, wait, waitHi,manager]=uavSim1(uav, zones, base, priFac, duration,km2pixRatio);
 [total, zone, UAV] = analyze(manager);
 disp(total)
 %% Multiple simulations    
@@ -58,7 +58,7 @@ for c = 1:8
         cargo = a; % The cargo for the uav
         uavTest(3) = cargo; 
         for m = 1:10
-            [cNumComp(m), cPerComp(m), cNumExpr(a,m), ~, ~,~]=uavSim1(uavTest, zonesTest, base, priFac, duration,feet2pixRatio);
+            [cNumComp(m), cPerComp(m), cNumExpr(a,m), ~, ~,~]=uavSim1(uavTest, zonesTest, base, priFac, duration,km2pixRatio);
         end
         cNumEx = mean(cNumExpr(a,:));
         scatter(cargo,cNumEx, ['b',symbol(c)])

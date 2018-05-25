@@ -45,11 +45,11 @@ classdef Request4 < handle
             obj.timeElapsed=time-obj.timeRequested;
             % Expire the request if necessary
             if(obj.priority == 1 && obj.status>0&&(obj.timeElapsed >=obj.exprTime))
-                obj.status=-1;
-                obj.zone.expired = obj.zone.expired +1;
-                obj.zone.remove(obj.index);
+                obj.status=-1;  % Change status to expired value
+                obj.zone.expired = obj.zone.expired +1; % Increase the zone's expired counter
+                obj.zone.remove(obj.index); % Remove from zone's activeList
                 obj.zone.manager.expiredList(length(obj.zone.manager.expiredList)+1)=obj;
-                obj.zone.manager.assign();
+                obj.zone.manager.assign(); % Call assign function so UAV's are reassigned if necessary
             end
         end
         

@@ -43,6 +43,7 @@ end
 % plot(base.position(1),base.position(2),'r.','MarkerSize',25)
 
 manager = Manager4(zones, base); % Create a manager to receive and assign requests
+% Add the manager to the zones
 for c=1:length(zones)
     zones(c).manager = manager;
     zones(c).priFac = priFac;
@@ -50,7 +51,7 @@ end
 % Color array for the UAV's
 color = ['y', 'g','m','c','b','k','w','r'];
 
-% Assign UAV's 
+% Create UAV's and add them to the manager
 % Converts uav speeds and ranges to pixels 
 uavArray=UAVDrone4.empty;
  for k=1:numUAVs
@@ -58,20 +59,15 @@ uavArray=UAVDrone4.empty;
         manager.addUAV(uavArray(k, 1));
  end
  
-% Simulate time step, each is 1 minute
+% Simulate time steps for the duration of the simulation, each is 1 minute
 
 for c=1:60*duration
         manager.refresh(c/60);    
 end
 
 %title('UAV simulation test')
+% Perform analysis and return results, as well as the manager object.
 [numComp, perComp, numExp, wait, waitHi] = analyze2(manager);
 simManager=manager;
 
-%disp(manager.requestsMet + " Requests met")
-%disp(manager.expired + " Requests expired")
 
-% [overallTable,uavTable,zoneTable]=analyze(manager);
-% disp(zoneTable)
-% disp(uavTable)
-% % disp(overallTable)

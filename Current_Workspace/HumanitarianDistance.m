@@ -8,6 +8,7 @@ function hd = HumanitarianDistance(request, uav)
 %   hd = The humanitarian distance between the request
 
 
+
 % Calculate the priority factor using the request's type and time elapsed.
 p = request.priority * (request.timeFac)^(request.timeElapsed);
 % Multiplication HD

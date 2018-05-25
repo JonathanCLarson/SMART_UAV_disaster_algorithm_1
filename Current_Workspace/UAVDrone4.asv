@@ -79,14 +79,13 @@ classdef UAVDrone4 < handle
                 end
              
             else
-                if(obj.request.status>-1)
-                    % Complete the request by delivering cargo (if not at base)
-                    obj.cargo = obj.cargo - 1;
-%                   disp(obj.cargo + " After Delivery")
-                    obj.requestsMet = obj.requestsMet + 1;
-                    obj.request.complete(obj.time);
-                    obj.manager.completedList(length(obj.manager.completedList) + 1) = obj.request; 
-                end
+                
+                % Complete the request by delivering cargo (if not at base)
+                obj.cargo = obj.cargo - 1;
+%                 disp(obj.cargo + " After Delivery")
+                obj.requestsMet = obj.requestsMet + 1;
+                obj.request.complete(obj.time);
+                obj.manager.completedList(length(obj.manager.completedList) + 1) = obj.request; 
             end
                
             if(obj.cargo<1)
@@ -100,11 +99,17 @@ classdef UAVDrone4 < handle
                 obj.request=Request4.empty;
             end
             
-            % Have the manager give new assignments          
+            % Have the manager give new assignments
+            
+           
+            % Call assign function in the manager
             obj.manager.assign();
             % Determine the drone's time to its new request.
             obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
 
+                % Return to base if there is not enough cargo to complete the
+                % next request
+                
             % Instantly perform a delivery if the new request is at the
             % current UAV location (same zone as the previous request)
             if(Distance(obj.request.zone.position,obj.position)<=.0001)

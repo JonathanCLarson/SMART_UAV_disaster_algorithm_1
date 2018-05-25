@@ -5,14 +5,14 @@ classdef Request4 < handle
         % Stores priority, time needed to fulfill requests, etc.
         % This version is a handle class.
     properties
-        timeRequested   % when the request was made
-        timeElapsed     % time since the request was made
+        timeRequested % when the request was made
+        timeElapsed % time since the request was made
         priority        % Value to scale Humanitarian Distance based on request priority
         timeFac         % Value to determine how requests gain priority over time
-        status          % 2 if unassigned, 1 if assigned, 0 if fulfilled, or (-1) if expired
-        zone            % the zone (1 of 3) in which the request takes place
-        exprTime        % Time at which a high priority request will expire
-        index           % The index in the active request list
+        status % 2 if unassigned, 1 if assigned, 0 if fulfilled, or (-1) if expired
+        zone % the zone (1 of 3) in which the request takes place
+        exprTime % Time at which a high priority request will expire
+        index % The index in the active request list
     end
     
     methods

@@ -8,14 +8,14 @@
 classdef Manager4 < handle
     
     properties
-        requestZones    % list of the request zones
-        completedList   % List of requests to assign to UAV's
-        expiredList     % List of expired requests
+        requestZones % list of the request zones
+        completedList % List of requests to assign to UAV's
         uavList % List of uav's in the fleet
         time % Stores the current time
         base % the base for the UAV's
+        timeFac % the time factor to make requests more important over time
         requestsMet % to keep track of the requests met
-        expired     % Counts the number of expired requests
+        expired % Counts the number of expired requests
         numRedirect % Count the number of times UAV's were redirected
     end
     methods
@@ -23,25 +23,25 @@ classdef Manager4 < handle
         % Initializes the time at 0, starts off with an empty drone list,
         % and gets the request zones and the base
         
-        function obj = Manager4(zones, base)
+        function obj = Manager4(zones, base,timeFac)
             obj.requestZones = zones;
-            obj.time = 0;
-            obj.uavList = UAVDrone4.empty;
+            obj.time=0;
+            obj.uavList=UAVDrone4.empty;
             obj.base = base;
-            obj.completedList = Request4.empty;
-            obj.expiredList = Request4.empty;
+            obj.timeFac = timeFac;
+            obj.completedList=Request4.empty;
             obj.requestsMet = 0;
             obj.expired = 0;
             obj.numRedirect = 0;
         end
         % Adds uav to the manager's list of uav's 
         function addUAV(obj, uav)
-            obj.uavList(length(obj.uavList) + 1, 1) = uav;
+            obj.uavList(length(obj.uavList) + 1, 1)=uav;
         end
             
        % Function to refresh the UAV's and requests
         function refresh(obj, time)
-            obj.time = time;
+            obj.time=time;
             % Refresh request zones
             for k=1:length(obj.requestZones)
                 obj.requestZones(k).refresh(time);

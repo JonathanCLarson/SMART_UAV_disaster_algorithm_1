@@ -123,10 +123,10 @@ function  [tableOver, tableZone, tableUAV] = analyze(manager)
     
     
     
-        labels1 = {'Completed_Requests','Number_Expired','High_Priority_Met','Low_Priority_Met', 'Unfinished_Requests','Total_High','Total_Low', 'Percent_Completed', 'Average_Wait', 'High_Priority_Average_Wait','High_Requests_Met', 'Low_Requests_Met', 'Recharge', 'Refuel', 'Restock', 'Refill'};
+        labels1 = {'Completed_Requests','Number_Expired','High_Priority_Met','Low_Priority_Met', 'Unfinished_Requests','Redirected_UAVs','Total_High','Total_Low', 'Percent_Completed', 'Average_Wait', 'High_Priority_Average_Wait','High_Requests_Met', 'Low_Requests_Met', 'Recharge', 'Refuel', 'Restock', 'Refill'};
     labels2 = {'Zone','Completed_Requests','High_Priority_Requests','Low_Priority_Requests', 'Unfinished_Requests', 'Average_Wait'};
     labels3 = {'Recharge','Low_Charge', 'Empty', 'Refill', 'RequestsMet', 'Idle_Time_UAV'};
-    tableOver = table((hiMet+lowMet),manager.expired, hiMet, lowMet, unfinished, highTotal,lowTotal,completedPer, averageTime, hiAverage, hiMet, loMet, recharge, refuel, restock, refill, 'VariableNames', labels1);
+    tableOver = table((hiMet+lowMet),manager.expired, hiMet, lowMet, unfinished, manager.numRedirect,highTotal,lowTotal,completedPer, averageTime, hiAverage, hiMet, loMet, recharge, refuel, restock, refill, 'VariableNames', labels1);
 
     tableZone = table(zoneNum,completedRequestZ, hiPriZ, loPriZ, unfinishedRequestZ, averageTimeZ, 'VariableNames', labels2);
     

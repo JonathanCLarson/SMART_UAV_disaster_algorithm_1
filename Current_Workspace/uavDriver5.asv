@@ -48,7 +48,7 @@ zoneList = [dZone1,dZone2];%,dZone3, dZone4,dZone5,dZone6];
 
 manager = Manager4(zoneList, base); % Create a manager to receive and assign requests
 
-color = ['y', 'g','m','c','b','r','k','w'];
+color = ['y', 'g','m'];
 
 % uav1 = UAVDrone(color(1),10,3,200,base,manager);
 % uav2 = UAVDrone(color(2),10,3,200,base,manager);

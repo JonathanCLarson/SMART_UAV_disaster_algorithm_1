@@ -24,7 +24,7 @@ classdef RequestZone4 < handle
         % This tells what the position of the request is. It also tells
         % what the probability of a new request is and what the probability
         % of a high priority request is
-        function obj = RequestZone4(pos,probNew,probHi,exprTime,priFac,timeFac,ID)
+        function obj = RequestZone4(pos,probNew,probHi,exprTime,ID)
             obj.position = pos;
             obj.probNew = probNew;
             obj.probHi = probHi;
@@ -33,8 +33,7 @@ classdef RequestZone4 < handle
             obj.numUnassigned = 0;
             obj.manager=Manager4.empty;
             obj.exprTime = exprTime;
-            obj.priFac = priFac;
-            obj.timeFac = timeFac;
+            obj.priFac = 0;
             obj.ID = ID;
         end
         
@@ -65,7 +64,7 @@ classdef RequestZone4 < handle
                 else
                     priority = obj.priFac;
                 end
-                newreq = Request4(time,priority,obj.timeFac, obj,obj.exprTime,length(obj.activeList)+1);
+                newreq = Request4(time,priority, obj,obj.exprTime,length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
             end
          obj.numUnassigned = obj.getUnassigned();

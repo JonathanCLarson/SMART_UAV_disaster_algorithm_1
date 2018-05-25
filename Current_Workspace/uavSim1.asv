@@ -1,4 +1,4 @@
-function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zones, baseLocation, priFac,duration,kmToPix)
+function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zones, baseLocation, priFac, timeFac,duration,kmToPix)
 % Simulates a uav fleet responding to a disaster
 % Runs a simulation and returns the results for analysis
 % Inputs:
@@ -35,8 +35,8 @@ km2Pix = @(ft) ft/kmToPix;
 pix2km = @(pix) pix * km2px;
 
 
-base = RequestZone4(baseLocation,'B','B','B','B','B','B');
-base.activeList=Request4('B','B','B',base,'B', 'B');
+base = RequestZone4(baseLocation,1,1,0,'B');
+base.activeList=Request4('B','B',base,'B', 'B');
 
 % Reset the Request Zones
 for c=1:length(zones)
@@ -44,7 +44,7 @@ for c=1:length(zones)
 end
 plot(base.position(1),base.position(2),'r.','MarkerSize',25)
 
-manager = Manager4(zones, base); % Create a manager to receive and assign requests
+manager = Manager4(zones, base,timeFac); % Create a manager to receive and assign requests
 for c=1:length(zones)
     zones(c).manager = manager;
     zones(c).priFac = priFac;

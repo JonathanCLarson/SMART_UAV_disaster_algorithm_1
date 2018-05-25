@@ -4,15 +4,13 @@ function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zone
 % Inputs:
 %   UAV: A vector of [number of UAVs in the fleet, speed of the UAVs, 
 %      maximum cargo load for the drones, and range]
-%   exprTime: The amount of time that can pass before a high priority
-%       request "expires" (The victim dies)
 %   zones: A vector of RequestZone4 objects that the fleet will respond to
 %   baseLocation: The [x,y] location of the base where the drones resupply
 %   priFac: The priority factor which tells the rate comparing low to high
 %       priority requests
 %   duration: The duration of the simulation (hours)
 %   kmToPix: The ratio of kilometers to pixels on the map (used to convert to
-%       speed from mph)
+%       speed from km/h)
 
 
 % Outputs: 
@@ -28,21 +26,21 @@ function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zone
 % Parameters
 numUAVs = UAV(1); % The number of UAV's in the fleet
 uavSpeed = UAV(2); % in km/h
-uavRange = UAV(4); % in km
+uavRange = UAV(4); % in kilometers
 uavCap = UAV(3); % Drone capacity 
 
-km2Pix = @(ft) ft/kmToPix;
-pix2km = @(pix) pix * km2px;
+km2Pix = @(ft) ft/kmToPix;      % Anonymous function to convert km to pixels
+pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km 
 
-
+% Create the base object, and give it a single request.
 base = RequestZone4(baseLocation,'B','B','B','B','B','B');
-base.activeList=Request4('B','B','B',base,'B', 'B');
+base.activeList=Request4('B','B','B',base,'B', 0);
 
-% Reset the Request Zones
+% Reset the Request Zones (needed for running multiple simulations
 for c=1:length(zones)
     zones(c).reset();
 end
-plot(base.position(1),base.position(2),'r.','MarkerSize',25)
+% plot(base.position(1),base.position(2),'r.','MarkerSize',25)
 
 manager = Manager4(zones, base); % Create a manager to receive and assign requests
 for c=1:length(zones)

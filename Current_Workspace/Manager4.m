@@ -1,6 +1,7 @@
 %%  Manager1
 % Jonathan Larson and Gabe Flores
-% manages tests for the driver class
+% Fleet manager to direct the UAV fleet and coordinate with requests from
+% the request zones.
 %   Assigns UAV's to deliver supplies to request zones, and refreshes the
 %   status of the fleet
 % 5/10/2018
@@ -73,6 +74,7 @@ classdef Manager4 < handle
             j = 1;
             droneList=UAVDrone4.empty;
             for c = 1:length(obj.uavList)
+                % 
                 if(obj.uavList(c).cargo ~= 0&& obj.uavList(c).idleCounter==0)
                     droneList(j) = obj.uavList(c);
                     j = j + 1;
@@ -81,7 +83,8 @@ classdef Manager4 < handle
             
             requestList = Request4.empty;
             n=1;
-            % Collect the highest priority requests from each zone
+            % Collect the highest priority requests from each zone, and
+            %   store them in an array requestList
             for c = 1:length(obj.requestZones)
                 temp = obj.requestZones(c).getHighest(length(droneList));
                 if ~isempty(temp)
@@ -132,41 +135,45 @@ classdef Manager4 < handle
         % Output:   req = the selected request
         function chooseRequests(requestList,uavList) 
 
-            
+            % CALCULATE HUMANITARIAN DISTANCES
             M = zeros(length(uavList), length(requestList));
-            % disp(M)
-            % disp(uavList)
-            % disp(requestList)
+            % Create a matrix where element (r,c) corresponds to the HD
+            %   between uav(r) and request(c)
             for r = 1:length(uavList)
                 for c = 1:length(requestList)
-                     M(r, c) = HumanitarianDistance(requestList(c),uavList(r));
-                    %M(r, c) = Distance(requestList(c).zone.position,uavList(r).position);
-                    
+                     M(r, c) = HumanitarianDistance(requestList(c),uavList(r));                    
                 end
-              
             end
-            %disp(M)
+
             [~, index] = min(M); % Determine which UAV's correspond to a minimum HD from each request
             
-            % Assign optimum requests to each UAV
+            % Initialize empty arrays
             unAssigUAV=UAVDrone4.empty; % Stores the UAV's that haven't been given requests yet
             hdArray=[]; % Array of humanitarian distances to compare
             reqArray=Request4.empty; % Array of requests for which the current UAV minimizes the HD
             assignedIndex=[]; % Stores the index of requests that have been assigned to UAV's
             listIndex = []; % Stores the index in requestList that corresponds to each element in reqArray
+            
+            % FIND OPTIMUM ASSIGNMENTS
+            % If only 1 UAV needs to be assigned, just find the minimum of
+            %   the 1-D array of requests
             if(length(uavList) == 1)
                  % Count redirected UAV's
                  if(~isempty(uavList(1).request)&& uavList(1).request.zone.ID~=requestList(index).zone.ID)
                             uavList(1).manager.numRedirect = uavList(1).manager.numRedirect+1;
                  end
+                % Assign the optimum to the UAV
                 uavList.request = requestList(index);
+                
+            % If more than 1 UAV, find ideal UAV's for each Request and
+            %   then choose the best request for each UAV to service
             else
                 for u=1:length(uavList)
                     for i=1:length(index)
                         if index(i)==u
-                            % build an array of the requests for which the 
-                            % current UAV is the closest and the HD between
-                            % that request and the UAV
+                            % Build an array of the requests for which the 
+                            %   current UAV is the closest and the HD between
+                            %   that request and the UAV
                             reqArray(length(reqArray)+1)=requestList(i); % Request object array
                             % Calculate Humanitarian Distances
                             hdArray(length(hdArray)+1)=HumanitarianDistance(requestList(i),uavList(u));
@@ -175,21 +182,26 @@ classdef Manager4 < handle
                         end
                     
                     end
+                    % If no requests, all UAV's are unassigned
                     if isempty(reqArray)
                         unAssigUAV(length(unAssigUAV)+1)=uavList(u);
                     else
-                    [~,bestFit]=min(hdArray); % Find the optimum UAV assignment
-                    
+                    [~,bestFit]=min(hdArray); % Find the optimum UAV for each Request
+                    % Check for redirected UAV's
                     if(~isempty(uavList(u).request)&& uavList(u).request.zone.ID~=reqArray(bestFit).zone.ID)
                             uavList(u).manager.numRedirect = uavList(u).manager.numRedirect+1;
                     end
-                    uavList(u).request=reqArray(bestFit); % Assign request to UAV
+                    % Assign request to UAV
+                    uavList(u).request=reqArray(bestFit); 
+                    % Store index of assigned request
                     assignedIndex(length(assignedIndex)+1)=listIndex(bestFit);                
                     % RESET arrays before moving to next UAV
                     reqArray=Request4.empty;
                     hdArray=[];
                     end
                 end
+                
+                % ASSIGN LEFTOVER DRONES
                 % Sort list of assigned indices into descending order to remove
                 % assigned requests from the list
                 assignedIndex=sort(assignedIndex,'descend'); 
@@ -203,54 +215,25 @@ classdef Manager4 < handle
                     unAssigReq=unAssigReq(1:length(unAssigReq)-1);
                 end
 
-                % Call the chooseRequests function on the unassigned UAV's, if necessary 
+                % Call the chooseRequests function on the unassigned UAV's,
+                %   if there are still requests available
                 if(~isempty(unAssigUAV)&&~isempty(unAssigReq))
                     Manager4.chooseRequests(unAssigReq,unAssigUAV);
-                elseif(isempty(unAssigReq)&& ~isempty(unAssigUAV))
-                    % Send extra drones to base
+                    
+                % Send extra UAV's to base if there are no more Requests
+                elseif(isempty(unAssigReq)&& ~isempty(unAssigUAV))                    
                     for c=1:length(unAssigUAV)
                         % Check for redirected UAV's
-                        if(~isempty(unAssigUAV(c).request)&& unAssigUAV.request.zone.ID~=unAssigUAV(c).base.ID)
+                        if(~isempty(unAssigUAV(c).request)&& unAssigUAV(c).request.zone.ID~=unAssigUAV(c).base.ID)
                             unAssigUAV(c).manager.numRedirect = unAssigUAV(c).manager.numRedirect+1;
                         end
+                        % Assign the request
                         unAssigUAV(c).request=unAssigUAV(c).base.activeList;
 
                     end
                 end
             end 
-            
-%             k=1;
-%             
-%             for c=1:length(reqList)
-%                 
-%                 for j = 1:length(reqList{c})
-%                     temp = reqList{c};
-%                     % Create a list of requests to choose from
-%                     chooseList(k)= temp(j);
-%                     % The Humanitarian distance function version
-%                     % This version makes use of the humanitarian distance
-%                     % function in order to show how the UAV behaves when
-%                     % commanded to go to the high priority requests first
-%                     dist(k)= HumanitarianDistance(chooseList(k),uav);
-%                     % The Standard distance function version
-%                     % This version will get the requests based on the zones
-%                     % that they are in regardless of priority
-%                     %dist(k) = Distance(chooseList(k).zone.position,uav.position);
-%                     k=k+1;
-%                 end
-%             end
-%             
-%             if k==1
-%                 %% disp("No unassigned requests")
-%                 req = uav.base.activeList;
-%                 if(Distance(uav.position,req.zone.position)<.001)
-%                     uav.idleCounter = 3;
-%                 end
-%             else
-%                 [~,index]=min(dist);
-%                 req=chooseList(index);
-%             end         
-            
+                       
         end
     end
     

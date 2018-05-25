@@ -1,4 +1,4 @@
-function  [tableOver, tableZone, tableUAV] = analyze(manager)
+function  [numComp, perComp, numExp, wait, waitHi] = analyze2(manager)
 % Analyze function for UAV simulation
 %   returns numerical results of the UAV simulation
 %   for some of the variables, including the high priority requests
@@ -7,36 +7,23 @@ function  [tableOver, tableZone, tableUAV] = analyze(manager)
 
     %% The loop to get the number of high priority requests, the unfinished requests,
     % and the total wait time
-    hiMet = 0; % number of high priority requests met
-    lowMet = 0; % number of low priority requests met
+    numHi = 0; % number of high priority requests generated
     unfinished = 0; % number of unfinished requests
     waitTime = 0; % The total amount of time waited
-    hiUnMet = 0; % total unmet high priority requests
-    lowUnMet = 0; % total unmet low priority requests
     
     for c=1:length(manager.completedList)
         if(manager.completedList(c).priority==1)
-            hiMet=hiMet+1;
+            numHi=numHi+1;
+            
+        end
+        if (manager.completedList(c).status > 0)
+            unfinished = unfinished + 1;
         else
-            lowMet= lowMet+1;
+            waitTime = waitTime + manager.completedList(c).timeElapsed;
         end
-        waitTime = waitTime + manager.completedList(c).timeElapsed;        
+        
     end
-  
-    for c = 1:length(manager.requestZones)
-        unfinished = unfinished + length(manager.requestZones(c).activeList);
-        for k = 1:length(manager.requestZones(c).activeList)
-            if(manager.requestZones(c).activeList(k).priority==1)
-                hiUnMet=hiUnMet+1;
-            else
-                lowUnMet=lowUnMet+1;
-            end
-        end
-    end
-    highTotal = hiMet+hiUnMet;
-    lowTotal = lowMet+lowUnMet;
     
-
     %% This is a loop to get some information based on the zones
     hiPriZ = zeros(length(manager.requestZones), 1); % The number of High priority requests per zone
     completedRequestZ = zeros(length(manager.requestZones), 1); % The number of completed requests per zone
@@ -80,14 +67,12 @@ function  [tableOver, tableZone, tableUAV] = analyze(manager)
     rechargeuav = zeros(length(manager.uavList), 1); % The total number of recharges per UAV
     refueluav = zeros(length(manager.uavList), 1); % The total number of refuels per UAV
     requestsMetUAV = zeros(length(manager.uavList), 1);
-    idleTimeuav = zeros(length(manager.uavList), 1); 
     for c = 1:length(manager.uavList)
         
         restockuav(c) = manager.uavList(c).emptyCounter;
         refueluav(c) = manager.uavList(c).lowChargeCounter;
         rechargeuav(c) = manager.uavList(c).rechargeCounter;
         requestsMetUAV(c) = manager.uavList(c).requestsMet;
-        idleTimeuav(c) = manager.uavList(c).idleTotal;
     end
         refilluav = refueluav + restockuav;
         
@@ -99,7 +84,7 @@ function  [tableOver, tableZone, tableUAV] = analyze(manager)
         hiWait = 0; % The time Waited by high Priority requests
         
         for c = 1:length(manager.completedList)
-            if(manager.completedList(c).priority == 1 && manager.completedList(c).status==0)
+            if((manager.completedList(c).priority == 1) && (manager.completedList(c).status == 0))
                 hiMet = hiMet + 1;
                 hiWait = hiWait + manager.completedList(c).timeElapsed;
             elseif(manager.completedList(c).priority == 1000 && manager.completedList(c).status == 0) 
@@ -112,8 +97,8 @@ function  [tableOver, tableZone, tableUAV] = analyze(manager)
         
                 
     %% This is where all of the information is stored to make the table for the analysis
-    completedPer = (manager.requestsMet/(highTotal+lowTotal)) * 100;
-    numLow=length(manager.completedList)-hiMet; % The Number of Low Priorty requests met
+    completedPer = (manager.requestsMet/length(manager.completedList)) * 100;
+    numLow=length(manager.completedList)-numHi; % The Number of Low Priorty requests met
     averageTime = waitTime/length(manager.completedList); % The average wait time between requests
     numComp = manager.requestsMet;
     perComp = completedPer;
@@ -123,13 +108,14 @@ function  [tableOver, tableZone, tableUAV] = analyze(manager)
     
     
     
-        labels1 = {'Completed_Requests','Number_Expired','High_Priority_Met','Low_Priority_Met', 'Unfinished_Requests','Total_High','Total_Low', 'Percent_Completed', 'Average_Wait', 'High_Priority_Average_Wait','High_Requests_Met', 'Low_Requests_Met', 'Recharge', 'Refuel', 'Restock', 'Refill'};
-    labels2 = {'Zone','Completed_Requests','High_Priority_Requests','Low_Priority_Requests', 'Unfinished_Requests', 'Average_Wait'};
-    labels3 = {'Recharge','Low_Charge', 'Empty', 'Refill', 'RequestsMet', 'Idle_Time_UAV'};
-    tableOver = table((hiMet+lowMet),manager.expired, hiMet, lowMet, unfinished, highTotal,lowTotal,completedPer, averageTime, hiAverage, hiMet, loMet, recharge, refuel, restock, refill, 'VariableNames', labels1);
-
-    tableZone = table(zoneNum,completedRequestZ, hiPriZ, loPriZ, unfinishedRequestZ, averageTimeZ, 'VariableNames', labels2);
-    
-    tableUAV = table(rechargeuav, refueluav, restockuav, refilluav, requestsMetUAV, idleTimeuav, 'VariableNames', labels3);
+%         labels1 = {'Completed_Requests','Number_Expired','High_Priority_Requests','Low_Priority_Requests', 'Unfinished_Requests', 'Percent_Completed', 'Average_Wait', 'High_Priority_Average_Wait','High_Requests_Met', 'Low_Requests_Met', 'Recharge', 'Refuel', 'Restock', 'Refill'};
+%     labels2 = {'Zone','Completed_Requests','High_Priority_Requests','Low_Priority_Requests', 'Unfinished_Requests', 'Average_Wait'};
+%     labels3 = {'Recharge','Low_Charge', 'Empty', 'Refill', 'RequestsMet'};
+%     tableOver = table(manager.requestsMet,manager.expired, numHi, numLow, unfinished, completedPer, averageTime, hiAverage, hiMet, loMet, recharge, refuel, restock, refill, 'VariableNames', labels1);
+% 
+%     tableZone = table(zoneNum,completedRequestZ, hiPriZ, loPriZ, unfinishedRequestZ, averageTimeZ, 'VariableNames', labels2);
+%     
+%     tableUAV = table(rechargeuav, refueluav, restockuav, refilluav, requestsMetUAV, 'VariableNames', labels3);
 end
+
 

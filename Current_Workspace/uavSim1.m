@@ -35,14 +35,14 @@ km2Pix = @(ft) ft/kmToPix;
 pix2km = @(pix) pix * km2px;
 
 
-base = RequestZone4(baseLocation,1,1,0);
-base.activeList=Request4('B','B',base,0, 1);
+base = RequestZone4(baseLocation,1,1,0,'B');
+base.activeList=Request4('B','B',base,'B', 'B');
 
 % Reset the Request Zones
 for c=1:length(zones)
     zones(c).reset();
 end
-% plot(base.position(1),base.position(2),'k.','MarkerSize',15)
+plot(base.position(1),base.position(2),'k.','MarkerSize',15)
 
 manager = Manager4(zones, base); % Create a manager to receive and assign requests
 for c=1:length(zones)
@@ -53,9 +53,10 @@ end
 color = ['y', 'g','m','c','b','r','k','w'];
 
 % Assign UAV's 
+% Converts uav speeds and ranges to pixels 
  for k=1:numUAVs
-        uavArray(k)=UAVDrone4(color(k),uavRange,uavCap,km2Pix(uavSpeed),base,manager);
-        manager.addUAV(uavArray(k));
+        uavArray(k, 1)=UAVDrone4(color(k),km2Pix(uavRange),uavCap,km2Pix(uavSpeed),base,manager);
+        manager.addUAV(uavArray(k, 1));
  end
  
 % Simulate time step, each is 1 minute

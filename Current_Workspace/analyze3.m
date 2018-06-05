@@ -1,4 +1,4 @@
-function  [numComp, perComp, numExp, recharge,restock,refill,idleTotal] = analyze2(manager)
+function  [numComp, perComp, numExp, totAvgWait, highAvgWait,lowAvgWait,totAvgWaitZ,highAvgWaitZ,lowAvgWaitZ,recharge,restock,refill,idleTotal] = analyze3(manager)
 % Analyze function for UAV simulation
 %   returns numerical results of the UAV simulation
 %   for some of the variables, including the high priority requests
@@ -28,75 +28,75 @@ function  [numComp, perComp, numExp, recharge,restock,refill,idleTotal] = analyz
         waitTime = waitTime + manager.expiredList(c).exprTime;       
     end
     
-    %% Consolidate the lists into: Low & High priority (In Analyze 3)
-%     highReq = Request4.empty;
-%     lowReq = Request4.empty;
-%     
-%     highWait = 0;
-%     lowWait = 0;
-%     zoneWaitHigh = zeros(length(manager.requestZones),1); % Stores high priority wait times for each zone
-%     zoneWaitLow = zeros(length(manager.requestZones),1); % Stores low priority wait times per zone
-%     zoneCountHigh = zeros(length(manager.requestZones),1); % Stores number of high priority requests in each zone
-%     zoneCountLow = zeros(length(manager.requestZones),1); % Stores number of low priority requests in each zone
-%     % Extract requests from completed list and count up wait times
-%     for c=1:length(manager.completedList)
-%         if manager.completedList(c).priority==1
-%             highReq(length(highReq)+1)= manager.completedList(c);
-%             highWait = highWait+manager.completedList(c).timeElapsed;
-%             i=manager.completedList(c).zone.ID;
-%             zoneWaitHigh(i)=zoneWaitHigh(i)+manager.completedList(c).timeElapsed;
-%             zoneCountHigh(i)=zoneCountHigh(i)+1;
-%        
-%         else
-%             lowReq(length(lowReq)+1)=manager.completedList(c);
-%             lowWait = lowWait + manager.completedList(c).timeElapsed;
-%             i=manager.completedList(c).zone.ID;
-%             zoneWaitLow(i)=zoneWaitLow(i)+manager.completedList(c).timeElapsed;
-%             zoneCountLow(i)=zoneCountLow(i)+1;
-%         end
-%     end
-%     % Extract from the expired list and count wait times
-%     for c=1:length(manager.expiredList)
-%         if manager.completedList(c).priority==1
-%             highReq(length(highReq)+1)= manager.expiredList(c);
-%             highWait = highWait + manager.expiredList(c).exprTime;
-%             i=manager.expiredList(c).zone.ID;
-%             zoneWaitHigh(i)=zoneWaitHigh(i)+manager.expiredList(c).timeElapsed;
-%             zoneCountHigh(i)=zoneCountHigh(i)+1;
-%         else
-%             lowReq(length(lowReq)+1)=manager.expiredList(c);
-%             lowWait = lowWait + manager.expiredList(c).exprTime;
-%             i=manager.completedList(c).zone.ID;
-%             zoneWaitLow(i)=zoneWaitLow(i)+manager.expiredList(c).timeElapsed;
-%             zoneCountLow(i)=zoneCountLow(i)+1;
-% 
-%         end
-%     end
-%     % Extract from active lists and count up wait times
-%     for c=1:length(manager.requestZones)
-%         for k=1:length(manager.requestZones(c).activeList)
-%            if(manager.requestZones(c).activeList(k).priority==1)
-%                 highReq(length(highReq)+1)= manager.requestZones(c).activeList(k);
-%                 highWait = highWait+manager.requestZones(c).activeList(k).timeElapsed;
-%                 zoneWaitHigh(c)=zoneWaitHigh(c)+manager.requestZones(c).activeList(k).timeElapsed;
-%                 zoneCountHigh(c)=zoneCountHigh(c)+1;
-%            else
-%                 lowReq(length(lowReq)+1)= manager.requestZones(c).activeList(k);
-%                 lowWait = lowWait+manager.requestZones(c).activeList(k).timeElapsed;
-%                 zoneWaitLow(c)=zoneWaitLow(c)+manager.requestZones(c).activeList(k).timeElapsed;
-%                 zoneCountLow(c)=zoneCountLow(c)+1;
-%            end
-%         end
-%     end
-%     % Calculate averages
-%     highAvgWait = highWait/length(highReq);
-%     lowAvgWait = lowWait/length(lowReq);
-%     totAvgWait = (highWait+lowWait)/(length(highReq)+length(lowReq));
-%     
-%     highAvgWaitZ = zoneWaitHigh./zoneCountHigh;
-%     lowAvgWaitZ = zoneWaitLow./zoneCountLow;
-%     totAvgWaitZ = (zoneWaitHigh+zoneWaitLow)./(zoneCountHigh+zoneCountLow);
-%     
+    %% Consolidate the lists into: Low & High priority
+    highReq = Request4.empty;
+    lowReq = Request4.empty;
+    
+    highWait = 0;
+    lowWait = 0;
+    zoneWaitHigh = zeros(length(manager.requestZones),1); % Stores high priority wait times for each zone
+    zoneWaitLow = zeros(length(manager.requestZones),1); % Stores low priority wait times per zone
+    zoneCountHigh = zeros(length(manager.requestZones),1); % Stores number of high priority requests in each zone
+    zoneCountLow = zeros(length(manager.requestZones),1); % Stores number of low priority requests in each zone
+    % Extract requests from completed list and count up wait times
+    for c=1:length(manager.completedList)
+        if manager.completedList(c).priority==1
+            highReq(length(highReq)+1)= manager.completedList(c);
+            highWait = highWait+manager.completedList(c).timeElapsed;
+            i=manager.completedList(c).zone.ID;
+            zoneWaitHigh(i)=zoneWaitHigh(i)+manager.completedList(c).timeElapsed;
+            zoneCountHigh(i)=zoneCountHigh(i)+1;
+       
+        else
+            lowReq(length(lowReq)+1)=manager.completedList(c);
+            lowWait = lowWait + manager.completedList(c).timeElapsed;
+            i=manager.completedList(c).zone.ID;
+            zoneWaitLow(i)=zoneWaitLow(i)+manager.completedList(c).timeElapsed;
+            zoneCountLow(i)=zoneCountLow(i)+1;
+        end
+    end
+    % Extract from the expired list and count wait times
+    for c=1:length(manager.expiredList)
+        if manager.completedList(c).priority==1
+            highReq(length(highReq)+1)= manager.expiredList(c);
+            highWait = highWait + manager.expiredList(c).exprTime;
+            i=manager.expiredList(c).zone.ID;
+            zoneWaitHigh(i)=zoneWaitHigh(i)+manager.expiredList(c).timeElapsed;
+            zoneCountHigh(i)=zoneCountHigh(i)+1;
+        else
+            lowReq(length(lowReq)+1)=manager.expiredList(c);
+            lowWait = lowWait + manager.expiredList(c).exprTime;
+            i=manager.completedList(c).zone.ID;
+            zoneWaitLow(i)=zoneWaitLow(i)+manager.expiredList(c).timeElapsed;
+            zoneCountLow(i)=zoneCountLow(i)+1;
+
+        end
+    end
+    % Extract from active lists and count up wait times
+    for c=1:length(manager.requestZones)
+        for k=1:length(manager.requestZones(c).activeList)
+           if(manager.requestZones(c).activeList(k).priority==1)
+                highReq(length(highReq)+1)= manager.requestZones(c).activeList(k);
+                highWait = highWait+manager.requestZones(c).activeList(k).timeElapsed;
+                zoneWaitHigh(c)=zoneWaitHigh(c)+manager.requestZones(c).activeList(k).timeElapsed;
+                zoneCountHigh(c)=zoneCountHigh(c)+1;
+           else
+                lowReq(length(lowReq)+1)= manager.requestZones(c).activeList(k);
+                lowWait = lowWait+manager.requestZones(c).activeList(k).timeElapsed;
+                zoneWaitLow(c)=zoneWaitLow(c)+manager.requestZones(c).activeList(k).timeElapsed;
+                zoneCountLow(c)=zoneCountLow(c)+1;
+           end
+        end
+    end
+    % Calculate averages
+    highAvgWait = highWait/length(highReq);
+    lowAvgWait = lowWait/length(lowReq);
+    totAvgWait = (highWait+lowWait)/(length(highReq)+length(lowReq));
+    
+    highAvgWaitZ = zoneWaitHigh./zoneCountHigh;
+    lowAvgWaitZ = zoneWaitLow./zoneCountLow;
+    totAvgWaitZ = (zoneWaitHigh+zoneWaitLow)./(zoneCountHigh+zoneCountLow);
+    
     
     %% This is a loop to get some information based on the zones
     hiPriZ = zeros(length(manager.requestZones), 1)'; % The number of High priority requests per zone

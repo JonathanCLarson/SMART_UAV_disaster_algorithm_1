@@ -88,13 +88,11 @@ classdef UAVDrone4 < handle
                     obj.manager.completedList(length(obj.manager.completedList) + 1) = obj.request; 
                 end
             end
-               
+            % Check if the drone's cargo is empty   
             if(obj.cargo<1)
-                %disp("Cargo empty at " + obj.time)
                 obj.emptyCounter = obj.emptyCounter + 1;
                 obj.returnToBase();
-%               disp(obj.position)
-%               disp(obj.request)
+
             else
                 % Set this uav's request to empty if it still has cargo
                 obj.request=Request4.empty;
@@ -148,7 +146,6 @@ classdef UAVDrone4 < handle
         %   Replaces the current request with the base
         %   Marks the request as unassigned
         function  returnToBase(obj)
-%            obj.request.status = 2;
             obj.request= obj.base.activeList;
            
         end
@@ -180,7 +177,7 @@ classdef UAVDrone4 < handle
                 if(Distance(newPos,obj.request.zone.position)<=0.001)
                     % Plots the path from the UAV to the request and
                     % updates the UAV at the time of delivery
-                 %  plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+%                   plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
 
                     obj.position=newPos;
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
@@ -191,13 +188,13 @@ classdef UAVDrone4 < handle
                         obj.request.zone.remove(obj.request.index);
                     end
                 else
-                %hold on
+                hold on
                 % Plot the change in position
-                %plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+%                 plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
                 % Move the UAV forward by updating its position and time
                 % and plot the results
                 obj.position=newPos;
-                %plot(obj.position(1),obj.position(2),'k.')
+%                 plot(obj.position(1),obj.position(2),'k.')
                 obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
                 obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                 obj.rangeLeft = obj.rangeLeft - (obj.speed * (newTime-obj.time));

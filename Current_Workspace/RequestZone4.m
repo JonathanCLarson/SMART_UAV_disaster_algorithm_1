@@ -11,11 +11,15 @@ classdef RequestZone4 < handle
         probHi      % Probability of a high priority request
         expired     % Number of expired requests
         numUnassigned % Number of unassigned requests
+        completed   % The number of completed requets
         manager;    % The manager that assigns to the drone
         exprTime    % The time at which high priority requests expire
+        waitTime    % The amount of time requests have waited for aid
+        waitTimeHi  % The amount of time high priority requests have waited
         priFac      % The priority factor
         timeFac     % The time factor (how requests gain importance over time)
-        ID          % The Request zone ID number
+        ID          % The Request zone ID number, equals the zone's index in the manager's requestZones list
+        
     end
     
     
@@ -31,6 +35,9 @@ classdef RequestZone4 < handle
             obj.activeList=Request4.empty;
             obj.expired = 0;
             obj.numUnassigned = 0;
+            obj.completed = 0;
+            obj.waitTime = 0;
+            obj.waitTimeHi = 0;
             obj.manager=Manager4.empty;
             obj.exprTime = exprTime;
             obj.priFac = priFac;
@@ -55,20 +62,28 @@ classdef RequestZone4 < handle
                     n = length(obj.activeList);
                 end
             end
-            a1=rand;
-            a2=rand;    
+            a1=rand; % Random number for new requests
+            b1=rand; % Random number for high priority requests
+            numNew=0; % number of new requests to add
             % Generate a new request based on the probabilities of new
             % requests and high priority requests
-            if(a1<obj.probNew)
-                if(a2<obj.probHi)
+            
+            % Determine the number of requests to add
+            while(a1<obj.probNew)
+                numNew=numNew+1;
+                a1=rand;
+            end
+            % Create new requests
+            for c=1:numNew                
+                if(b1<obj.probHi)
                     priority=1;
                 else
-                    priority = obj.priFac;
+                    priority = obj.priFac(1);
                 end
                 newreq = Request4(time,priority,obj.timeFac, obj,obj.exprTime,length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
             end
-         obj.numUnassigned = obj.getUnassigned();
+            obj.numUnassigned = obj.getUnassigned();
         end
         
         % Function to remove the request from the active list upon completion

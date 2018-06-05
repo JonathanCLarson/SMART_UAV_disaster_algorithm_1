@@ -30,19 +30,27 @@ classdef Request4 < handle
             obj.index = index;
             obj.timeElapsed= 0;
         end
-        % Determine if the request was met.
+        
+        % Mark a request as complete and remove it from the activeList.
+        % Also update counters in RequestZone
         function obj = complete(obj,time)
             
             obj.status = 0;
             obj.timeElapsed = time-obj.timeRequested;
-            obj.index = 1000;
-            
+            obj.zone.remove(obj.index);
+            obj.zone.completed = obj.zone.completed + 1;
+            obj.zone.waitTime = obj.zone.waitTime+obj.timeElapsed;
+            if obj.priority == obj.zone.priFac
+                obj.zone.waitTimeHi= obj.zone.waitTimeHi+obj.timeElapsed;
+            end
         end
         
         % Refresh the request, called every time step
         function refresh(obj,time)
             % Update the time elapsed
-            obj.timeElapsed=time-obj.timeRequested;
+            if(obj.status>0)
+                obj.timeElapsed=time-obj.timeRequested;
+            end
             % Expire the request if necessary
             if(obj.priority == 1 && obj.status>0&&(obj.timeElapsed >=obj.exprTime))
                 obj.status=-1;  % Change status to expired value
@@ -50,6 +58,7 @@ classdef Request4 < handle
                 obj.zone.remove(obj.index); % Remove from zone's activeList
                 obj.zone.manager.expiredList(length(obj.zone.manager.expiredList)+1)=obj;
                 obj.zone.manager.assign(); % Call assign function so UAV's are reassigned if necessary
+                obj.zone.waitTimeHi = obj.zone.waitTimeHi + obj.exprTime;
             end
         end
         

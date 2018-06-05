@@ -1,10 +1,14 @@
-function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zones, baseLocation, priFac,duration,kmToPix)
+function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zoneParam, baseLocation, priFac,duration,kmToPix)
 % Simulates a uav fleet responding to a disaster
 % Runs a simulation and returns the results for analysis
 % Inputs:
 %   UAV: A vector of [number of UAVs in the fleet, speed of the UAVs, 
 %      maximum cargo load for the drones, and range]
-%   zones: A vector of RequestZone4 objects that the fleet will respond to
+%   zoneParam: A matrix of parameters, used to create the RequestZone4 objects 
+%       that the fleet will respond to. The rows in this matrix correspond
+%       to the individual zones, while the columns represent:
+%       [x-position,y-position,probability of new request, probability of
+%       high request, 
 %   baseLocation: The [x,y] location of the base where the drones resupply
 %   priFac: The priority factor which tells the rate comparing low to high
 %       priority requests
@@ -36,6 +40,12 @@ pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km
 base = RequestZone4(baseLocation,'B','B','B','B','B','B');
 base.activeList=Request4('B','B','B',base,'B', 0);
 
+% Create the Request Zone objects and store them in an array
+[numZones,~]=size(zoneParam);
+zones = RequestZone4.empty;
+for c=1:numZones
+    zones(c)=RequestZone4([zoneParam(c,1),zoneParam(c,2)],zoneParam(c,3),zoneParam(c,4),zoneParam(c,5),zoneParam(c,6),zoneParam(c,7),c);
+end
 % Reset the Request Zones (needed for running multiple simulations
 for c=1:length(zones)
     zones(c).reset();
@@ -49,7 +59,7 @@ for c=1:length(zones)
     zones(c).priFac = priFac;
 end
 % Color array for the UAV's
-color = ['y', 'g','m','c','b','k','w','r'];
+color = ['y', 'c','m','c','g','k','w','r'];
 
 % Create UAV's and add them to the manager
 % Converts uav speeds and ranges to pixels 

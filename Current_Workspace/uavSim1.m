@@ -1,4 +1,4 @@
-function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
+function [numComp, perComp, numExp, wait, waitHi,simManager,recharges,restocks,refills, idleTime] = uavSim1(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
 % Simulates a uav fleet responding to a disaster
 % Runs a simulation and returns the results for analysis
 % Inputs:
@@ -78,7 +78,7 @@ end
 
 %title('UAV simulation test')
 % Perform analysis and return results, as well as the manager object.
-[numComp, perComp, numExp, wait, waitHi] = analyze2(manager);
+[numComp, perComp, numExp, wait, waitHi,recharges,restocks,refills,idleTime] = analyze2(manager);
 simManager=manager;
 
 

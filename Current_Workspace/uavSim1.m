@@ -1,4 +1,4 @@
-function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zoneParam, baseLocation, priFac,duration,kmToPix)
+function [numComp, perComp, numExp, wait, waitHi,simManager] = uavSim1(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
 % Simulates a uav fleet responding to a disaster
 % Runs a simulation and returns the results for analysis
 % Inputs:
@@ -37,14 +37,14 @@ km2Pix = @(ft) ft/kmToPix;      % Anonymous function to convert km to pixels
 pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km 
 
 % Create the base object, and give it a single request.
-base = RequestZone4(baseLocation,'B','B','B','B','B','B');
+base = RequestZone4(baseLocation,'B','B','B','B');
 base.activeList=Request4('B','B','B',base,'B', 0);
 
 % Create the Request Zone objects and store them in an array
 [numZones,~]=size(zoneParam);
 zones = RequestZone4.empty;
 for c=1:numZones
-    zones(c)=RequestZone4([zoneParam(c,1),zoneParam(c,2)],zoneParam(c,3),zoneParam(c,4),zoneParam(c,5),zoneParam(c,6),zoneParam(c,7),c);
+    zones(c)=RequestZone4([zoneParam(c,1),zoneParam(c,2)],zoneParam(c,3),zoneParam(c,4),zoneParam(c,5),c);
 end
 % Reset the Request Zones (needed for running multiple simulations
 for c=1:length(zones)
@@ -53,10 +53,11 @@ end
 % plot(base.position(1),base.position(2),'r.','MarkerSize',25)
 
 manager = Manager4(zones, base); % Create a manager to receive and assign requests
-% Add the manager to the zones
+% Add the manager to the zones, assign priority and time factors
 for c=1:length(zones)
     zones(c).manager = manager;
-    zones(c).priFac = priFac;
+    zones(c).priFac = priFac(1);
+    zones(c).timeFac = timeFac(1);
 end
 % Color array for the UAV's
 color = ['y', 'c','m','c','g','k','w','r'];

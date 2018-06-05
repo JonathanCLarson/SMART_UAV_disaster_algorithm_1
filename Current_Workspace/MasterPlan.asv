@@ -322,8 +322,6 @@ priWaitHi=zeros(10,10); % Wait time values (high priority)
 uavTestpri = uavTest;
 expiredPri=zeros(4,10);
 completedPri=zeros(4,10);
-waitPri = zeros(4,10);
-waitHiPri = zeros(4,10);
 priority=linspace(1.1:5,10);
 % Vary the number of UAV's
 for c=1:4
@@ -333,12 +331,10 @@ for c=1:4
         % Run several trials
         for m=1:10
             [priNumComp(k,m),~, priNumEx(k,m), priWait(k,m), priWaitHi,priManager]=uavSim1(uavTestpri, zoneParam, base, priority(k),timeFac, duration,km2pixRatio);
-        end
-        % Find averages of trials
+        end       
         expiredPri(c,k) = mean(priNumEx(k,:));
         completedPri(c,k)=mean(priNumComp(k,:));
-        priWait(c,k)=mean(priWait(k,:));
-        priWaitHi(c,k)=mean(priWaitHi(k,:));
+        priWait(c,k)=
     end
     figure(f)
     plot(priority,expiredPri(c,:), [color(c),'-'],'Linewidth',2)
@@ -346,8 +342,6 @@ for c=1:4
     figure(f+1)
     plot(priority,completedPri(c,:), [color(c),'-'],'Linewidth',2)
     hold on
-    figure(f+2)
-    plot(priority,priWait(c,k)
 end
 
 figure(f)

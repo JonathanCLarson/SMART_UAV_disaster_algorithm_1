@@ -40,8 +40,8 @@ classdef RequestZone4 < handle
             obj.waitTimeHi = 0;
             obj.manager=Manager4.empty;
             obj.exprTime = exprTime;
-            obj.priFac = 1;
-            obj.timeFac = 1;
+            obj.priFac = priFac;
+            obj.timeFac = timeFac;
             obj.ID = ID;
         end
         

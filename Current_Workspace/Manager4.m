@@ -73,6 +73,7 @@ classdef Manager4 < handle
             % Create an array of UAV's that are available to be assigned            
             j = 1;
             droneList=UAVDrone4.empty;
+            
             for c = 1:length(obj.uavList)
                 % 
                 if(obj.uavList(c).cargo ~= 0&& obj.uavList(c).idleCounter==0)

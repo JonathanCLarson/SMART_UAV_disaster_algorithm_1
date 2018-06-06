@@ -40,6 +40,7 @@ pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km
 base = RequestZone4(baseLocation,'B','B','B','B');
 base.activeList=Request4('B','B','B',base,'B', 0);
 
+
 % Create the Request Zone objects and store them in an array
 [numZones,~]=size(zoneParam);
 zones = RequestZone4.empty;
@@ -50,7 +51,6 @@ end
 for c=1:length(zones)
     zones(c).reset();
 end
-% plot(base.position(1),base.position(2),'r.','MarkerSize',25)
 
 manager = Manager4(zones, base); % Create a manager to receive and assign requests
 % Add the manager to the zones, assign priority and time factors
@@ -60,7 +60,7 @@ for c=1:length(zones)
     zones(c).timeFac = timeFac(1);
 end
 % Color array for the UAV's
-color = ['y', 'c','m','c','g','k','w','r'];
+color = ['y', 'c','m','b','r','w','k','g'];
 
 % Create UAV's and add them to the manager
 % Converts uav speeds and ranges to pixels 
@@ -75,8 +75,9 @@ uavArray=UAVDrone4.empty;
 for c=1:60*duration
         manager.refresh(c/60);    
 end
+% Plot the base location
+% plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
 
-%title('UAV simulation test')
 % Perform analysis and return results, as well as the manager object.
 [numComp, perComp, numExp, wait, waitHi,recharges,restocks,refills,idleTime] = analyze2(manager);
 simManager=manager;

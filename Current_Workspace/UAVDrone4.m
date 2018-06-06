@@ -188,7 +188,7 @@ classdef UAVDrone4 < handle
                         obj.request.zone.remove(obj.request.index);
                     end
                 else
-%                hold on
+
                 % Plot the change in position
 %                 plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
                 % Move the UAV forward by updating its position and time

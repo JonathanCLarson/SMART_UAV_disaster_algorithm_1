@@ -12,12 +12,12 @@ function  [numComp, perComp, numExp,wait,waitHi, recharge,restock,refill,idleTot
     unfinished = 0; % number of unfinished requests
     waitTime = 0; % The total amount of time waited
     waitTimeHi = 0; % Total time waited by high priority requests
+    
     % Completed requests
     for c=1:length(manager.completedList)
         if(manager.completedList(c).priority==1)
             numHi=numHi+1;
             waitTimeHi = waitTimeHi + manager.completedList(c).timeElapsed;
-            
         end
         waitTime = waitTime + manager.completedList(c).timeElapsed;
         numReq=numReq+1;

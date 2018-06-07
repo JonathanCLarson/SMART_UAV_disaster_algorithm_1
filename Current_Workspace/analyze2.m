@@ -1,4 +1,4 @@
-function  [numComp, numExp,wait,waitHi, recharge,extraCargo,refill,idleTotal] = analyze2(manager)
+function  [numComp, numExp,wait,waitHi,recharge,extraCargo,refill,idleTotal] = analyze2(manager)
 % Analyze function for UAV simulation
 %   returns numerical results of the UAV simulation
 %   for some of the variables, including the high priority requests

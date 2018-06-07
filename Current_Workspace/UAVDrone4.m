@@ -46,7 +46,7 @@ classdef UAVDrone4 < handle
             obj.distTravelled = 0;
             obj.base = base;
             obj.position= base.position;
-            obj.rangeBuffer = 0.005*obj.maxRange; % UAV should reach base with up to 5% of max fuel remaining
+            obj.rangeBuffer = 0.01*obj.maxRange; % UAV should reach base with up to 1% of max fuel remaining
             obj.time = 0;
             obj.manager=manager;
             obj.request=base.activeList;
@@ -54,7 +54,6 @@ classdef UAVDrone4 < handle
             obj.requestsMet = 0;
             obj.numAssigned = 1;
             obj.emptyCounter = 0;
-            obj.lowChargeCounter = 0;
             obj.rechargeCounter = 0;
             obj.idleCounter = 1;
             obj.idleTotal = 0;

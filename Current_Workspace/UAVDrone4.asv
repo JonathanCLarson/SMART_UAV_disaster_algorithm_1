@@ -173,8 +173,7 @@ classdef UAVDrone4 < handle
                         obj.deliver();
                     end                                           
                 elseif Distance(obj.position,obj.request.zone.position)==0
-                    obj.idleCounter=1;
-                else
+                    o
                 % Find new position of the UAV
                 newPos = obj.position+(obj.request.zone.position-obj.position).*obj.speed.*(newTime-obj.time)./Distance(obj.position,obj.request.zone.position);
                 

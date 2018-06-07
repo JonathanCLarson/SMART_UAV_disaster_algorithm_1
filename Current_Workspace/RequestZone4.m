@@ -116,9 +116,7 @@ classdef RequestZone4 < handle
                 % Remove the last element(if necessary)
                     obj.activeList=obj.activeList(1:n-1);
             
-            end
-                
-                
+            end               
         end               
         % Function to return the number of unassigned requests
         function c = getUnassigned(obj)

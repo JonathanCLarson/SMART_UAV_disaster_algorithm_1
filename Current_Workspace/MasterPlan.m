@@ -10,24 +10,30 @@
 % Gabriel Flores, Jonathan Larson, and Ted Townsend
 
 clear; close all; clc;
+
 f=1; % figure counter
 % Create display of the map
-% MAP=imread('Map2.png'); image(MAP) 
-% hold on
+MAP=imread('Map2.png'); image(MAP) 
+hold on
 
 % Parameters:
 % base = [130,285];                   % The [x,y] location of the base
 base = [578,398];                   % For bigger PR map
 % base = [1091,86];                   % Guatemala
+
+
+
+
 numZones = 13;                      % The number of request zones
 duration = 8;                       % The duration of the simulation in hours
 km2pixRatio = 1.609/90;             % The ratio for converting kilometers to pixels (90 for map 2, 73 for Guatemala)
-uav = [3, 40, 3, 15];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
+uav = [6, 40, 3, 15];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
+uavTest=uav;                        % For testing
 exprTime = .75*ones(numZones,1);    % How long it takes for the high priority request to expire (hours)
-priFac = 100;     % The priority factor by which low priority requests are reduced compared to high priority requests
-timeFac = 0.95;    % Factor by which requests become more important over time (.95 -> 5% more important every hour)
-zonesNewProb = .05*ones(numZones,1);    % Probability of a zone generating a new request on a given time step
-zonesHiProb = .25*ones(numZones,1);    % Probability of a new request being high priority (per zone)
+priFac = 100;                       % The priority factor by which low priority requests are reduced compared to high priority requests
+timeFac = 0.95;                     % Factor by which requests become more important over time (.95 -> 5% more important every hour)
+zonesNewProb = .05*ones(numZones,1);% Probability of a zone generating a new request on a given time step
+zonesHiProb = .25*ones(numZones,1); % Probability of a new request being high priority (per zone)
 zonesHiProb(1)=0.75; % Increase probability of high requests in zone 1
 
 % Array of [x,y] locations for each request zone based on the map image
@@ -70,11 +76,11 @@ color = [ 'b','k','m','g','y','c','r','w']; % The colors to mark the lines
 symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the graph
 
 % Single Simulation  
-% [~, ~, ~, ~, ~,manager]=uavSim1(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
-% overall=writeManagers(manager,'singleRun.xlsx');
-% [total, zone, UAV] = analyze(manager);
-% disp(total)
-% uavTest = [3, 40, 3, 15];
+[~, ~, ~, ~, ~,manager]=uavSim1(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
+overall=writeManagers(manager,'singleRun.xlsx');
+[total, zone, UAV] = analyze(manager);
+disp(total)
+
 
 %% Multiple simulations    
 % The first simulation will be the standard simulation to collect managers 
@@ -105,35 +111,41 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 
 
 %% Cargo capacity simulations
-cNumEx = zeros(4,4);    % Matrix to store number of expired requests for cargo simulation
-uavTestc = uavTest;     % UAV fleet property array for cargo simulation
-zonesTestC = zoneParam; % Zone array for tests
-cNumComp=zeros(20,1);
-cNumExpr=zeros(20,1);
-figure(f)
-hold on
-% Vary the number of UAV's
-for c = 1:4
-    uavTestc(1) = c;
-    % Vary the cargo capacity
-    for a = 1:4
-        cargo = a; % The cargo for the uav
-        uavTestc(3) = cargo;
-        for m = 1:20
-            [cNumComp(m), ~, cNumExpr(a,m), ~, ~,~]=uavSim1(uavTestc, zonesTestC, base, priFac,timeFac, duration,km2pixRatio);
-        end
-        cNumEx(c,a) = mean(cNumExpr(a,:));
-        
-    end
-    plot([1 2 3 4],cNumEx(c,:), [color(c),'-'],'Linewidth',2)
-    plot([1 2 3 4],cNumEx(c,:), [color(c),'.'],'MarkerSize',15)
-end
-title('Cargo Simulation')
-xlabel('Cargo load')
-ylabel('Expired Requests')
-legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-hold off
-f=f+1;
+% cNumEx = zeros(4,4);    % Matrix to store number of expired requests for cargo simulation
+% cCompleted = zeros(4,4);
+% uavTestc = uavTest;     % UAV fleet property array for cargo simulation
+% zonesTestC = zoneParam; % Zone array for tests
+% cNumComp=zeros(20,1);
+% cNumExpr=zeros(20,1);
+% figure(f)
+% hold on
+% % Vary the number of UAV's
+% for c = 1:4
+%     uavTestc(1) = c;
+%     % Vary the cargo capacity
+%     for a = 1:4
+%         cargo = a; % The cargo for the uav
+%         uavTestc(3) = cargo;
+%         for m = 1:20
+%             [cNumComp(m), ~, cNumExpr(a,m), ~, ~,~]=uavSim1(uavTestc, zonesTestC, base, priFac,timeFac, duration,km2pixRatio);
+%         end
+%         cNumEx(c,a) = mean(cNumExpr(a,:));
+%         cCompleted(c,a)=mean(cNumComp);
+%         
+%     end
+%     plot([1 2 3 4],cNumEx(c,:), [color(c),'-'],'Linewidth',2)
+%     
+% end
+% 
+% xlabel('Cargo load')
+% ylabel('Expired Requests')
+% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+% % Plot dots
+% for c=1:4
+%     plot([1 2 3 4],cNumEx(c,:), [color(c),'.'],'MarkerSize',20)
+% end
+% hold off
+% f=f+1;
 %% Range simulations
 % rNumEx = zeros(5,10);    % Matrix to store number of expired requests for range simulation
 % rNumComp = zeros(5,10);
@@ -143,7 +155,7 @@ f=f+1;
 % uavTestR = uavTest;         % UAV fleet property array for range simulation
 % zonesTest = zoneParam;
 % 
-% ranges = linspace(5,15,4);
+% ranges = linspace(5,15,5);
 % expiredR = zeros(4,5);
 % completedR = zeros(4,5);
 % 
@@ -156,9 +168,9 @@ f=f+1;
 %     uavTestc(1) = c;
 %     % Vary the range
 %     for a = 1:5
-%         uavTestc(4) = ranges(a);
+%         uavTestR(4) = ranges(a);
 %         for m = 1:10
-%             [rNumComp(a,m), ~, rNumEx(a,m), ~, ~,~,rNumRech(a,m),~,rNumRef(a,m),~]=uavSim1(uavTestc, zonesTest, base, priFac,timeFac, duration,km2pixRatio);
+%             [rNumComp(a,m), ~, rNumEx(a,m), ~, ~,~,rNumRech(a,m),~,rNumRef(a,m),~]=uavSim1(uavTestR, zonesTest, base, priFac,timeFac, duration,km2pixRatio);
 %             
 %         end
 %         expiredR(c,a) = mean(rNumEx(a,:));
@@ -177,7 +189,7 @@ f=f+1;
 %     figure(f+2)
 %     plot(ranges,rechargesR(c,:), [color(c),'-'],'Linewidth',2)
 %     hold on
-%     plot(ranges,refillsR(c,:), [color(c),'.-'],'Linewidth',2)
+%     plot(ranges,refillsR(c,:), [color(c),'--'],'Linewidth',2)
 % end
 % figure(f)
 % title('Range Simulation')
@@ -197,12 +209,14 @@ f=f+1;
 % ylabel('Number of Refills/Recharges')
 % %legend('1 UAV: Recharges','1 UAV: Total Refills','2 UAVs: TotalRefills', '3 UAVs', '4 UAVs')
 % hold off
-            
+% f=f+1;    
 %% The simulation for the different expiration times
 % eTime = zeros(4,8); % The time the requests expire
-% eNumEx = zeros(4,8); % The number of expired requests for each trial (for this simulation
+% eNumEx = zeros(8,20); % The number of expired requests for each trial (for this simulation
 % uavTeste = uavTest;
 % expiredE=zeros(4,8);
+% testZones = zoneParam;
+% 
 % figure(f)
 % % Vary the number of UAV's
 % for c=1:4
@@ -210,15 +224,14 @@ f=f+1;
 %     for k = 1:8
 %         eTime(c,k) = k/4;
 %         % Adjust expiration time (0.25-2 hours)
-%         for g = 1:length(zones)
-%             zonesTest(g).exprTime = eTime(c,k);
+%         for g = 1:numZones
+%             testZones(g,5) = eTime(c,k);
 %         end
 %         % Run several trials
 %         for m=1:20
-%              [numComp(n), perComp(n), numExpr(k,m), ~, ~,managers(n)]=uavSim1(uavTeste, zonesTest, base, priFac, duration,km2pixRatio);
-%              n=n+1;
+%              [~, ~, eNumEx(k,m), ~, ~,~]=uavSim1(uavTeste, testZones, base, priFac,timeFac, duration,km2pixRatio);             
 %         end       
-%         expiredE(c,k) = mean(numExpr(k,:));
+%         expiredE(c,k) = mean(eNumEx(k,:));
 %     end
 %     plot(eTime(c,:),expiredE(c,:), [color(c),'-'],'Linewidth',2)
 %     hold on
@@ -271,17 +284,18 @@ f=f+1;
 % ylabel('Requests Expired')
 % legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
 % hold off
-% figure(f) % Completed
+% figure(f+1) % Completed
 % title('Request Frequency Simulation-Completed')
 % xlabel('Probability of a new request')
 % ylabel('Requests Completed')
 % legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
 % hold off
-% 
+%f=f+2;
 
 %% High Priority Request frequency simulation
 % % Set parameters
 % uavTestH = uavTest;
+% zonesTest=zoneParam;
 % probsH = linspace(0.1,0.6, 10); % The probability of a new request occuring
 % numMetTestH = zeros(8,20);      % Completed requests (per simulation)
 % numExpTestH = zeros(8,20);       % Expired requests (per simulation)
@@ -294,13 +308,13 @@ f=f+1;
 %     % Change probability of a high priority request at each request zone.
 %     for p = 1:10
 %         % Apply probability to each request zone
-%         for d = 1:length(zones)
-%             zones(d).exprTime = exprTime;
-%             zones(d).probNew = probsH(p);
+%         for d = 1:numZones
+
+%             zonesTest(d,4)= probsH(p);
 %         end
 %         % Run 20 simulations
 %         for m=1:20
-%             [numMetTestP(p,m), ~, numExpTestP(p,m), ~, ~,~]=uavSim1(uavTestH, zonesTest, base, priFac, duration,km2pixRatio);
+%             [numMetTestP(p,m), ~, numExpTestP(p,m), ~, ~,~]=uavSim1(uavTestH, zonesTest, base, priFac,timeFac, duration,km2pixRatio);
 %         end
 %         % Find averages from simulations
 %         expiredH(c,p)=mean(numExpTestP(p,:));
@@ -321,15 +335,16 @@ f=f+1;
 % ylabel('Requests Expired')
 % legend('1 UAV','2 UAVs','3 UAV"s','4 UAVs','location','northwest')
 % hold off
-% figure(f) % Completed
+% figure(f+1) % Completed
 % title('High Priority Frequency Simulation-Completed')
 % xlabel('Probability of a High Priority Request')
 % ylabel('Requests Completed')
 % legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
 % hold off
+%f=f+2;
 %% Duration Simulation (Simulate effect of longer simulations)
 % uavTestD = uavTest;
-% zonesTestD = zonesParam; % Zone array
+% zonesTestD = zoneParam; % Zone array
 % % Vary the number of UAV's
 % for c = 1:4
 %     uavTestD(1) = c;
@@ -337,7 +352,7 @@ f=f+1;
 %     for a = 1:13
 %         durTest = a+3;    % Duration variable to test
 %         for m = 1:20     % Run several simulations
-%             [NumCompD(a,m), ~, NumExprD(a,m), ~, ~,~]=uavSim1(uavTestD, zonesTestD, base, priFac, durTest,km2pixRatio);
+%             [NumCompD(a,m), ~, NumExprD(a,m), ~, ~,~]=uavSim1(uavTestD, zonesTestD, base, priFac,timeFac, durTest,km2pixRatio);
 %         end
 %         NumExD(c,a) = mean(NumExprD(a,:));
 %         NumCompletedD(c,a) = mean(NumCompD(a,:));
@@ -348,7 +363,7 @@ f=f+1;
 %     figure(f) % Expired
 %     plot((4:16),exPerHrD(c,:), [color(c),'-'],'Linewidth',2)
 %     hold on
-%     figure(f) % Completed
+%     figure(f+1) % Completed
 %     plot((4:16),comPerHrD(c,:), [color(c),'-'],'Linewidth',2)
 %     hold on
 % end
@@ -359,15 +374,14 @@ f=f+1;
 % legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
 % hold off
 %            
-% figure(f)
+% figure(f+1)
 % title('Duration Simulation-Completed')
 % xlabel('Duration length (hours)')
 % ylabel('Completed Requests per hour')
 % legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs','location','northwest')
 % hold off
-
+% f=f+2;
 %% Priority Factor tests
-
 
 % priNumEx = zeros(10,10); % The number of expired requests for each trial (for this simulation)
 % priNumComp = zeros(10,10); % The number of Completed requests for each trial (for this simulation)
@@ -431,7 +445,6 @@ f=f+1;
 % f=f+4;
 
 %% Time factor tests
-
 
 % tNumEx = zeros(5,10); % The number of expired requests for each trial (for this simulation)
 % tNumComp = zeros(5,10); % The number of Completed requests for each trial (for this simulation)

@@ -82,6 +82,9 @@ classdef RequestZone4 < handle
                     newHi=1;
                 end
                 expTime = obj.exprTime+randn*(1/6);
+                if expTime<0
+                    expTime=0;
+                end
                 newreq = Request4(time,priority,obj.timeFac, obj,expTime,length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
             end

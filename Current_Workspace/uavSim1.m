@@ -1,4 +1,4 @@
-function [numComp, perComp, numExp, wait, waitHi,simManager,recharges,restocks,refills, idleTime] = uavSim1(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
+function [numComp, numExp, wait, waitHi,simManager,recharges,extraCargo,refills, idleTime] = uavSim1(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
 % Simulates a uav fleet responding to a disaster
 % Runs a simulation and returns the results for analysis
 % Inputs:
@@ -78,7 +78,7 @@ end
 % Plot the base location
 plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
 % Perform analysis and return results, as well as the manager object.
-[numComp, perComp, numExp, wait, waitHi,recharges,restocks,refills,idleTime] = analyze2(manager);
+[numComp, numExp, wait, waitHi,recharges,extraCargo,refills,idleTime] = analyze2(manager);
 simManager=manager;
 
 

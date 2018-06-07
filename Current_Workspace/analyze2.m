@@ -14,7 +14,7 @@ function  [numComp, numExp,wait,waitHi, recharge,extraCargo,refill,idleTotal] = 
     numReq=0; % number of total requests
     waitTime = 0; % The total amount of time waited
     waitTimeHi = 0; % Total time waited by high priority requests
-    
+    % Each loop processes requests from that source.
     % Completed requests
     for c=1:length(manager.completedList)
         if(manager.completedList(c).priority==1)

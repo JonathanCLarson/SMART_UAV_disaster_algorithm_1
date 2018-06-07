@@ -55,7 +55,6 @@ classdef UAVDrone4 < handle
             obj.requestsMet = 0;
             obj.numAssigned = 1;
             obj.emptyCounter = 0;
-            obj.lowChargeCounter = 0;
             obj.rechargeCounter = 0;
             obj.idleCounter = 1;
             obj.idleTotal = 0;

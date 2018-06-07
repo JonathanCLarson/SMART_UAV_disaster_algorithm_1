@@ -49,6 +49,9 @@ function  [numComp, numExp,wait,waitHi, recharge,restock,refill,idleTotal] = ana
         end
     end
     wait = waitTime/numReq;
+    waitHi=waitTimeHi/numHi;
+    numComp = length(manager.completedList);
+    numExp = length(manager.expiredList);
     
     
     %% The loop to get the refuel information for all the UAV's
@@ -62,55 +65,7 @@ function  [numComp, numExp,wait,waitHi, recharge,restock,refill,idleTotal] = ana
         idleTime = idleTime + manager.uavList(c).idleTotal;        
     end
     refill = recharge + restock;
-    idleTotal = idleTime;
-    %% The loops to get the information for the individual UAV's
-    restockuav = zeros(length(manager.uavList), 1);     % The total number of restocks per UAV
-    refilluav = zeros(length(manager.uavList), 1);      % The total number of refills per UAV
-    rechargeuav = zeros(length(manager.uavList), 1);    % The total number of recharges per UAV
-    refueluav = zeros(length(manager.uavList), 1);      % The total number of refuels per UAV
-    requestsMetUAV = zeros(length(manager.uavList), 1); % Number of requests met by each UAV
-    
-    
-    for c = 1:length(manager.uavList)
-        restockuav(c) = manager.uavList(c).emptyCounter;
-        refueluav(c) = manager.uavList(c).lowChargeCounter;
-        rechargeuav(c) = manager.uavList(c).rechargeCounter;
-        requestsMetUAV(c) = manager.uavList(c).requestsMet;
-    end
-        refilluav = refueluav + restockuav;
-        
-        
-        %% The information to tell about the requests based on their priority and the average wait time for high priority requests
-        
-        
-        loWait = 0;
-        hiWait = 0; % The time Waited by high Priority requests
-        
-        for c = 1:length(manager.completedList)
-            if((manager.completedList(c).priority == 1) && (manager.completedList(c).status == 0))
-                hiMet = hiMet + 1;
-                hiWait = hiWait + manager.completedList(c).timeElapsed;
-            elseif(manager.completedList(c).priority == 1000 && manager.completedList(c).status == 0) 
-                loMet = loMet + 1;
-            end
-    
-        end
-            % Expired requests
-        for c=1:length(manager.expiredList)
-            hiWait = hiWait + manager.expiredList(c).exprTime;       
-        end
-        
-        hiAverage = hiWait/hiMet; % The average wait time for high priority requests
-        
-                
-    %% This is where all of the information is stored to make the table for the analysis
-    numLow=length(manager.completedList)-numHi; % The Number of Low Priorty requests met
-    averageTime = waitTime/(numReq); % The average wait time between requests
-    averageTimeHi = waitTimeHi/numHi;
-    numComp = manager.requestsMet;
-    numExp = manager.expired;
-    wait =  averageTime;
-    waitHi = averageTimeHi;    
+    idleTotal = idleTime; 
 end
 
 

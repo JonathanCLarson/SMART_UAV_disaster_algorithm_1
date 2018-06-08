@@ -56,7 +56,7 @@ manager = Manager4(zones, base); % Create a manager to receive and assign reques
 % Add the manager to the zones, assign priority and time factors
 for c=1:length(zones)
     zones(c).manager = manager;
-    zones(c).priFac = priFac(1);
+    zones(c).priFac = priFac;
     zones(c).timeFac = timeFac(1);
 end
 % Color array for the UAV's
@@ -76,7 +76,7 @@ for c=1:60*duration
         manager.refresh(c/60);    
 end
 % Plot the base location
-plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
+% plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
 % Perform analysis and return results, as well as the manager object.
 [numComp, numExp, wait, waitHi,recharges,extraCargo,refills,idleTime] = analyze2(manager);
 simManager=manager;

@@ -67,7 +67,7 @@ classdef RequestZone4 < handle
             numNew=0; % number of new requests to add
             % Generate a new request based on the probabilities of new
             % requests and high priority requests
-            priority = obj.priFac(1);
+            priority = obj.priFac;
             newHi = 0;
             % Determine the number of requests to add using random numbers
             %   and the probability of new requests
@@ -87,6 +87,7 @@ classdef RequestZone4 < handle
                 end
                 newreq = Request4(time,priority,obj.timeFac, obj,expTime,length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
+                priority=obj.priFac;
             end
             obj.numUnassigned = obj.getUnassigned();
             % Call the assign function if a new high priority request was

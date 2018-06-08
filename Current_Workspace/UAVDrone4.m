@@ -188,7 +188,7 @@ classdef UAVDrone4 < handle
                 if(Distance(newPos,obj.request.zone.position)<=0.001)
                     % Plots the path from the UAV to the request and
                     % updates the UAV at the time of delivery
-                  plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+%                   plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
 
                     obj.position=newPos;
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
@@ -199,11 +199,11 @@ classdef UAVDrone4 < handle
                 else
 
                 % Plot the change in position
-                plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+%                 plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
                 % Move the UAV forward by updating its position and time
                 % and plot the results
                 obj.position=newPos;
-                plot(obj.position(1),obj.position(2),'k.')
+%                 plot(obj.position(1),obj.position(2),'k.')
                 obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
                 obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                 obj.rangeLeft = obj.rangeLeft - (obj.speed * (newTime-obj.time));

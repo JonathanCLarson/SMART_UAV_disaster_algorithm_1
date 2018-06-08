@@ -8,12 +8,12 @@ classdef UAVDrone4 < handle
     %   May 17, 2018
        
     properties % (instance variables)        
-        position % current (last known) position of the UAV
-        request % The next request to fill
-        timeToRequest % The time until the UAV reaches the request
-        requestsMet % The number of requests met by the UAV
-        maxRange % Maximum range of the UAV in pixels
-        maxCargo % Maximum carrying capacity
+        position        % current (last known) position of the UAV
+        request         % The next request to fill
+        timeToRequest   % The time until the UAV reaches the request
+        requestsMet     % The number of requests met by the UAV
+        maxRange        % Maximum range of the UAV in pixels
+        maxCargo        % Maximum carrying capacity
         speed  % Velocity of the drone (assumed constant in pixels per hour)
         distTravelled % Total distance travelled by the UAV
         rangeLeft % Flight time remaining before recharge is needed

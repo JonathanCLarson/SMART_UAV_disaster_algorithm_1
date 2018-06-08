@@ -19,7 +19,7 @@ classdef UAVDrone4 < handle
         rangeLeft % Flight time remaining before recharge is needed
         cargo % the cargo available to the UAV
         rangeBuffer % Distance the drone should be able to fly after returning to base
-        base % a request object for the base location
+        base % a request zone object for the base location
         time % time elapsed since beginning of simulation
         manager % The manager object
         color % the color of the uav's path
@@ -41,7 +41,7 @@ classdef UAVDrone4 < handle
             obj.maxRange=maxRange;
             obj.rangeLeft = maxRange;
             obj.maxCargo = maxCargo;
-            obj.cargo = ['H','L'];
+            obj.cargo = maxCargo;
             obj.speed=sp;
             obj.distTravelled = 0;
             obj.base = base;
@@ -82,14 +82,14 @@ classdef UAVDrone4 < handle
                 % Complete the request by delivering cargo (if not at base)
                 % by checking the priority of the requests
                 if(obj.request.priority == 1)
-                  index = find(obj.cargo, 'H');
+                  index = strfind(obj.cargo, 'H');
                   if (index == 1 && length(index) == 1)
                       obj.cargo = [];
                   elseif (index(1) == 1 && length(index) == 2)
                       obj.cargo = obj.cargo(2);
                   end
                 else
-                    index = find(obj.cargo, 'L');
+                    index = strfind(obj.cargo, 'L');
                      if (index == 1)
                       obj.cargo = []; 
                      else
@@ -113,13 +113,12 @@ classdef UAVDrone4 < handle
                 % Set this uav's request to empty if it still has cargo
                 obj.request=Request4.empty;
             end
-            
-            % Have the manager give new assignments
-            
-           
+                     
             % Call assign function in the manager
             obj.manager.assign();
             % Determine the drone's time to its new request.
+            disp(obj.cargo)
+            disp(obj.request)
             obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
 
                 % Return to base if there is not enough cargo to complete the

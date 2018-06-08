@@ -10,11 +10,11 @@
 % Gabriel Flores, Jonathan Larson, and Ted Townsend
 
 clear; close all; clc;
-
+dbstop if infnan
 f=1; % figure counter
 % Create display of the map
-% MAP=imread('Map2.png'); image(MAP) 
-% hold on
+MAP=imread('Map2.png'); image(MAP) 
+hold on
 
 % Parameters:
 % base = [130,285];                   % The [x,y] location of the base
@@ -27,12 +27,12 @@ base = [578,398];                   % For bigger PR map
 numZones = 13;                      % The number of request zones
 duration = 8;                       % The duration of the simulation in hours
 km2pixRatio = 1.609/90;             % The ratio for converting kilometers to pixels (90 for map 2, 73 for Guatemala)
-uav = [6, 40, 2, 15];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
+uav = [1, 40, 2, 15];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
 uavTest=uav;                        % For testing
 exprTime = .75*ones(numZones,1);    % How long it takes for the high priority request to expire (hours)
 priFac = 1000;                       % The priority factor by which low priority requests are reduced compared to high priority requests
 timeFac = 0.95;                     % Factor by which requests become more important over time (.95 -> 5% more important every hour)
-zonesNewProb = .05*ones(numZones,1);% Probability of a zone generating a new request on a given time step
+zonesNewProb = .01*ones(numZones,1);% Probability of a zone generating a new request on a given time step
 zonesHiProb = .25*ones(numZones,1); % Probability of a new request being high priority (per zone)
 zonesHiProb(1)=0.75; % Increase probability of high requests in zone 1
 

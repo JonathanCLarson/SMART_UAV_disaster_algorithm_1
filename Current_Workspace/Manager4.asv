@@ -114,21 +114,20 @@ classdef Manager4 < handle
                 % Only use UAVs with cargo, separate UAVs by type of cargo
                 % available
                 if(obj.uavList(c).idleCounter==0)
-                    if isempty(obj.uavList(c).cargo)
-                        % Empty UAV
-                        obj.uavList(c).request = obj.uavList(c).base.activeList;
-                    elseif(contains(obj.uavList(c).cargo,'H'))
+                    if(contains(obj.uavList(c).cargo,'H'))
                         % Has high cargo
                         hiUAVs(length(hiUAVs)+1)=obj.uavList(c);                        
                     elseif contains(obj.uavList(c).cargo,'L')
                         % Only has low cargo
                         loUAVs(length(loUAVs)+1)=obj.uavList(c); 
-                    
+                    else
+                        % Empty UAV
+                        obj.uavList(c).request = obj.uavList(c).base;
                     end
                 end
             end
             numDrones = length(loUAVs)+length(hiUAVs);
-%           requestList = Request4.empty;
+%             requestList = Request4.empty;
             highReqs = Request4.empty; % Array of high priority requests
             lowReqs = Request4.empty; % Array of low priority requests
             obj.activeHi=0; % Reset counter
@@ -163,22 +162,20 @@ classdef Manager4 < handle
                 if (~isempty(lowReqs)&&~isempty(loUAVs))
                     Manager4.chooseRequests(lowReqs,loUAVs);
                 end
-            else
-                % If no requests, send all drones to the base
+            end
+                           % If no requests, send all drones to the base
                 for c=1:length(obj.uavList)
                     obj.uavList(c).request=obj.uavList(c).base.activeList;
+                    % Have drones at the base wait for the next time step
+                    if Distance(obj.uavList(c).position,hiUAVs(c).request.zone.position)<.0001
+                        hiUAVs(c).idleCounter=1;
+                    end
                 end
+                
             end
-            % Send unassigned UAVs to the base
+            % Send any unassigned UAVs to the base
             for c=1:length(obj.uavList)
-                if(isempty(obj.uavList(c).request))
-                    obj.uavList(c).request=obj.uavList(c).base.activeList;
-                end
-                % Have drones at the base wait for the next time step
-                if Distance(obj.uavList(c).position,obj.uavList(c).base.position)<.0001 && obj.uavList(c).request.priority == 'B'
-                     obj.uavList(c).idleCounter=1;
-                end
-            end  
+                
             
         end        
 %            activeArray=cell(length(obj.requestZones),1);
@@ -229,6 +226,7 @@ classdef Manager4 < handle
                  end
                 % Assign the optimum to the UAV
                 uavList.request = requestList(index);
+                disp(uavList.request)
                 
             % If more than 1 UAV, find ideal UAV's for each Request and
             %   then choose the best request for each UAV to service
@@ -258,6 +256,7 @@ classdef Manager4 < handle
                     end
                     % Assign request to UAV
                     uavList(u).request=reqArray(bestFit); 
+                    disp(uavList(u).request)
                     % Store index of assigned request
                     assignedIndex(length(assignedIndex)+1)=listIndex(bestFit);                
                     % RESET arrays before moving to next UAV

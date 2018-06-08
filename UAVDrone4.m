@@ -17,7 +17,7 @@ classdef UAVDrone4 < handle
         speed  % Velocity of the drone (assumed constant in pixels per hour)
         distTravelled % Total distance travelled by the UAV
         rangeLeft % Flight time remaining before recharge is needed
-        cargo % Amount of cargo remaining
+        cargo % the cargo available to the UAV
         rangeBuffer % Distance the drone should be able to fly after returning to base
         base % a request object for the base location
         time % time elapsed since beginning of simulation
@@ -29,7 +29,6 @@ classdef UAVDrone4 < handle
         rechargeCounter % The number of times the batteries are replaced
         idleCounter % Counts down to keep the UAV idle
         idleTotal % keeps track of total idle time
-        extraCargo % Counts how many times drones return to base with extra cargo
     end
 
     methods
@@ -42,12 +41,12 @@ classdef UAVDrone4 < handle
             obj.maxRange=maxRange;
             obj.rangeLeft = maxRange;
             obj.maxCargo = maxCargo;
-            obj.cargo = maxCargo;
+            obj.cargo = ['H','L'];
             obj.speed=sp;
             obj.distTravelled = 0;
             obj.base = base;
             obj.position= base.position;
-            obj.rangeBuffer = 0.01*obj.maxRange; % UAV should reach base with up to 1% of max fuel remaining
+            obj.rangeBuffer = 0.005*obj.maxRange; % UAV should reach base with up to 5% of max fuel remaining
             obj.time = 0;
             obj.manager=manager;
             obj.request=base.activeList;
@@ -59,10 +58,8 @@ classdef UAVDrone4 < handle
             obj.rechargeCounter = 0;
             obj.idleCounter = 1;
             obj.idleTotal = 0;
-            obj.extraCargo=0; 
         end        
         %% Action methods
-        
         % Function to simulate delivery of aid to a request
         %   If the "delivery" is a visit to the base to refuel, the cargo
         %   and remaining flight time are both reset
@@ -73,10 +70,7 @@ classdef UAVDrone4 < handle
             % disp(obj.position)
             % Refill if the drone is at the base
             if(Distance(obj.position, obj.base.position) <= 0.001)
-                if obj.cargo >0
-                    obj.extraCargo=obj.extraCargo+1;
-                end
-                obj.cargo = obj.maxCargo;
+                obj.refill();
                 %disp("Refilled at " + obj.time)
                 if (obj.rangeLeft < obj.maxRange * 0.4)
                     obj.rangeLeft = obj.maxRange;
@@ -85,31 +79,52 @@ classdef UAVDrone4 < handle
                 end
              
             else
-                if(obj.request.status>-1)
-                    % Complete the request by delivering cargo (if not at base)
-                    obj.cargo = obj.cargo - 1;
-%                   disp(obj.cargo + " After Delivery")
-                    obj.requestsMet = obj.requestsMet + 1;
-                    obj.request.complete(obj.time);
-                    obj.manager.completedList(length(obj.manager.completedList) + 1) = obj.request; 
+                % Complete the request by delivering cargo (if not at base)
+                % by checking the priority of the requests
+                if(obj.request.priority == 1)
+                  index = find(obj.cargo, 'H');
+                  if (index == 1 && length(index) == 1)
+                      obj.cargo = [];
+                  elseif (index(1) == 1 && length(index) == 2)
+                      obj.cargo = obj.cargo(2);
+                  end
+                else
+                    index = find(obj.cargo, 'L');
+                     if (index == 1)
+                      obj.cargo = []; 
+                     else
+                        obj.cargo = obj.cargo(1);
+                     end
                 end
+                      
+                     
+                obj.requestsMet = obj.requestsMet + 1;
+                obj.request.complete(obj.time);
+                obj.manager.completedList(length(obj.manager.completedList) + 1) = obj.request; 
             end
-            % Check if the drone's cargo is empty   
-            if(obj.cargo<1)
+               
+            if(isempty(obj.cargo))
+                %disp("Cargo empty at " + obj.time)
                 obj.emptyCounter = obj.emptyCounter + 1;
                 obj.returnToBase();
-
+%               disp(obj.position)
+%               disp(obj.request)
             else
                 % Set this uav's request to empty if it still has cargo
                 obj.request=Request4.empty;
             end
             
-            % Have the manager give new assignments          
-            obj.manager.assign();
+            % Have the manager give new assignments
             
+           
+            % Call assign function in the manager
+            obj.manager.assign();
             % Determine the drone's time to its new request.
             obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
 
+                % Return to base if there is not enough cargo to complete the
+                % next request
+                
             % Instantly perform a delivery if the new request is at the
             % current UAV location (same zone as the previous request)
             if(Distance(obj.request.zone.position,obj.position)<=.0001)
@@ -119,8 +134,6 @@ classdef UAVDrone4 < handle
                     obj.idleCounter = 1;
                 end
             end
-            % Check if the UAV has enough charge to fulfill the request
-            obj.checkFuel();
                   
         end   
           
@@ -142,7 +155,7 @@ classdef UAVDrone4 < handle
         function checkFuel(obj)
             % Return to base if there is not enough fuel to reach the
             % next request
-            if (Distance(obj.position, obj.request.zone.position) + Distance(obj.base.position,obj.request.zone.position)+1/12*obj.speed+obj.rangeBuffer >=obj.rangeLeft)
+            if (Distance(obj.position, obj.request.zone.position) + Distance(obj.base.position,obj.request.zone.position)+obj.rangeBuffer >=obj.rangeLeft)
                 obj.lowChargeCounter = obj.lowChargeCounter + 1;
                 % disp("Fuel empty at " + obj.time)
                 obj.returnToBase();
@@ -151,10 +164,24 @@ classdef UAVDrone4 < handle
             end
         end
         
+        %% This is the function to refill the cargo for the UAVs.
+          % The function will put two high priority cargo in the UAV if 
+          % There are more high priority requests than drones, otherwise,
+          % it will put the high and low priority cargo in the UAVs
+        function refill(obj)
+            if obj.manager.activeHi>=obj.manager.uavList
+                obj.cargo = ['H','H'];
+            else
+                obj.cargo = ['H', 'L'];
+            end
+        end
+        
+        
         % Function to return the UAV to base
         %   Replaces the current request with the base
         %   Marks the request as unassigned
         function  returnToBase(obj)
+%            obj.request.status = 2;
             obj.request= obj.base.activeList;
            
         end
@@ -178,8 +205,6 @@ classdef UAVDrone4 < handle
                     if(obj.idleCounter==0)
                         obj.deliver();
                     end                                           
-                elseif Distance(obj.position,obj.request.zone.position)==0
-                    obj.idleCounter=1;
                 else
                 % Find new position of the UAV
                 newPos = obj.position+(obj.request.zone.position-obj.position).*obj.speed.*(newTime-obj.time)./Distance(obj.position,obj.request.zone.position);
@@ -188,22 +213,24 @@ classdef UAVDrone4 < handle
                 if(Distance(newPos,obj.request.zone.position)<=0.001)
                     % Plots the path from the UAV to the request and
                     % updates the UAV at the time of delivery
-%                   plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+                   plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
 
                     obj.position=newPos;
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
                     obj.rangeLeft = obj.rangeLeft - (obj.speed * (newTime-obj.time));
                     obj.time = newTime;
                     obj.idleCounter = 5;
-                    
+                    if(obj.request.priority ~= 'B')
+                        obj.request.zone.remove(obj.request.index);
+                    end
                 else
-
+                %hold on
                 % Plot the change in position
-%                 plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+               plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
                 % Move the UAV forward by updating its position and time
                 % and plot the results
                 obj.position=newPos;
-%                 plot(obj.position(1),obj.position(2),'k.')
+                plot(obj.position(1),obj.position(2),'k.')
                 obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
                 obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                 obj.rangeLeft = obj.rangeLeft - (obj.speed * (newTime-obj.time));
@@ -211,7 +238,7 @@ classdef UAVDrone4 < handle
             
                 % If the UAV is close to its target, perform a shorter time
                 % step so that it can refresh at the goal location
-                if((Distance(obj.position,obj.request.zone.position)/obj.speed) <=1/60)
+                if((Distance(obj.position,obj.request.zone.position)/obj.speed) <1/60)
                     t = obj.time+ (Distance(obj.position,obj.request.zone.position)/obj.speed);
                     obj.refresh(t);
                 end

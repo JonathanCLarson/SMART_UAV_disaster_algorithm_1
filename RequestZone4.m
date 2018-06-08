@@ -11,10 +11,15 @@ classdef RequestZone4 < handle
         probHi      % Probability of a high priority request
         expired     % Number of expired requests
         numUnassigned % Number of unassigned requests
+        completed   % The number of completed requets
         manager;    % The manager that assigns to the drone
         exprTime    % The time at which high priority requests expire
+        waitTime    % The amount of time requests have waited for aid
+        waitTimeHi  % The amount of time high priority requests have waited
         priFac      % The priority factor
-        ID          % The Request zone ID number
+        timeFac     % The time factor (how requests gain importance over time)
+        ID          % The Request zone ID number, equals the zone's index in the manager's requestZones list
+        
     end
     
     
@@ -30,9 +35,13 @@ classdef RequestZone4 < handle
             obj.activeList=Request4.empty;
             obj.expired = 0;
             obj.numUnassigned = 0;
+            obj.completed = 0;
+            obj.waitTime = 0;
+            obj.waitTimeHi = 0;
             obj.manager=Manager4.empty;
             obj.exprTime = exprTime;
-            obj.priFac = 0;
+            obj.priFac = 1;
+            obj.timeFac = 1;
             obj.ID = ID;
         end
         
@@ -53,20 +62,39 @@ classdef RequestZone4 < handle
                     n = length(obj.activeList);
                 end
             end
-            a1=rand;
-            a2=rand;    
+            a1=rand; % Random number for new requests
+            b1=rand; % Random number for high priority requests
+            numNew=0; % number of new requests to add
             % Generate a new request based on the probabilities of new
             % requests and high priority requests
-            if(a1<obj.probNew)
-                if(a2<obj.probHi)
-                    priority=1;
-                else
-                    priority = obj.priFac;
-                end
-                newreq = Request4(time,priority, obj,obj.exprTime,length(obj.activeList)+1);
-                obj.activeList(newreq.index) = newreq;
+            priority = obj.priFac;
+            newHi = 0;
+            % Determine the number of requests to add using random numbers
+            %   and the probability of new requests
+            while(a1<obj.probNew)
+                numNew=numNew+1;
+                a1=rand;
             end
-         obj.numUnassigned = obj.getUnassigned();
+            % Create new requests
+            for c=1:numNew                
+                if(b1<obj.probHi)
+                    priority=1;
+                    newHi=1;
+                end
+                expTime = obj.exprTime+randn*(1/6);
+                if expTime<0
+                    expTime=0;
+                end
+                newreq = Request4(time,priority,obj.timeFac, obj,expTime,length(obj.activeList)+1);
+                obj.activeList(newreq.index) = newreq;
+                priority=obj.priFac;
+            end
+            obj.numUnassigned = obj.getUnassigned();
+            % Call the assign function if a new high priority request was
+            % generated
+            if newHi == 1
+                obj.manager.assign();
+            end
         end
         
         % Function to remove the request from the active list upon completion
@@ -89,9 +117,7 @@ classdef RequestZone4 < handle
                 % Remove the last element(if necessary)
                     obj.activeList=obj.activeList(1:n-1);
             
-            end
-                
-                
+            end               
         end               
         % Function to return the number of unassigned requests
         function c = getUnassigned(obj)
@@ -128,12 +154,12 @@ classdef RequestZone4 < handle
                 if isempty(sortedRequests)
                     requests=sortedRequests;
                 else
-                obj.activeList=sortedRequests;
-                if(numUAV<length(sortedRequests))
-                    requests = sortedRequests(1:numUAV);
-                else
-                    requests=sortedRequests;
-                end
+                    obj.activeList=sortedRequests;
+                    if(numUAV<length(sortedRequests))
+                        requests = sortedRequests(1:numUAV);
+                    else
+                        requests=sortedRequests;
+                    end
                 end
         end
     end

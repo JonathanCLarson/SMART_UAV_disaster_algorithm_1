@@ -30,12 +30,12 @@ hold on
 % reqList(c) = Request(0,[1100*rand,700*rand],0,2);
 % plot(reqList(c).position(1),reqList(c).position(2),'b.','MarkerSize',15);
 % end
-dZone1 = RequestZone4([510,660],0.05,.5,timeExp); % Request object for drop zone 1
-dZone2 = RequestZone4([785,580],0.05,0.4,timeExp); % Request object for drop zone 2
-% dZone3 = RequestZone4([1080,170],0.05,.6,timeExp); % Request object for drop zone 3
-% dZone4 = RequestZone4([886, 68], 0.05, .4, timeExp); % Request object for drop zone 4
-% dZone5 = RequestZone4([716, 235], 0.05, .5, timeExp); % Request object for drop zone 5
-% dZone6 = RequestZone4([826, 328], 0.05, .4, timeExp); % Request object for drop zone 6
+dZone1 = RequestZone4([510,660],0.05,.5,timeExp,1); % Request object for drop zone 1
+dZone2 = RequestZone4([785,580],0.05,0.4,timeExp,2); % Request object for drop zone 2
+% dZone3 = RequestZone4([1080,170],0.05,.6,timeExp,3); % Request object for drop zone 3
+% dZone4 = RequestZone4([886, 68], 0.05, .4, timeExp,4); % Request object for drop zone 4
+% dZone5 = RequestZone4([716, 235], 0.05, .5, timeExp,5); % Request object for drop zone 5
+% dZone6 = RequestZone4([826, 328], 0.05, .4, timeExp,6); % Request object for drop zone 6
 
 
 zoneList = [dZone1,dZone2];%,dZone3, dZone4,dZone5,dZone6];
@@ -48,7 +48,7 @@ zoneList = [dZone1,dZone2];%,dZone3, dZone4,dZone5,dZone6];
 
 manager = Manager4(zoneList, base); % Create a manager to receive and assign requests
 
-color = ['y', 'g','m'];
+color = ['y', 'g','m','c','b','r','k','w'];
 
 % uav1 = UAVDrone(color(1),10,3,200,base,manager);
 % uav2 = UAVDrone(color(2),10,3,200,base,manager);

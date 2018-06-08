@@ -78,7 +78,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % Single Simulation  
 [~, ~, ~, ~, ~,manager]=uavSim1(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
 overall=writeManagers(manager,'singleRun.xlsx');
-[total, zone, UAV] = analyze(manager);
+[total] = analyze(manager);
 disp(total)
 
 
@@ -92,7 +92,7 @@ disp(total)
 % wait = zeros(10, 1);
 % waitHi = zeros(10, 1);
 % for c = 1:100
-%         [numMet(c),per(c),numExp(c),wait(c), waitHi(c), managerArray(c)] = uavSim1(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
+%         [numMet(c),numExp(c),wait(c), waitHi(c), managerArray(c)] = uavSim1(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
 % end
 % [overallMat,zoneMat]=writeManagers(managerArray,'testOutput.xlsx');
 % % 
@@ -127,7 +127,7 @@ disp(total)
 %         cargo = a; % The cargo for the uav
 %         uavTestc(3) = cargo;
 %         for m = 1:20
-%             [cNumComp(m), ~, cNumExpr(a,m), ~, ~,~]=uavSim1(uavTestc, zonesTestC, base, priFac,timeFac, duration,km2pixRatio);
+%             [cNumComp(m), , cNumExpr(a,m), ~, ~,~]=uavSim1(uavTestc, zonesTestC, base, priFac,timeFac, duration,km2pixRatio);
 %         end
 %         cNumEx(c,a) = mean(cNumExpr(a,:));
 %         cCompleted(c,a)=mean(cNumComp);
@@ -170,7 +170,7 @@ disp(total)
 %     for a = 1:5
 %         uavTestR(4) = ranges(a);
 %         for m = 1:10
-%             [rNumComp(a,m), ~, rNumEx(a,m), ~, ~,~,rNumRech(a,m),~,rNumRef(a,m),~]=uavSim1(uavTestR, zonesTest, base, priFac,timeFac, duration,km2pixRatio);
+%             [rNumComp(a,m),rNumEx(a,m), ~, ~,~,rNumRech(a,m),~,rNumRef(a,m),~]=uavSim1(uavTestR, zonesTest, base, priFac,timeFac, duration,km2pixRatio);
 %             
 %         end
 %         expiredR(c,a) = mean(rNumEx(a,:));
@@ -263,7 +263,7 @@ disp(total)
 %         end
 %         % Run 20 simulations
 %         for m=1:20
-%             [numMetTestP(p,m), ~, numExpTestP(p,m), ~, ~,~]=uavSim1(uavTestP, zonesTest, base, priFac, duration,km2pixRatio);
+%             [numMetTestP(p,m),numExpTestP(p,m), ~, ~,~]=uavSim1(uavTestP, zonesTest, base, priFac, duration,km2pixRatio);
 %         end
 %         % Find averages from simulations
 %         expiredP(c,p)=mean(numExpTestP(p,:));
@@ -314,7 +314,7 @@ disp(total)
 %         end
 %         % Run 20 simulations
 %         for m=1:20
-%             [numMetTestP(p,m), ~, numExpTestP(p,m), ~, ~,~]=uavSim1(uavTestH, zonesTest, base, priFac,timeFac, duration,km2pixRatio);
+%             [numMetTestP(p,m), numExpTestP(p,m), ~, ~,~]=uavSim1(uavTestH, zonesTest, base, priFac,timeFac, duration,km2pixRatio);
 %         end
 %         % Find averages from simulations
 %         expiredH(c,p)=mean(numExpTestP(p,:));
@@ -352,7 +352,7 @@ disp(total)
 %     for a = 1:13
 %         durTest = a+3;    % Duration variable to test
 %         for m = 1:20     % Run several simulations
-%             [NumCompD(a,m), ~, NumExprD(a,m), ~, ~,~]=uavSim1(uavTestD, zonesTestD, base, priFac,timeFac, durTest,km2pixRatio);
+%             [NumCompD(a,m), NumExprD(a,m), ~, ~,~]=uavSim1(uavTestD, zonesTestD, base, priFac,timeFac, durTest,km2pixRatio);
 %         end
 %         NumExD(c,a) = mean(NumExprD(a,:));
 %         NumCompletedD(c,a) = mean(NumCompD(a,:));
@@ -399,7 +399,7 @@ disp(total)
 %     for k = 1:5
 %         % Run several trials
 %         for m=1:1
-%             [priNumComp(k,m),~, priNumEx(k,m), priWait(k,m), priWaitHi(k,m),priManager]=uavSim1(uavTestpri, zoneParam, base, priority(k),timeFac, duration,km2pixRatio);
+%             [priNumComp(k,m),priNumEx(k,m), priWait(k,m), priWaitHi(k,m),priManager]=uavSim1(uavTestpri, zoneParam, base, priority(k),timeFac, duration,km2pixRatio);
 %         end
 %         % Find averages of trials
 %         expiredPri(c,k) = mean(priNumEx(k,:));
@@ -462,7 +462,7 @@ disp(total)
 %     for k = 1:5
 %         % Run several trials
 %         for m=1:10
-%             [tNumComp(k,m),~, tNumEx(k,m), tWait(k,m), tWaitHi(k,m),priManager]=uavSim1(uavTestTF, zoneParam, base, priFac,tFactor(k), duration,km2pixRatio);
+%             [tNumComp(k,m),tNumEx(k,m), tWait(k,m), tWaitHi(k,m),priManager]=uavSim1(uavTestTF, zoneParam, base, priFac,tFactor(k), duration,km2pixRatio);
 %         end
 %         % Find averages of trials
 %         expiredTF(c,k) = mean(tNumEx(k,:));

@@ -37,7 +37,6 @@ classdef Request4 < handle
             
             obj.status = 0;
             obj.timeElapsed = time-obj.timeRequested;
-            obj.zone.remove(obj.index);
             obj.zone.completed = obj.zone.completed + 1;
             obj.zone.waitTime = obj.zone.waitTime+obj.timeElapsed;
             if obj.priority == obj.zone.priFac

@@ -14,11 +14,11 @@ classdef RequestZone4 < handle
         completed   % The number of completed requets
         manager;    % The manager that assigns to the drone
         exprTime    % The time at which high priority requests expire
-        stDev       % The standard deviation of the expiration time
-        waitTime    % The amount of time requests have waited for aid (COMPLETED/EXPIRED ONLY)
+        waitTime    % The amount of time requests have waited for aid
         waitTimeHi  % The amount of time high priority requests have waited
         priFac      % The priority factor
         timeFac     % The time factor (how requests gain importance over time)
+        stDev       % The 
         ID          % The Request zone ID number, equals the zone's index in the manager's requestZones list
         
     end
@@ -29,7 +29,7 @@ classdef RequestZone4 < handle
         % This tells what the position of the request is. It also tells
         % what the probability of a new request is and what the probability
         % of a high priority request is
-        function obj = RequestZone4(pos,probNew,probHi,exprTime, stDev, ID)
+        function obj = RequestZone4(pos,probNew,probHi,exprTime,ID)
             obj.position = pos;
             obj.probNew = probNew;
             obj.probHi = probHi;
@@ -41,7 +41,6 @@ classdef RequestZone4 < handle
             obj.waitTimeHi = 0;
             obj.manager=Manager4.empty;
             obj.exprTime = exprTime;
-            obj.stDev = stDev;
             obj.priFac = 1;
             obj.timeFac = 1;
             obj.ID = ID;

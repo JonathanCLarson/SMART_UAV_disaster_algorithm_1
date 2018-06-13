@@ -14,8 +14,8 @@ dbstop if error
 % dbclear all
 f=1; % figure counter
 % Create display of the map
-%  MAP=imread('Map2.png'); image(MAP) 
-%  hold on
+ MAP=imread('Map2.png'); image(MAP) 
+ hold on
 
 % Parameters:
 % base = [130,285];                   % The [x,y] location of the base
@@ -26,7 +26,7 @@ base = [578,398];                   % For bigger PR map
 numZones = 13;                      % The number of request zones
 duration = 8;                       % The duration of the simulation in hours
 km2pixRatio = 1.609/90;             % The ratio for converting kilometers to pixels (90 for map 2, 73 for Guatemala)
-uav = [2, 40, 2, 35];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
+uav = [2, 80, 2, 60];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
 uavTest=uav;                        % For testing
 exprTime = .75*ones(numZones,1);    % How long it takes for the high priority request to expire (hours)
 exDev = (1/6) * ones(numZones, 1);  % The standard deviation of expiration times (hours)
@@ -77,10 +77,10 @@ color = [ 'b','k','m','g','y','c','r','w']; % The colors to mark the lines
 symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the graph
 
 %% Single Simulation  
-% [~, ~, ~, ~, manager]=uavSim1(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
-% overall=writeManagers(manager,'singleRun.xlsx');
-% [total] = analyze(manager);
-% disp(total)
+[~, ~, ~, ~, manager]=uavSim1(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
+overall=writeManagers(manager,'singleRun.xlsx');
+[total] = analyze(manager);
+disp(total)
 
 %% Number of UAVs
 uavTestU=uav;
@@ -89,9 +89,9 @@ numExpU=zeros(1,20);
 numCompU=zeros(1,20);
 expiredU=zeros(1,6);
 completedU=zeros(1,6);
-numHiU=zeros(1,20); % Number of high priority requests from a simulation
+numHiU=zeros(1,20);
 lolp = zeros(1,6);
-compPerUAV=zeros(1,6);
+
 % 
 for c=1:length(numUAVs)
     uavTestU(1)=c;
@@ -105,17 +105,19 @@ for c=1:length(numUAVs)
                  end
              end
              for k=1:length(managersU.requestZones)
-                 for n=1:length(managersU.requestZones(k).activeList)
-                     if managersU.requestZones(k).activeList(n).priority==1
+                 for n=1:length(managersU.requestZones(k)
+                     if managersU.requestZones(k).priority==1
                          numHiU(m)=numHiU(m)+1;
                      end
                  end
              end
-       end
+             
+    end
     expiredU(c)=mean(numExpU);
     completedU(c)=mean(numCompU);
     % LOLP: extract total number of high priority requests
-    lolp(c)=mean(numExpU./numHiU);
+    
+    
     compPerUAV(c) = completedU(c)/c;
 end
 figure(f)
@@ -129,11 +131,11 @@ xlabel('Number of UAVs')
 ylabel('Completed Requests')
 
 figure(f+2)
-plot(numUAVs,lolp,'k.','MarkerSize',20)
+plot(numUAVs,expTimesUAV)
 xlabel('Number of UAVs')
-ylabel('Proportion of HP requests that expired')
+ylabel('Expired requests/UAV')
 figure(f+3)
-plot(numUAVs,compPerUAV,'k.','Markersize',20)
+plot(numUAVs,compPerUAV,'.','Markersize',25)
 xlabel('Number of UAVs')
 ylabel('Completed Requests/UAV')
 f=f+4;

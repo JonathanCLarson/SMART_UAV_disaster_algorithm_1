@@ -37,7 +37,7 @@ km2Pix = @(ft) ft/kmToPix;      % Anonymous function to convert km to pixels
 pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km 
 
 % Create the base object, and give it a single request.
-base = RequestZone4(baseLocation,'B','B','B','B', 'B');
+base = RequestZone4(baseLocation,'B','B','B','B');
 base.activeList=Request4('B','B','B',base,'B', 0);
 
 
@@ -45,7 +45,7 @@ base.activeList=Request4('B','B','B',base,'B', 0);
 [numZones,~]=size(zoneParam);
 zones = RequestZone4.empty;
 for c=1:numZones
-    zones(c)=RequestZone4([zoneParam(c,1),zoneParam(c,2)],zoneParam(c,3),zoneParam(c,4),zoneParam(c,5),zoneParam(c,6),c);
+    zones(c)=RequestZone4([zoneParam(c,1),zoneParam(c,2)],zoneParam(c,3),zoneParam(c,4),zoneParam(c,5),zonw,c);
 end
 % Reset the Request Zones (needed for running multiple simulations
 for c=1:length(zones)

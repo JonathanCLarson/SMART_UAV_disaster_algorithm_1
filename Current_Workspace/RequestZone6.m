@@ -7,13 +7,14 @@ classdef RequestZone6 < handle
     properties
         position    % The location of the drop zone
         activeList  % List of the currently active requests in that zone
-        probNew     % Probability of the new request
-        probHi      % Probability of a high priority request
+        probA     % Probability of the new A request
+        probB      % Probability of a B request
         expired     % Number of expired requests
         numUnassigned % Number of unassigned requests
         completed   % The number of completed requets
         manager;    % The manager that assigns to the drone
-        exprTime    % The time at which high priority requests expire
+        exprTimeA    % The average time at which A requests expire
+        exprTimeB    % The average time at which B requests expire
         stDev       % The standard deviation of the expiration time
         waitTime    % The amount of time requests have waited for aid (COMPLETED/EXPIRED ONLY)
         waitTimeHi  % The amount of time high priority requests have waited
@@ -29,10 +30,10 @@ classdef RequestZone6 < handle
         % This tells what the position of the request is. It also tells
         % what the probability of a new request is and what the probability
         % of a high priority request is
-        function obj = RequestZone6(pos,probNew,probHi,exprTime, stDev, ID)
+        function obj = RequestZone6(pos,probA,probB,exprTimeA, exprTimeB, stDev, ID)
             obj.position = pos;
-            obj.probNew = probNew;
-            obj.probHi = probHi;
+            obj.probA = probA;
+            obj.probB = probB;
             obj.activeList=Request6.empty;
             obj.expired = 0;
             obj.numUnassigned = 0;
@@ -40,7 +41,8 @@ classdef RequestZone6 < handle
             obj.waitTime = 0;
             obj.waitTimeHi = 0;
             obj.manager=Manager6.empty;
-            obj.exprTime = exprTime;
+            obj.exprTimeA = exprTimeA;
+            obj.exprTimeB = exprTimeB;
             obj.stDev = stDev;
             obj.priFac = 1;
             obj.timeFac = 1;
@@ -64,32 +66,28 @@ classdef RequestZone6 < handle
                     n = length(obj.activeList);
                 end
             end
-            a1=rand; % Random number for new requests
-            b1=rand; % Random number for high priority requests
-            numNew=0; % number of new requests to add
+            a1=rand; % Random number for new A requests
+            b1=rand; % Random number for new B requests
             % Generate a new request based on the probabilities of new
             % requests and high priority requests
             priority = obj.priFac;
             newHi = 0;
             % Determine the number of requests to add using random numbers
             %   and the probability of new requests
-            while(a1<obj.probNew)
-                numNew=numNew+1;
+            while(a1<obj.probA)
+                 % Create an A request
+                exprTime = obj.getExpire('A')
+                newreq = Request6(time,priority,obj.timeFac, obj,exprTime,'A',length(obj.activeList)+1);
+                
+                 obj.activeList(newreq.index) = newreq;
                 a1=rand;
+                
             end
-            % Create new requests
-            for c=1:numNew                
-                if(b1<obj.probHi)
-                    priority=1;
-                    newHi=1;
-                end
-                expTime = obj.exprTime+randn*(obj.stDev);
-                if expTime<0
-                    expTime=0;
-                end
-                newreq = Request6(time,priority,obj.timeFac, obj,expTime,length(obj.activeList)+1);
+            while(b1<obj.probB)
+                exprTime = obj.getExpire('B');                
+                newreq = Request6(time,priority,obj.timeFac, obj,exprTime,'B',length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
-                priority=obj.priFac;
+                b1=rand;
             end
             obj.numUnassigned = obj.getUnassigned();
             % Call the assign function if a new high priority request was
@@ -139,7 +137,7 @@ classdef RequestZone6 < handle
             obj.manager=Manager6.empty;
         end
         
-        % This function is made to get the highest priority requests from
+        %% This function is made to get the highest priority requests from
         % the request zone. The number of requests returned equals the number of UAV's in the fleet  
         function requests = getHighest(obj, numUAV)
             P = zeros(length(obj.activeList), 2);
@@ -162,8 +160,20 @@ classdef RequestZone6 < handle
                     else
                         requests=sortedRequests;
                     end
-                end
+                end    
         end
+        %% Find the expiration time for a given request
+        function exprTime = getExpire(obj, type)
+            p=rand; % uniform random number (0-1)
+            % Type A requests
+            if(type == 'A')
+                exprTime = (obj.exprTimeA.*(p.^(1/4)))./((1-p).^(1/4));
+            else
+                % Type B
+                 exprTime = (obj.exprTimeB.*(p.^(1/4)))./((1-p).^(1/4)); 
+            end
+    end
+            
     end
 end
 

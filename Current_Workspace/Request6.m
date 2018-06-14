@@ -1,4 +1,3 @@
-
 %% Request object class
 classdef Request6 < handle
     %Request  class to simulate requests for aid in the UAV simulation
@@ -13,6 +12,7 @@ classdef Request6 < handle
         zone            % the zone (1 of 3) in which the request takes place
         exprTime        % Time at which a high priority request will expire
         index           % The index in the active request list
+        cargoType       % The type of cargo needed in the request
     end
     
     methods
@@ -20,7 +20,7 @@ classdef Request6 < handle
         % Initializes the time, starts the status of the request at 2
         % and gets the priority status(high or low) in order to start
         % mission. Also stores the index in the zone's active request list
-        function obj = Request6(t,pri,timeFac,zone,exp, index)
+        function obj = Request6(t,pri,timeFac,zone,exp, cargoType, index)
             obj.timeRequested = t;
             obj.priority = pri;
             obj.timeFac = timeFac;
@@ -28,7 +28,8 @@ classdef Request6 < handle
             obj.zone = zone;
             obj.exprTime = exp;
             obj.index = index;
-            obj.timeElapsed= 0;
+            obj.timeElapsed = 0;
+            obj.cargoType = cargoType; 
         end
         
         % Mark a request as complete and remove it from the activeList.
@@ -39,9 +40,7 @@ classdef Request6 < handle
             obj.timeElapsed = time-obj.timeRequested;
             obj.zone.completed = obj.zone.completed + 1;
             obj.zone.waitTime = obj.zone.waitTime+obj.timeElapsed;
-            if obj.priority == obj.zone.priFac
-                obj.zone.waitTimeHi= obj.zone.waitTimeHi+obj.timeElapsed;
-            end
+
         end
         
         % Refresh the request, called every time step
@@ -51,7 +50,7 @@ classdef Request6 < handle
                 obj.timeElapsed=time-obj.timeRequested;
             end
             % Expire the request if necessary
-            if(obj.priority == 1 && obj.status>0&&(obj.timeElapsed >=obj.exprTime))
+            if(obj.timeElapsed >=obj.exprTime))
                 obj.status=-1;  % Change status to expired value
                 obj.zone.expired = obj.zone.expired +1; % Increase the zone's expired counter
                 obj.zone.remove(obj.index); % Remove from zone's activeList
@@ -60,7 +59,10 @@ classdef Request6 < handle
                 obj.zone.waitTimeHi = obj.zone.waitTimeHi + obj.exprTime;
             end
         end
-        
+        % Function to return the Request's current priority
+        function pri = getPriority(obj)
+            pri=exp(-(obj.exprTime-obj.timeElapsed)./log(2));            
+        end
     end
     
 end

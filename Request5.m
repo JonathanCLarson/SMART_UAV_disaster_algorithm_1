@@ -1,6 +1,6 @@
 
 %% Request object class
-classdef Request4 < handle
+classdef Request5 < handle
     %Request  class to simulate requests for aid in the UAV simulation
         % Stores priority, time needed to fulfill requests, etc.
         % This version is a handle class.
@@ -20,7 +20,7 @@ classdef Request4 < handle
         % Initializes the time, starts the status of the request at 2
         % and gets the priority status(high or low) in order to start
         % mission. Also stores the index in the zone's active request list
-        function obj = Request4(t,pri,timeFac,zone,exp, index)
+        function obj = Request5(t,pri,timeFac,zone,exp, index)
             obj.timeRequested = t;
             obj.priority = pri;
             obj.timeFac = timeFac;

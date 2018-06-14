@@ -29,6 +29,7 @@ classdef UAVDrone4 < handle
         rechargeCounter % The number of times the batteries are replaced
         idleCounter % Counts down to keep the UAV idle
         idleTotal % keeps track of total idle time
+        extraCargo % Counts the amount of cargo the UAV has returned empty with
     end
 
     methods
@@ -41,7 +42,7 @@ classdef UAVDrone4 < handle
             obj.maxRange=maxRange;
             obj.rangeLeft = maxRange;
             obj.maxCargo = maxCargo;
-            obj.cargo = ['H','L'];
+            obj.cargo = maxCargo;
             obj.speed=sp;
             obj.distTravelled = 0;
             obj.base = base;
@@ -58,6 +59,7 @@ classdef UAVDrone4 < handle
             obj.rechargeCounter = 0;
             obj.idleCounter = 1;
             obj.idleTotal = 0;
+            obj.extraCargo=0;
         end        
         %% Action methods
         % Function to simulate delivery of aid to a request
@@ -70,7 +72,10 @@ classdef UAVDrone4 < handle
             % disp(obj.position)
             % Refill if the drone is at the base
             if(Distance(obj.position, obj.base.position) <= 0.001)
-                obj.refill();
+                if obj.cargo<obj.maxCargo
+                    obj.extraCargo=obj.extraCargo+obj.cargo;
+                end
+                obj.cargo=obj.maxCargo;
                 %disp("Refilled at " + obj.time)
                 if (obj.rangeLeft < obj.maxRange * 0.4)
                     obj.rangeLeft = obj.maxRange;
@@ -81,23 +86,7 @@ classdef UAVDrone4 < handle
             else
                 % Complete the request by delivering cargo (if not at base)
                 % by checking the priority of the requests
-                if(obj.request.priority == 1)
-                  index = find(obj.cargo, 'H');
-                  if (index == 1 && length(index) == 1)
-                      obj.cargo = [];
-                  elseif (index(1) == 1 && length(index) == 2)
-                      obj.cargo = obj.cargo(2);
-                  end
-                else
-                    index = find(obj.cargo, 'L');
-                     if (index == 1)
-                      obj.cargo = []; 
-                     else
-                        obj.cargo = obj.cargo(1);
-                     end
-                end
-                      
-                     
+                obj.cargo=obj.cargo-1;
                 obj.requestsMet = obj.requestsMet + 1;
                 obj.request.complete(obj.time);
                 obj.manager.completedList(length(obj.manager.completedList) + 1) = obj.request; 

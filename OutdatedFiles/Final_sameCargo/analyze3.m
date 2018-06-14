@@ -29,8 +29,8 @@ function  [numComp, perComp, numExp, totAvgWait, highAvgWait,lowAvgWait,totAvgWa
     end
     
     %% Consolidate the lists into: Low & High priority
-    highReq = Request5.empty;
-    lowReq = Request5.empty;
+    highReq = Request4.empty;
+    lowReq = Request4.empty;
     
     highWait = 0;
     lowWait = 0;

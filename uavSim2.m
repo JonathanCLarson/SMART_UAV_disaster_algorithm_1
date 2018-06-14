@@ -1,10 +1,10 @@
-function [numComp, numExp, wait, waitHi,simManager,recharges,extraCargo,refills, idleTime] = uavSim1(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
+function [numComp, numExp, wait, waitHi,simManager,recharges,extraCargo,refills, idleTime] = uavSim2(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
 % Simulates a uav fleet responding to a disaster
 % Runs a simulation and returns the results for analysis
 % Inputs:
 %   UAV: A vector of [number of UAVs in the fleet, speed of the UAVs, 
 %      maximum cargo load for the drones, and range]
-%   zoneParam: A matrix of parameters, used to create the RequestZone4 objects 
+%   zoneParam: A matrix of parameters, used to create the RequestZone5 objects 
 %       that the fleet will respond to. The rows in this matrix correspond
 %       to the individual zones, while the columns represent:
 %       [x-position,y-position,probability of new request, probability of
@@ -37,22 +37,22 @@ km2Pix = @(ft) ft/kmToPix;      % Anonymous function to convert km to pixels
 pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km 
 
 % Create the base object, and give it a single request.
-base = RequestZone4(baseLocation,'B','B','B','B', 'B');
-base.activeList=Request4('B','B','B',base,'B', 0);
+base = RequestZone5(baseLocation,'B','B','B','B', 'B');
+base.activeList=Request5('B','B','B',base,'B', 0);
 
 
 % Create the Request Zone objects and store them in an array
 [numZones,~]=size(zoneParam);
-zones = RequestZone4.empty;
+zones = RequestZone5.empty;
 for c=1:numZones
-    zones(c)=RequestZone4([zoneParam(c,1),zoneParam(c,2)],zoneParam(c,3),zoneParam(c,4),zoneParam(c,5),zoneParam(c,6),c);
+    zones(c)=RequestZone5([zoneParam(c,1),zoneParam(c,2)],zoneParam(c,3),zoneParam(c,4),zoneParam(c,5),zoneParam(c,6),c);
 end
 % Reset the Request Zones (needed for running multiple simulations
 for c=1:length(zones)
     zones(c).reset();
 end
 
-manager = Manager4(zones, base); % Create a manager to receive and assign requests
+manager = Manager5(zones, base); % Create a manager to receive and assign requests
 % Add the manager to the zones, assign priority and time factors
 for c=1:length(zones)
     zones(c).manager = manager;
@@ -64,9 +64,9 @@ color = ['y', 'c','m','b','r','w','k','g'];
 
 % Create UAV's and add them to the manager
 % Converts uav speeds and ranges to pixels 
-uavArray=UAVDrone4.empty;
+uavArray=UAVDrone5.empty;
  for k=1:numUAVs
-        uavArray(k, 1)=UAVDrone4(color(k),km2Pix(uavRange),uavCap,km2Pix(uavSpeed),base,manager);
+        uavArray(k, 1)=UAVDrone5(color(k),km2Pix(uavRange),uavCap,km2Pix(uavSpeed),base,manager);
         manager.addUAV(uavArray(k, 1));
  end
  
@@ -76,7 +76,7 @@ for c=1:60*duration
         manager.refresh(c/60);    
 end
 % Plot the base location
-% plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
+plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
 % Perform analysis and return results, as well as the manager object.
 [numComp, numExp, wait, waitHi,recharges,extraCargo,refills,idleTime] = analyze2(manager);
 simManager=manager;

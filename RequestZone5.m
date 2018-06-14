@@ -1,5 +1,5 @@
 %% RequestZone object class
-classdef RequestZone4 < handle
+classdef RequestZone5 < handle
     %RequestZone  class to simulate requests for aid in the UAV simulation
         % Stores location, probability of requests, probability of high/low
         % priority, time needed to fulfill requests, etc.
@@ -29,17 +29,17 @@ classdef RequestZone4 < handle
         % This tells what the position of the request is. It also tells
         % what the probability of a new request is and what the probability
         % of a high priority request is
-        function obj = RequestZone4(pos,probNew,probHi,exprTime, stDev, ID)
+        function obj = RequestZone5(pos,probNew,probHi,exprTime, stDev, ID)
             obj.position = pos;
             obj.probNew = probNew;
             obj.probHi = probHi;
-            obj.activeList=Request4.empty;
+            obj.activeList=Request5.empty;
             obj.expired = 0;
             obj.numUnassigned = 0;
             obj.completed = 0;
             obj.waitTime = 0;
             obj.waitTimeHi = 0;
-            obj.manager=Manager4.empty;
+            obj.manager=Manager5.empty;
             obj.exprTime = exprTime;
             obj.stDev = stDev;
             obj.priFac = 1;
@@ -87,7 +87,7 @@ classdef RequestZone4 < handle
                 if expTime<0
                     expTime=0;
                 end
-                newreq = Request4(time,priority,obj.timeFac, obj,expTime,length(obj.activeList)+1);
+                newreq = Request5(time,priority,obj.timeFac, obj,expTime,length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
                 priority=obj.priFac;
             end
@@ -114,7 +114,7 @@ classdef RequestZone4 < handle
                     obj.activeList = obj.activeList(1:n-1);
                 elseif(n<=1)
                 % Remove the only element in a list
-                   obj.activeList = Request4.empty;
+                   obj.activeList = Request5.empty;
                 elseif(index == n)
                 % Remove the last element(if necessary)
                     obj.activeList=obj.activeList(1:n-1);
@@ -133,17 +133,17 @@ classdef RequestZone4 < handle
         
         % Function to reset the zone at the beginning of a simulation
         function reset(obj)
-            obj.activeList=Request4.empty;
+            obj.activeList=Request5.empty;
             obj.expired = 0;
             obj.numUnassigned = 0;
-            obj.manager=Manager4.empty;
+            obj.manager=Manager5.empty;
         end
         
         % This function is made to get the highest priority requests from
         % the request zone. The number of requests returned equals the number of UAV's in the fleet  
         function requests = getHighest(obj, numUAV)
             P = zeros(length(obj.activeList), 2);
-            sortedRequests=Request4.empty;
+            sortedRequests=Request5.empty;
             for j = 1:length(obj.activeList)
                 P(j, :) = [obj.activeList(j).priority * 0.95 ^ (obj.activeList(j).timeElapsed), j];  
             end

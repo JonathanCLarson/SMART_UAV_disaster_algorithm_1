@@ -1,5 +1,5 @@
 %% UAV Drone file
-classdef UAVDrone4 < handle
+classdef UAVDrone6 < handle
     %UAVDrone
     %   UAV objects to simulate the distribution of aid after a disaster in
     %   Puerto Rico
@@ -37,7 +37,7 @@ classdef UAVDrone4 < handle
         % cargo and its time starts off at 0
         % The color is used to distiguish between the many drones we use
         % The manager assigns the requests to the drone
-        function obj = UAVDrone4(color,maxRange,maxCargo,sp,base,manager)
+        function obj = UAVDrone6(color,maxRange,maxCargo,sp,base,manager)
             obj.color= color;
             obj.maxRange=maxRange;
             obj.rangeLeft = maxRange;
@@ -138,7 +138,7 @@ classdef UAVDrone4 < handle
                 %disp(obj.request)
             else
                 % Set this uav's request to empty if it still has cargo
-                obj.request=Request4.empty;
+                obj.request=Request6.empty;
                 %disp(obj.base.activeList)
                 obj.manager.assign();
             end
@@ -262,7 +262,7 @@ classdef UAVDrone4 < handle
                 if(Distance(newPos,obj.request.zone.position)<=0.001)
                     % Plots the path from the UAV to the request and
                     % updates the UAV at the time of delivery
-%                     plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+                    plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
 
                     obj.position=newPos;
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
@@ -276,11 +276,11 @@ classdef UAVDrone4 < handle
                 else
                     %hold on
                     % Plot the change in position
-%                      plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+                     plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
                     % Move the UAV forward by updating its position and time
                     % and plot the results
                     obj.position=newPos;
-%                      plot(obj.position(1),obj.position(2),'k.')
+                     plot(obj.position(1),obj.position(2),'k.')
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                     obj.rangeLeft = obj.rangeLeft - (obj.speed * (newTime-obj.time));

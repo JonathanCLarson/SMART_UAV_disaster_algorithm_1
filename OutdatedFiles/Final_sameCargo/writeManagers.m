@@ -5,7 +5,7 @@ function [overallMatrix,zoneMatrix,status1,status2] = writeManagers(managers,fil
 %   for data analysis after performing UAV simulations
 % 
 % Input:
-%   managers: A 1-D array of Manager5 objects created by calling the
+%   managers: A 1-D array of Manager4 objects created by calling the
 %       uavSim1 function to run several simulations
 %       NOTE: Since these objects are from the same set of simulations, they
 %       have the same number of UAVs and request zones

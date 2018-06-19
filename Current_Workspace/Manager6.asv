@@ -335,7 +335,7 @@ classdef Manager6 < handle
                             end
                             % Determine if the UAV can reach its request
                             % before it expires
-                            if Manager6.checkTime(uavList(u),requestList(reqMatches{u,2}(bestFit)))
+                            if checkTime(uavList(U),requestList(reqMatches{u,2}(bestFit)))
 
                                 if(Manager6.checkRange(uavList(u), requestList(reqMatches{u,2}(bestFit))))
                                     % Check for redirected UAV's
@@ -353,12 +353,9 @@ classdef Manager6 < handle
                                 end
                             else % If the UAV cannot reach in time
                                 assignedIndex(length(assignedIndex)+1)=reqMatches{u,2}(bestFit); 
-                                unAssigUAV(length(unAssigUAV)+1)=uavList(u);
-                                disp('Cannot reach request')
+                                    unAssigUAV(length(unassigUAV
                             end
-                        end
                     end
-                
 
                     % ASSIGN LEFTOVER DRONES
                     % Sort list of assigned indices into descending order to remove

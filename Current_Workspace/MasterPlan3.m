@@ -10,6 +10,7 @@
 % Gabriel Flores, Jonathan Larson, and Ted Townsend
 % dbclear all
 clear; close all; %clc;
+dbstop if naninf
 dbstop if error
 % dbclear all
 f=1; % figure counter
@@ -24,17 +25,18 @@ base = [578,398];                   % For bigger PR map
 
 
 numZones = 13;                      % The number of request zones
-duration = 8;                       % The duration of the simulation in hours
+duration = 8;                      % The duration of the simulation in hours
 km2pixRatio = 1.609/90;             % The ratio for converting kilometers to pixels (90 for map 2, 73 for Guatemala)
-uav = [3, 40, 2, 35];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
+uav = [10, 40, 3, 35];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
 uavTest=uav;                        % For testing
 exprTime = .75*ones(numZones,1);    % How long it takes for the high priority request to expire (hours)
 exDev = (1/6) * ones(numZones, 1);  % The standard deviation of expiration times (hours)
 priFac = 1000;                      % The priority factor by which low priority requests are reduced compared to high priority requests
 timeFac = 0.95;                     % Factor by which requests become more important over time (.95 -> 5% more important every hour)
-zonesNewProb = .02*ones(numZones,1);% Probability of a zone generating a new request on a given time step
-zonesHiProb = .25*ones(numZones,1); % Probability of a new request being high priority (per zone)
-zonesHiProb(1) = 0.75;                % Increase probability of high requests in zone 1
+zonesYProb = .01*ones(numZones,1);% Probability of a zone generating a new request on a given time step
+zonesXProb = .01*ones(numZones,1); % Probability of a new request being high priority (per zone)
+exprTimeX = ones(numZones,1);
+exprTimeY = 3*ones(numZones,1);
 
 % Array of [x,y] locations for each request zone based on the map image
 % zoneLocations = [510,660;   % Zone 2
@@ -68,7 +70,7 @@ zoneLocations = [276,715;
 %                  759,481;
 %                  688,754];
              
-zoneParam = [zoneLocations,zonesNewProb,zonesHiProb,exprTime, exDev]; 
+zoneParam = [zoneLocations,zonesXProb,zonesYProb,exprTimeX,exprTimeY]; 
     % Matrix where element (i,j) corresponds to request zone i, property j,
     %   where property 1 is the x-location, 2 is the y-location, 3 is the 
     %   new probability, etc.
@@ -78,7 +80,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 
 %% Single Simulation  
 [~, ~, ~, ~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
-overall=writeManagers(manager,'singleRun.xlsx');
+% overall=writeManagers2(manager,'singleRun.xlsx');
 [total] = analyze(manager);
 disp(total)
 

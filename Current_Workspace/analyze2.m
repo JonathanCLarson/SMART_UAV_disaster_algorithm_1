@@ -1,4 +1,4 @@
-function  [numComp, numExp,wait,waitHi,recharge,extraCargo,refill,idleTotal] = analyze2(manager)
+function  [numComp, numExp,wait,waitX,recharge,extraCargo,refill,idleTotal] = analyze2(manager)
 % Analyze function for UAV simulation
 %   returns numerical results of the UAV simulation
 %   for some of the variables, including the high priority requests
@@ -9,18 +9,18 @@ function  [numComp, numExp,wait,waitHi,recharge,extraCargo,refill,idleTotal] = a
 
     %% The loop to get the number of high priority requests, the unfinished requests,
     % and the total wait time
-    numHi = 0; % number of high priority requests generated
-    hiMet = 0; % The number of High Priority Requests Met
-    numReq=0; % number of total requests
+    numX = 0; % number of high priority requests generated
+    XMet = 0; % The number of High Priority Requests Met
+    numReq = 0; % number of total requests
     waitTime = 0; % The total amount of time waited
-    waitTimeHi = 0; % Total time waited by high priority requests
+    waitTimeX = 0; % Total time waited by high priority requests
     % Each loop processes requests from that source.
     % Completed requests
     for c=1:length(manager.completedList)
         if(manager.completedList(c).priority==1)
-            numHi=numHi+1;
-            hiMet=hiMet+1;
-            waitTimeHi = waitTimeHi + manager.completedList(c).timeElapsed;
+            numX=numX+1;
+            XMet=XMet+1;
+            waitTimeX = waitTimeX + manager.completedList(c).timeElapsed;
         end
         waitTime = waitTime + manager.completedList(c).timeElapsed;
         numReq=numReq+1;
@@ -29,8 +29,8 @@ function  [numComp, numExp,wait,waitHi,recharge,extraCargo,refill,idleTotal] = a
     % Expired requests
     for c=1:length(manager.expiredList)
         waitTime = waitTime + manager.expiredList(c).exprTime; 
-        waitTimeHi=waitTimeHi+manager.expiredList(c).exprTime;
-        numHi=numHi+1;
+        waitTimeX=waitTimeX+manager.expiredList(c).exprTime;
+        numX=numX+1;
         numReq=numReq+1;
     end
     
@@ -39,8 +39,8 @@ function  [numComp, numExp,wait,waitHi,recharge,extraCargo,refill,idleTotal] = a
         for k=1:length(manager.requestZones(c).activeList)
             thisReq = manager.requestZones(c).activeList(k); % temporary variable
             if thisReq.status==1
-                numHi=numHi+1;
-                waitTimeHi = waitTimeHi + thisReq.timeElapsed;
+                numX=numX+1;
+                waitTimeX = waitTimeX + thisReq.timeElapsed;
             end
             waitTime=waitTime+thisReq.timeElapsed;
             numReq=numReq+1;
@@ -48,7 +48,7 @@ function  [numComp, numExp,wait,waitHi,recharge,extraCargo,refill,idleTotal] = a
         end
     end
     wait = waitTime/numReq;
-    waitHi=waitTimeHi/numHi;
+    waitX=waitTimeX/numX;
     numComp = length(manager.completedList);
     numExp = length(manager.expiredList);
     

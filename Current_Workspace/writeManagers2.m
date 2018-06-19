@@ -1,5 +1,5 @@
 %% writeManagers
-function [overallMatrix,zoneMatrix,status1,status2] = writeManagers(managers,fileName)
+function [overallMatrix,zoneMatrix,status1,status2] = writeManagers2(managers,fileName)
 
 % Function to write the data from an array of managers into an Excel file
 %   for data analysis after performing UAV simulations
@@ -25,30 +25,30 @@ nZones = length(managers(1).requestZones); % Number of request zones
 numCompleted = zeros(n,1);      % Number of completed requests
 numExpired = zeros(n,1);        % Number of expired requests
 avgWait = zeros(n,1);           % Average wait time for completed or expired requests
-avgWaitHi = zeros(n,1);
-avgWaitLow = zeros(n,1);
+avgWaitX = zeros(n,1);
+avgWaitY = zeros(n,1);
 totalRecharges = zeros(n,1); % Number of times UAV battery was replaced
 totalRestocks = zeros(n,1); % Number of times UAV cargo was restocked
 totalRefills = zeros(n,1); % Total restocks + refuels
 totalIdle = zeros(n,1); % Total amount of idle time spent by UAV's
 numRedirects = zeros(n,1); % Total number of times UAV's were redirected
 simLabels = cell(n,1);    
-valueLabels = {'Completed','Expired','Average_Wait','High_Priority_Wait','Low_Priority_Wait','Recharges','Restocks','Refills','Idle_time','Redirects'};
+valueLabels = {'Completed','Expired','Average_Wait','X_Wait','Y_Wait','Recharges','Restocks','Refills','Idle_time','Redirects'};
 
 % Zone data: entry (i,j) corresponds to requestZone i, from simulation j
 zonesCompleted = zeros(nZones,n);
 zonesExpired = zeros(nZones,n);
 zonesWait = zeros(nZones,n);
-zonesWaitHi = zeros(nZones,n);
-zonesWaitLow = zeros(nZones,n);
+zonesWaitX = zeros(nZones,n);
+zonesWaitY = zeros(nZones,n);
 zoneNames = cell(n*nZones,1);
-zoneVariables = {'Completed', 'Expired', 'Average_wait','High_Priority_Wait','Low_Priority_Wait'};
+zoneVariables = {'Completed', 'Expired', 'Average_wait','X_Wait','Y_Wait'};
 
 %% Extract data
 i=1;
 for c=1:n
     % Extract data from managers
-    [numCompleted(c), ~, numExpired(c), avgWait(c), avgWaitHi(c),avgWaitLow(c),zonesWait(:,c),zonesWaitHi(:,c),zonesWaitLow(:,c),totalRecharges(c),totalRestocks(c),totalRefills(c),totalIdle(c)] = analyze3(managers(c));
+    [numCompleted(c), ~, numExpired(c), avgWait(c), avgWaitX(c),avgWaitY(c),zonesWait(:,c),zonesWaitX(:,c),zonesWaitY(:,c),totalRecharges(c),totalRestocks(c),totalRefills(c),totalIdle(c)] = analyze3_1(managers(c));
     numRedirects(c)= managers(c).numRedirect;
     simLabels{c} = char("Simulation " + c); % String of the Simulation label
     % Zone-specific data (separate for each zone)    
@@ -61,12 +61,12 @@ for c=1:n
 
 end
 %% Build Matrices
-overallMatrix = [numCompleted numExpired avgWait avgWaitHi avgWaitLow totalRecharges totalRestocks totalRefills totalIdle numRedirects];
+overallMatrix = [numCompleted numExpired avgWait avgWaitX avgWaitY totalRecharges totalRestocks totalRefills totalIdle numRedirects];
 
 zoneMatrix = zeros(n*nZones,length(zoneVariables));
 % Build zone matrix
 for m=1:(n*nZones)
-    zoneMatrix(m,:)= [zonesCompleted(m),zonesExpired(m),zonesWait(m),zonesWaitHi(m),zonesWaitLow(m)];
+    zoneMatrix(m,:)= [zonesCompleted(m),zonesExpired(m),zonesWait(m),zonesWaitX(m),zonesWaitY(m)];
 end
 
 

@@ -180,10 +180,11 @@ classdef UAVDrone6 < handle
           % always have at least one high priority unit, but may have more
           % depending on the ratio of high priority requests to UAVs
         function refill(obj)
+            cargoType=('XY'); 
             uavCargo = obj.manager.containedCargo;
             reqCargo='';
             % Determine which units of cargo to add
-            if length(obj.manager.highReqs)>=(length(uavCargo)+ obj.maxCargo)
+            if length(obj.manager.highReqs)>=length(uavCargo)
                 for c=1:(obj.maxCargo-length(obj.cargo)+length(obj.manager.containedCargo))
                     reqCargo(length(reqCargo)+1)=obj.manager.highReqs(c).cargoType;
                 end
@@ -194,11 +195,9 @@ classdef UAVDrone6 < handle
                 fillX = reqNumX-uavNumX;
                 fillY = reqNumY-uavNumY;
             else
-                for c=1:length(obj.manager.highReqs)
+                for c=1:length(obj.manager.highReqs
                     reqCargo(length(reqCargo)+1)=obj.manager.highReqs(c).cargoType;
                 end
-                reqNumX = length(strfind(reqCargo, 'X'));
-                reqNumY = length(strfind(reqCargo, 'Y'));
                 if reqNumX>=reqNumY
                     fillX = ceil(obj.maxCargo/2);
                     fillY = obj.maxCargo-fillX;

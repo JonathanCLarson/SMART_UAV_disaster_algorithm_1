@@ -38,7 +38,7 @@ pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km
 
 % Create the base object, and give it a single request.
 base = RequestZone6(baseLocation,'B','B','B','B', 'B');
-base.activeList=Request6('B','B','B',base,'B', 0);
+base.activeList=Request6('B','B','B',base,'B','B', 0);
 
 
 % Create the Request Zone objects and store them in an array
@@ -60,7 +60,7 @@ for c=1:length(zones)
     zones(c).timeFac = timeFac(1);
 end
 % Color array for the UAV's
-color = ['y', 'c','m','b','r','w','k','g'];
+color = ['y', 'c','m','b','r','w','k','g','y','c','m','b','r','w','k','g'];
 
 % Create UAV's and add them to the manager
 % Converts uav speeds and ranges to pixels 

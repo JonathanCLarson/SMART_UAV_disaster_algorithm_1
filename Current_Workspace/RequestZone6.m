@@ -65,7 +65,7 @@ classdef RequestZone6 < handle
                 if(exprTime <= 1)
                     newHi = 1;
                 end
-                newreq = Request6(time,priority,obj.timeFac, obj,exprTime,'X',length(obj.activeList)+1);
+                newreq = Request6(time,priority,obj.manager.timeFac, obj.manager.priFac, obj,exprTime,'X',length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
                 x1=rand;
                 
@@ -75,7 +75,7 @@ classdef RequestZone6 < handle
                 if(exprTime <= 1)
                     newHi = 1;
                 end
-                newreq = Request6(time,priority,obj.timeFac, obj,exprTime,'Y',length(obj.activeList)+1);
+                newreq = Request6(time,priority,obj.manager.timeFac, obj.manager.priFac, obj,exprTime,'Y',length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
                 y1=rand;
             end

@@ -1,4 +1,4 @@
-function [numComp, numExp, wait, waitHi,simManager,recharges,extraCargo,refills, idleTime] = uavSim3(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
+function [numComp, numExp,perExp, wait, waitX,simManager,recharges,extraCargo,refills, idleTime] = uavSim3(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
 % Simulates a uav fleet responding to a disaster
 % Runs a simulation and returns the results for analysis
 % Inputs:
@@ -38,7 +38,7 @@ pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km
 
 % Create the base object, and give it a single request.
 base = RequestZone6(baseLocation,'B','B','B','B', 'B');
-base.activeList=Request6('B','B','B',base,'B','B', 0);
+base.activeList=Request6('B','B','B','B',base,'B','B', 'B');
 
 
 % Create the Request Zone objects and store them in an array
@@ -52,12 +52,10 @@ for c=1:length(zones)
     zones(c).reset();
 end
 
-manager = Manager6(zones, base); % Create a manager to receive and assign requests
+manager = Manager6(zones, base, priFac, timeFac); % Create a manager to receive and assign requests
 % Add the manager to the zones, assign priority and time factors
 for c=1:length(zones)
     zones(c).manager = manager;
-    zones(c).priFac = priFac;
-    zones(c).timeFac = timeFac(1);
 end
 % Color array for the UAV's
 color = ['y', 'c','m','b','r','w','k','g','y','c','m','b','r','w','k','g'];
@@ -76,9 +74,9 @@ for c=1:60*duration
         manager.refresh(c/60);    
 end
 % Plot the base location
-plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
+ plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
 % Perform analysis and return results, as well as the manager object.
-[numComp, numExp, wait, waitHi,recharges,extraCargo,refills,idleTime] = analyze2(manager);
+[numComp, numExp,perExp, wait, waitX,recharges,extraCargo,refills,idleTime] = analyze2(manager);
 simManager=manager;
 
 

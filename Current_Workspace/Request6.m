@@ -7,7 +7,8 @@ classdef Request6 < handle
         timeRequested   % when the request was made
         timeElapsed     % time since the request was made
         priority        % Value to scale Humanitarian Distance based on request priority
-        timeFac         % Value to determine how requests gain priority over time
+        priFac          % Maximum priority value
+        timeFac         % Half-life of the priority function (how long it takes for the priority to double)
         status          % 2 if unassigned, 1 if assigned, 0 if fulfilled, or (-1) if expired
         zone            % the zone (1 of 3) in which the request takes place
         exprTime        % Time at which a high priority request will expire (number of hours)
@@ -20,9 +21,10 @@ classdef Request6 < handle
         % Initializes the time, starts the status of the request at 2
         % and gets the priority status(high or low) in order to start
         % mission. Also stores the index in the zone's active request list
-        function obj = Request6(t,pri,timeFac,zone,exp, cargoType, index)
+        function obj = Request6(t,pri, priFac, timeFac,zone,exp, cargoType, index)
             obj.timeRequested = t;
             obj.priority = pri;
+            obj.priFac = priFac;
             obj.timeFac = timeFac;
             obj.status = 2;
             obj.zone = zone;
@@ -61,8 +63,9 @@ classdef Request6 < handle
             end
         end
         % Function to return the Request's current priority
+        %   Exponential function based on time and priority factors
         function pri = getPriority(obj)
-            pri = 1000 * exp(-(obj.exprTime-obj.timeElapsed)./log(2));            
+            pri = obj.priFac * exp(-(obj.exprTime-obj.timeElapsed)./(2*obj.timeFac*log(2)));            
         end
     end
     

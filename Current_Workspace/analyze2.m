@@ -1,4 +1,4 @@
-function  [numComp, numExp,wait,waitX,recharge,extraCargo,refill,idleTotal] = analyze2(manager)
+function  [numComp, numExp,perExp,wait,waitX,recharge,extraCargo,refill,idleTotal] = analyze2(manager)
 % Analyze function for UAV simulation
 %   returns numerical results of the UAV simulation
 %   for some of the variables, including the high priority requests
@@ -17,7 +17,7 @@ function  [numComp, numExp,wait,waitX,recharge,extraCargo,refill,idleTotal] = an
     % Each loop processes requests from that source.
     % Completed requests
     for c=1:length(manager.completedList)
-        if(manager.completedList(c).priority==1)
+        if(manager.completedList(c).cargoType=='X')
             numX=numX+1;
             XMet=XMet+1;
             waitTimeX = waitTimeX + manager.completedList(c).timeElapsed;
@@ -38,7 +38,7 @@ function  [numComp, numExp,wait,waitX,recharge,extraCargo,refill,idleTotal] = an
     for c=1:length(manager.requestZones)
         for k=1:length(manager.requestZones(c).activeList)
             thisReq = manager.requestZones(c).activeList(k); % temporary variable
-            if thisReq.status==1
+            if thisReq.cargoType=='X'
                 numX=numX+1;
                 waitTimeX = waitTimeX + thisReq.timeElapsed;
             end
@@ -51,6 +51,7 @@ function  [numComp, numExp,wait,waitX,recharge,extraCargo,refill,idleTotal] = an
     waitX=waitTimeX/numX;
     numComp = length(manager.completedList);
     numExp = length(manager.expiredList);
+    perExp = numExp/numReq;
     
     
     %% The loop to get the refuel information for all the UAV's

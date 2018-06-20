@@ -278,14 +278,17 @@ for c = 1:4
     % Vary the range
     for a = 1:length(ranges)
         uavTestR(4) = ranges(a);
-        for m = 1:20
-            [rNumComp(m),rNumEx(m), rPerEx(m), ~, ~,~,rNumRech(m),~,rNumRef(m),~]=uavSim3(uavTestR, zonesTest, base, priFac,timeFac,addedVal, duration,km2pixRatio);            
+        for m = 1:5
+            [rNumComp(m),rNumEx(m), rPerEx(m), ~, ~,~,rNumRech(m),~,rNumRef(m),~]=uavSim3(uavTestR, zonesTest, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+            
         end
         percentR(c,a) = mean(rPerEx);
         expiredR(c,a) = mean(rNumEx);
         completedR(c,a)=mean(rNumComp);
         rechargesR(c,a)=mean(rNumRech);
-        refillsR(c,a)  =mean(rNumRef);  
+        refillsR(c,a)  =mean(rNumRef);
+     
+        
     end
     figure(f)
     plot(ranges,expiredR(c,:), [color(c),'-'],'Linewidth',2)

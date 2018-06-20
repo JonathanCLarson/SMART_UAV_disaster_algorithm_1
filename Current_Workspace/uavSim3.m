@@ -1,4 +1,4 @@
-function [numComp, numExp,perExp, wait, waitX,simManager,recharges,extraCargo,refills, idleTime] = uavSim3(UAV, zoneParam, baseLocation, priFac,timeFac,duration,kmToPix)
+function [numComp, numExp,perExp, wait, waitX,simManager,recharges,extraCargo,refills, idleTime] = uavSim3(UAV, zoneParam, baseLocation, priFac,timeFac,addedVal,duration,kmToPix)
 % Simulates a uav fleet responding to a disaster
 % Runs a simulation and returns the results for analysis
 % Inputs:
@@ -52,7 +52,7 @@ for c=1:length(zones)
     zones(c).reset();
 end
 
-manager = Manager6(zones, base, priFac, timeFac); % Create a manager to receive and assign requests
+manager = Manager6(zones, base, priFac, timeFac,addedVal); % Create a manager to receive and assign requests
 % Add the manager to the zones, assign priority and time factors
 for c=1:length(zones)
     zones(c).manager = manager;
@@ -64,14 +64,14 @@ color = ['y', 'c','m','b','r','w','k','g','y','c','m','b','r','w','k','g'];
 % Converts uav speeds and ranges to pixels 
 uavArray=UAVDrone6.empty;
  for k=1:numUAVs
-        uavArray(k, 1)=UAVDrone6(color(k),km2Pix(uavRange),uavCap,km2Pix(uavSpeed),base,manager);
-        manager.addUAV(uavArray(k, 1));
+    uavArray(k, 1)=UAVDrone6(color(k),km2Pix(uavRange),uavCap,km2Pix(uavSpeed),base,manager);
+    manager.addUAV(uavArray(k, 1));
  end
  
 % Simulate time steps for the duration of the simulation, each is 1 minute
 
 for c=1:60*duration
-        manager.refresh(c/60);    
+    manager.refresh(c/60);    
 end
 % Plot the base location
  % plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')

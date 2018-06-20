@@ -20,6 +20,7 @@ classdef Manager6 < handle
         requestsMet     % to keep track of the requests met
         expired         % Counts the number of expired requests
         priFac          % the Priority factor
+        addedVal        % Value added to distance in HD function
         numRedirect     % Count the number of times UAV's were redirected
         probCrash       % The probability of a UAV crashing each time step
 %         activeHi        % Number of high priority requests 
@@ -31,7 +32,7 @@ classdef Manager6 < handle
         % Initializes the time at 0, starts off with an empty drone list,
         % and gets the request zones and the base
         
-        function obj = Manager6(zones, base, priFac, timeFac)
+        function obj = Manager6(zones, base, priFac, timeFac,addedVal)
             obj.requestZones = zones;
             obj.time = 0;
             obj.uavList = UAVDrone6.empty;
@@ -41,6 +42,7 @@ classdef Manager6 < handle
             obj.requestsMet = 0;
             obj.priFac = priFac;
             obj.timeFac = timeFac;
+            obj.addedVal = addedVal;
             obj.expired = 0;
             obj.numRedirect = 0;
             obj.probCrash=0;

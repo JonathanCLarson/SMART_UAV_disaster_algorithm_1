@@ -119,21 +119,31 @@ classdef UAVDrone6 < handle
             end
                
             if(isempty(obj.cargo))
+                %disp("Cargo empty at " + obj.time)
                 obj.emptyCounter = obj.emptyCounter + 1;
-                obj.returnToBase();       
+                obj.returnToBase();
+                %disp(obj.position)
+                %disp(obj.request)
             else
                 % Set this uav's request to empty if it still has cargo
+%                 disp("Assigning UAVs at " + obj.time)
                 obj.request=Request6.empty;
+                %disp(obj.base.activeList)
                 obj.manager.assign();
             end
                      
             % Call assign function in the manager
             
             % Determine the drone's time to its new request.
+%             disp(obj.cargo)
+%             disp(obj.request)
             obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
+
             % Return to base if there is not enough cargo to complete the
             % next request
-            obj.checkFuel();                  
+                
+            obj.checkFuel();
+                  
         end   
           
         % Check if the UAV can meet all of the zone's requests
@@ -155,7 +165,9 @@ classdef UAVDrone6 < handle
             landingFuel = obj.speed/12;
             if (Distance(obj.position, obj.request.zone.position) + Distance(obj.base.position,obj.request.zone.position) + obj.rangeBuffer + landingFuel >=obj.rangeLeft)
                 obj.lowChargeCounter = obj.lowChargeCounter + 1;
+%                 disp("UAV empty fuel " + obj.time)
                 obj.returnToBase();
+                %disp("Fuel low at " + obj.time)
                 obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
             end
         end

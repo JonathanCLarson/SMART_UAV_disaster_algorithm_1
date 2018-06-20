@@ -18,6 +18,7 @@ classdef Manager6 < handle
         base            % the base for the UAV's
         requestsMet     % to keep track of the requests met
         expired         % Counts the number of expired requests
+        priFac          % the Priority factor
         numRedirect     % Count the number of times UAV's were redirected
         probCrash       % The probability of a UAV crashing each time step
 %         activeHi        % Number of high priority requests 
@@ -335,7 +336,7 @@ classdef Manager6 < handle
                             end
                             % Determine if the UAV can reach its request
                             % before it expires
-                            if checkTime(uavList(U),requestList(reqMatches{u,2}(bestFit)))
+                            if Manager6.checkTime(uavList(u),requestList(reqMatches{u,2}(bestFit)))
 
                                 if(Manager6.checkRange(uavList(u), requestList(reqMatches{u,2}(bestFit))))
                                     % Check for redirected UAV's
@@ -353,9 +354,12 @@ classdef Manager6 < handle
                                 end
                             else % If the UAV cannot reach in time
                                 assignedIndex(length(assignedIndex)+1)=reqMatches{u,2}(bestFit); 
-                                    unAssigUAV(length(unassigUAV
+                                unAssigUAV(length(unAssigUAV)+1)=uavList(u);
+%                                 disp('Cannot reach request')
                             end
+                        end
                     end
+                
 
                     % ASSIGN LEFTOVER DRONES
                     % Sort list of assigned indices into descending order to remove

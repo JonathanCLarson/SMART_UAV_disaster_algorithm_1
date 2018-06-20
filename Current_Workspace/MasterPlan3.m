@@ -15,8 +15,8 @@ dbstop if error
 % dbclear all
 f=1; % figure counter
 % Create display of the map
-  MAP=imread('Map2.png'); image(MAP) 
-  hold on
+  %MAP=imread('Map2.png'); image(MAP) 
+  %hold on
 
 % Parameters:
 % base = [130,285];                   % The [x,y] location of the base
@@ -79,10 +79,10 @@ color = [ 'b','k','m','g','y','c','r','w']; % The colors to mark the lines
 symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the graph
 
 %% Single Simulation  
-[~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
-overall=writeManagers2(manager,'singleRun.xlsx');
-[total] = analyze(manager);
-disp(total)
+% [~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac, duration,km2pixRatio);
+% overall=writeManagers2(manager,'singleRun.xlsx');
+% [total] = analyze(manager);
+% disp(total)
 
 %% Number of UAVs
 % uavTestU=uav;
@@ -225,10 +225,11 @@ disp(total)
 %     for a = 1:4
 %         uavTestc(3) = cargo(a);
 %         for m = 1:20
-%             [cNumComp(m), cNumExpr(m), ~, ~,~, ~]=uavSim3(uavTestc, zonesTestC, base, priFac,timeFac, duration,km2pixRatio);
+%             [cNumComp(m), cNumExpr(m), cPerExp, ~,~, ~]=uavSim3(uavTestc, zonesTestC, base, priFac,timeFac, duration,km2pixRatio);
 %         end
 %         cNumEx(c,a) = mean(cNumExpr);
 %         cCompleted(c,a)=mean(cNumComp);
+%         cLOLP(c,a)=mean(cPerExp)
 %         
 %     end
 %     figure(f)
@@ -237,6 +238,7 @@ disp(total)
 %     figure(f+1)
 %     plot(cargo,cCompleted(c,:),[color(c),'.'],'MarkerSize',20)
 %     hold on
+%     
 % end
 % figure(f)
 % xlabel('Cargo load')
@@ -252,69 +254,69 @@ disp(total)
 % hold off
 % f=f+1;
 %% Range simulations
-% rNumEx = zeros(1,10);    % Matrix to store number of expired requests for range simulation
-% rNumComp = zeros(1,10);
-% rNumRech = zeros(1,10);
-% rNumRef = zeros(1,10);
-% 
-% uavTestR = uavTest;         % UAV fleet property array for range simulation
-% zonesTest = zoneParam;
-% 
-% ranges = linspace(15,70,5);
-% expiredR = zeros(4,5);
-% completedR = zeros(4,5);
-% 
-% % Recharges and refills at base
-% rechargesR = zeros(4,5);
-% refillsR = zeros(4,5);
-% 
-% % Vary the number of UAV's
-% for c = 1:4
-%     uavTestR(1) = c;
-%     % Vary the range
-%     for a = 1:5
-%         uavTestR(4) = ranges(a);
-%         for m = 1:10
-%             [rNumComp(a,m),rNumEx(a,m), ~, ~, ~,~,rNumRech(a,m),~,rNumRef(a,m),~]=uavSim3(uavTestR, zonesTest, base, priFac,timeFac, duration,km2pixRatio);
-%             
-%         end
-%         expiredR(c,a) = mean(rNumEx);
-%         completedR(c,a)=mean(rNumComp);
-%         rechargesR(c,a)=mean(rNumRech);
-%         refillsR(c,a)=mean(rNumRef);
-%         
-%         
-%     end
-%     figure(f)
-%     plot(ranges,expiredR(c,:), [color(c),'-'],'Linewidth',2)
-%     hold on
-%     figure(f+1)
-%     plot(ranges,completedR(c,:), [color(c),'-'],'Linewidth',2)
-%     hold on
-%     figure(f+2)
-%     plot(ranges,rechargesR(c,:), [color(c),'-'],'Linewidth',2)
-%     hold on
-%     plot(ranges,refillsR(c,:), [color(c),'--'],'Linewidth',2)
-% end
-% figure(f)
-% title('Range Simulation')
-% xlabel('Range')
-% ylabel('Expired Requests')
-% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-% hold off
-% figure(f+1)
-% title('Range Simulation')
-% xlabel('Range')
-% ylabel('Completed Requests')
-% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-% hold off
-% figure(f+2)
-% title('Range Simulation')
-% xlabel('Range')
-% ylabel('Number of Refills/Recharges')
-% %legend('1 UAV: Recharges','1 UAV: Total Refills','2 UAVs: Total Recharges','2 UAVs: TotalRefills', '3 UAVs: Total Recharges', '4 UAVs')
-% hold off
-% f=f+1;    
+rNumEx = zeros(1,10);    % Matrix to store number of expired requests for range simulation
+rNumComp = zeros(1,10);
+rNumRech = zeros(1,10);
+rNumRef = zeros(1,10);
+
+uavTestR = uavTest;         % UAV fleet property array for range simulation
+zonesTest = zoneParam;
+
+ranges = linspace(15,70,5);
+expiredR = zeros(4,5);
+completedR = zeros(4,5);
+
+% Recharges and refills at base
+rechargesR = zeros(4,5);
+refillsR = zeros(4,5);
+
+% Vary the number of UAV's
+for c = 1:4
+    uavTestR(1) = c;
+    % Vary the range
+    for a = 1:5
+        uavTestR(4) = ranges(a);
+        for m = 1:10
+            [rNumComp(a,m),rNumEx(a,m), ~, ~, ~,~,rNumRech(a,m),~,rNumRef(a,m),~]=uavSim3(uavTestR, zonesTest, base, priFac,timeFac, duration,km2pixRatio);
+            
+        end
+        expiredR(c,a) = mean(rNumEx);
+        completedR(c,a)=mean(rNumComp);
+        rechargesR(c,a)=mean(rNumRech);
+        refillsR(c,a)=mean(rNumRef);
+        
+        
+    end
+    figure(f)
+    plot(ranges,expiredR(c,:), [color(c),'-'],'Linewidth',2)
+    hold on
+    figure(f+1)
+    plot(ranges,completedR(c,:), [color(c),'-'],'Linewidth',2)
+    hold on
+    figure(f+2)
+    plot(ranges,rechargesR(c,:), [color(c),'-'],'Linewidth',2)
+    hold on
+    plot(ranges,refillsR(c,:), [color(c),'--'],'Linewidth',2)
+end
+figure(f)
+title('Range Simulation')
+xlabel('Range')
+ylabel('Expired Requests')
+legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+hold off
+figure(f+1)
+title('Range Simulation')
+xlabel('Range')
+ylabel('Completed Requests')
+legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+hold off
+figure(f+2)
+title('Range Simulation')
+xlabel('Range')
+ylabel('Number of Refills/Recharges')
+%legend('1 UAV: Recharges','1 UAV: Total Refills','2 UAVs: Total Recharges','2 UAVs: TotalRefills', '3 UAVs: Total Recharges', '4 UAVs')
+hold off
+f=f+1;    
 %% The simulation for the different expiration times
 % eTime = zeros(4,8); % The time the requests expire
 % eNumEx = zeros(8,20); % The number of expired requests for each trial (for this simulation

@@ -538,7 +538,7 @@ for c=1:4
     plot(priority,waitPri(c,:),[color(c),'-'],'Linewidth',2)
     hold on
     figure(f+3)
-    plot(priority,priTimeLeft(c,:),[color(c),'-'],'Linewidth',2)
+    plot(priority,timeLeftPri(c,:),[color(c),'-'],'Linewidth',2)
     hold on
     
 end

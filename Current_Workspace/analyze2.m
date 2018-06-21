@@ -1,4 +1,4 @@
-function  [numComp, numExp,perExp,wait,waitX,recharge,extraCargo,refill,idleTotal] = analyze2(manager)
+function  [numComp, numExp,perExp,wait,avgTimeLeft,recharge,extraCargo,refill,idleTotal] = analyze2(manager)
 % Analyze function for UAV simulation
 %   returns numerical results of the UAV simulation
 %   for some of the variables, including the high priority requests
@@ -14,6 +14,7 @@ function  [numComp, numExp,perExp,wait,waitX,recharge,extraCargo,refill,idleTota
     numReq = 0; % number of total requests
     waitTime = 0; % The total amount of time waited
     waitTimeX = 0; % Total time waited by high priority requests
+    timeLeft = 0;
     % Each loop processes requests from that source.
     % Completed requests
     for c=1:length(manager.completedList)
@@ -22,15 +23,19 @@ function  [numComp, numExp,perExp,wait,waitX,recharge,extraCargo,refill,idleTota
             XMet=XMet+1;
             waitTimeX = waitTimeX + manager.completedList(c).timeElapsed;
         end
+        timeLeft = timeLeft + (manager.completedList(c).exprTime-manager.completedList(c).timeElapsed);
         waitTime = waitTime + manager.completedList(c).timeElapsed;
         numReq=numReq+1;
+        
     end
     
     % Expired requests
     for c=1:length(manager.expiredList)
         waitTime = waitTime + manager.expiredList(c).exprTime; 
-        waitTimeX=waitTimeX+manager.expiredList(c).exprTime;
-        numX=numX+1;
+        if manager.expiredList(c).cargoType=='X'
+            waitTimeX=waitTimeX+manager.expiredList(c).exprTime;
+            numX=numX+1;
+        end
         numReq=numReq+1;
     end
     
@@ -52,7 +57,7 @@ function  [numComp, numExp,perExp,wait,waitX,recharge,extraCargo,refill,idleTota
     numComp = length(manager.completedList);
     numExp = length(manager.expiredList);
     perExp = numExp/numReq;
-    
+    avgTimeLeft = timeLeft/(length(manager.completedList)+length(manager.expiredList));
     
     %% The loop to get the refuel information for all the UAV's
     extraCargo = 0; % The number of times when the UAV returns to base with cargo

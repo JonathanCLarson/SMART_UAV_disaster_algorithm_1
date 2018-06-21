@@ -91,6 +91,10 @@ classdef UAVDrone6 < handle
                 % Complete the request by delivering cargo (if not at base)
                 % by checking the priority of the requests
 %                 disp(""+obj.cargo+" " + obj.request.priority)
+                if obj.request.timeElapsed>obj.request.exprTime
+                    disp('Too Late :(')
+                    disp(obj.request.exprTime-obj.request.timeElapsed)
+                end
                 if(contains(obj.cargo, obj.request.cargoType))
                     index = strfind(obj.cargo, obj.request.cargoType);
                     if isempty(index)

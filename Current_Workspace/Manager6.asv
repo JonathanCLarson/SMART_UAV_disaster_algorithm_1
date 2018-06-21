@@ -185,8 +185,7 @@ classdef Manager6 < handle
                         UAVs(c).idleCounter = 1;
                     else
                         % Have drones assigned to a request at their current
-                        % location instantly deliver and remove request
-                        % from active list
+                        % location instantly deliver
                         UAVs(c).request.zone.remove(UAVs(c).request.index)
                         UAVs(c).deliver();
                         

@@ -38,11 +38,10 @@ classdef Request6 < handle
         % Mark a request as complete and remove it from the activeList.
         % Also update counters in RequestZone
         function obj = complete(obj,time)
-            
-            obj.status = 0;
             obj.timeElapsed = time-obj.timeRequested;
             obj.zone.completed = obj.zone.completed + 1;
             obj.zone.waitTime = obj.zone.waitTime+obj.timeElapsed;
+            obj.index = 0;
 
         end
         

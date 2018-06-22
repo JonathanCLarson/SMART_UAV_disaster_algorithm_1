@@ -27,11 +27,11 @@ base = [578,398];                   % For bigger PR map
 numZones = 13;                      % The number of request zones
 duration = 12;                       % STANDARD: 8 The duration of the simulation in hours
 km2pixRatio = 1.609/90;             % The ratio for converting kilometers to pixels (90 for map 2, 73 for Guatemala)
-uav = [4, 40, 2, 35];               % STANDARD: [3,40,2,35] UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
+uav = [3, 40, 2, 35];               % STANDARD: [3,40,2,35] UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
 uavTest=uav;                        % For testing
 % exprTime = .75*ones(numZones,1);    % How long it takes for the high priority request to expire (hours)
 exDev = (1/6) * ones(numZones, 1);  % The standard deviation of expiration times (hours)
-priFac = 1000;                      % The priority factor by which low priority requests are reduced compared to high priority requests
+priFac = 100;                      % The priority factor by which low priority requests are reduced compared to high priority requests
 timeFac = 1;                     % Factor by which requests become more important over time (.95 -> 5% more important every hour)
 addedVal = 1;
 zonesYProb = .01*ones(numZones,1);  % Probability of a zone generating a new request on a given time step
@@ -95,7 +95,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % numReq=zeros(1,20); % Number of high priority requests from a simulation
 % lolp = zeros(1,6);
 % compPerUAV=zeros(1,6);
-% % 
+%  
 % for c=1:length(numUAVs)
 %     uavTestU(1)=c;
 %     for m=1:20
@@ -184,28 +184,28 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 %% Multiple simulations    
 % The first simulation will be the standard simulation to collect managers 
 % Outputs spreadsheet with overall and zone-specific results
-% managerArray = Manager6.empty;
-% numMet = zeros(10, 1);
-% per = zeros(10, 1);
-% numExp = zeros(10, 1);
-% wait = zeros(10, 1);
-% waitHi = zeros(10, 1);
-% for c = 1:100
-%         [numMet(c),numExp(c),~, wait(c), waitHi(c), managerArray(c)] = uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-% end
-% [overallMat,zoneMat]=writeManagers(managerArray,'testOutput.xlsx');
-% 
-% figure(f) % Expired
-% histogram(wait,10)
-% title('Wait Distribution')
-% xlabel('Wait time')
-% ylabel('Frequency of result')
-% figure(f+1) % Completed
-% histogram(waitHi,10)
-% title('High Priority Wait Time Distribution')
-% xlabel('Completed requests')
-% ylabel('Frequency of result')
-% f=f+2;
+managerArray = Manager6.empty;
+numMet = zeros(10, 1);
+per = zeros(10, 1);
+numExp = zeros(10, 1);
+wait = zeros(10, 1);
+waitHi = zeros(10, 1);
+for c = 1:100
+        [numMet(c),numExp(c),~, wait(c), waitHi(c), managerArray(c)] = uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+end
+[overallMat,zoneMat]=writeManagers2(managerArray,'testOutput.xlsx');
+
+figure(f) % Expired
+histogram(wait,10)
+title('Wait Distribution')
+xlabel('Wait time')
+ylabel('Frequency of result')
+figure(f+1) % Completed
+histogram(waitHi,10)
+title('High Priority Wait Time Distribution')
+xlabel('Completed requests')
+ylabel('Frequency of result')
+f=f+2;
 %     
 
 
@@ -502,7 +502,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % hold off
 % f=f+2;
 %% Priority Factor tests
-% 
+
 % numTrials = 2;
 % priNumEx = zeros(1,numTrials); % The number of expired requests for each trial (for this simulation)
 % priNumComp = zeros(1,numTrials); % The number of Completed requests for each trial (for this simulation)
@@ -514,15 +514,15 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % waitPri = zeros(4,10);
 % timeLeftPri = zeros(4,10);
 % priority=linspace(1,1000,10);
-% Vary the number of UAV's
+% % Vary the number of UAV's
 % for c=1:4
 %     uavTestpri(1)=c;
 %     for k = 1:10
-%         Run several trials
+% %         Run several trials
 %         for m=1:numTrials
 %             [priNumComp(m),priNumEx(m), ~, priWait(m),priTimeLeft(m),priManager]=uavSim3(uavTestpri, zoneParam, base, priority(k),timeFac, addedVal,duration,km2pixRatio);
 %         end
-%         Find averages of trials
+% %         Find averages of trials
 %         expiredPri(c,k) = mean(priNumEx);
 %         completedPri(c,k)=mean(priNumComp);
 %         waitPri(c,k)=mean(priWait);

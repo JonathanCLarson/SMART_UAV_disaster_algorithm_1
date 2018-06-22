@@ -175,7 +175,7 @@ classdef Manager6 < handle
                 end
                 % Have drones at the base wait for the next time step
                  
-                if Distance(UAVs(c).position,UAVs(c).request.zone.position)<.001 
+                if Distance(UAVs(c).position,UAVs(c).request.zone.position)<.1 
                     
                     
                     % Have drones at the base wait for the next time step
@@ -188,7 +188,8 @@ classdef Manager6 < handle
                         % Have drones assigned to a request at their current
                         % location instantly deliver and remove request
                         % from active list
-                        UAVs(c).request.zone.remove(UAVs(c).request.index)
+                        UAVs(c).request.zone.remove(UAVs(c).request.index);
+                        UAVs(c).request.status = 0;
                         UAVs(c).deliver();
                         
                     end
@@ -201,7 +202,6 @@ classdef Manager6 < handle
 %                 activeArray{j} = obj.requestZones(j).activeList;
 %            end
 %            nextRequest = Manager6.chooseRequest(activeArray,uav);
-%            nextRequest.status=1;
 %            request=nextRequest;    
 %         end
     end
@@ -309,15 +309,24 @@ classdef Manager6 < handle
                     if isempty(requestList(bestInd))
                         disp('Hello there')
                     end
-                    if(Manager6.checkRange(uavList(1), requestList(bestInd)))
-                        % Count redirected UAV's
-                        if(~isempty(uavList(1).request)&& uavList(1).request.zone.ID~=requestList(bestInd).zone.ID&& uavList(1).request.index~='B')
-                            uavList(1).manager.numRedirect = uavList(1).manager.numRedirect+1;
+                    if (Manager6.checkTime(uavList(1),requestList(bestInd)))
+                        if(Manager6.checkRange(uavList(1), requestList(bestInd)))
+                            % Count redirected UAV's
+                            if(~isempty(uavList(1).request)&& uavList(1).request.zone.ID~=requestList(bestInd).zone.ID&& uavList(1).request.index~='B')
+                                uavList(1).manager.numRedirect = uavList(1).manager.numRedirect+1;
+                            end
+                            uavList.request = requestList(bestInd);
+                        else
+                            %disp('Not enough battery to reach')
+                            uavList.returnToBase();
                         end
-                        uavList.request = requestList(bestInd);
-                    else
-                        %disp('Not enough battery to reach')
-                        uavList.returnToBase();
+                    else % If cannot reach in time, assign to another request
+                        unAssigReq = requestList;
+                        for c=bestInd:length(requestList)-1
+                           unAssigReq(c) = requestList(c+1);                           
+                        end
+                        unAssigReq = unAssigReq(1:(length(unAssigReq)-1));
+                        Manager6.chooseRequests(unAssigReq,uavList);
                     end
                 % If more than 1 UAV, find ideal UAV's for each Request and
                 %   then choose the best request for each UAV to service
@@ -421,7 +430,7 @@ classdef Manager6 < handle
         function canReach = checkTime(uav,request)
             timeToReq = Distance(uav.position,request.zone.position)/uav.speed;
             timeLeft = request.exprTime-request.timeElapsed;
-            canReach = (timeToReq<=timeLeft);
+            canReach = (timeToReq<timeLeft);
         end
             
             

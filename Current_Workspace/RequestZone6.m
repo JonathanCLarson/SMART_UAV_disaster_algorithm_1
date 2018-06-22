@@ -145,7 +145,7 @@ classdef RequestZone6 < handle
         %% This function is made to get the highest priority requests from
         % the request zone. The number of requests returned equals the number of UAV's in the fleet  
         function requests = getHighest(obj, numUAV)
-            P = zeros(length(obj.activeList), 2);
+            P = zeros(length(obj.activeList), 2); % Stores priority
             sortedRequests=Request6.empty;
             for j = 1:length(obj.activeList)
                 P(j, :) = [obj.activeList(j).priority, j];  

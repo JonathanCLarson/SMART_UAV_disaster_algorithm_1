@@ -81,7 +81,7 @@ classdef UAVDrone6 < handle
             % disp(obj.position)
             %disp(obj.position)
             %disp(obj.request.zone.position)
-            if Distance(obj.position,obj.request.zone.position)>.001
+            if Distance(obj.position,obj.request.zone.position)>0.1
                 disp('UAV NOT AT REQUEST!')
             end
            
@@ -126,7 +126,8 @@ classdef UAVDrone6 < handle
 %                 disp(obj.position)     
                 obj.requestsMet = obj.requestsMet + 1;
                 obj.request.complete(obj.time);
-                obj.manager.completedList(length(obj.manager.completedList) + 1) = obj.request; 
+                obj.manager.completedList(length(obj.manager.completedList) + 1) = obj.request;
+                obj.request.index = 0;
             end
                
             if(isempty(obj.cargo))
@@ -239,7 +240,7 @@ classdef UAVDrone6 < handle
 %            obj.request.status = 2;
             %disp('Sent Back to the base')
             obj.request= obj.base.activeList;
-            if Distance(obj.position,obj.base.position)<.001
+            if Distance(obj.position,obj.base.position)<.1
                 %disp(obj.position)
                 %disp(obj.request.zone.position)
                 obj.idleCounter = 1;
@@ -285,7 +286,7 @@ classdef UAVDrone6 < handle
                 newPos = obj.position+(obj.request.zone.position-obj.position).*obj.speed.*(newTime-obj.time)./Distance(obj.position,obj.request.zone.position);
                 
                 % Begin delivery process if the UAV has reached its goal
-                if(Distance(newPos,obj.request.zone.position)<0.001)
+                if(Distance(newPos,obj.request.zone.position)<0.1)
                     % Plots the path from the UAV to the request and
                     % updates the UAV at the time of delivery
 %                      plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
@@ -299,11 +300,13 @@ classdef UAVDrone6 < handle
                     obj.idleCounter = 5;
                     if(obj.request.index ~= 'B')
                         if obj.request.status<1
-                         disp('Already completed or expired request')
+                            disp('Already completed or expired request')
                         end
                         obj.request.status = 0;
+                        
                         obj.rangeLeft = obj.rangeLeft - obj.speed/12;
                         obj.request.zone.remove(obj.request.index);
+                        obj.request.index = -10;
                     end
                 else
                     %hold on
@@ -311,6 +314,10 @@ classdef UAVDrone6 < handle
 %                     plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
                     % Move the UAV forward by updating its position and time
                     % and plot the results
+                    if obj.request.status<1
+                        disp('Redirecting from completed or expired request')
+                        
+                    end
                     obj.position=newPos;
 %                     plot(obj.position(1),obj.position(2),'k.')
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);

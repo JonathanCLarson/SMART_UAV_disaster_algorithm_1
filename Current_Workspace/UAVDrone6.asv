@@ -312,7 +312,7 @@ classdef UAVDrone6 < handle
                     % Move the UAV forward by updating its position and time
                     % and plot the results
                     obj.position=newPos;
-%                     plot(obj.position(1),obj.position(2),'k.')
+                    plot(obj.position(1),obj.position(2),'k.')
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                     obj.rangeLeft = obj.rangeLeft - (obj.speed * (newTime-obj.time));

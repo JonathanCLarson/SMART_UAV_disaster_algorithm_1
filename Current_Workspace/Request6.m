@@ -21,9 +21,9 @@ classdef Request6 < handle
         % Initializes the time, starts the status of the request at 2
         % and gets the priority status(high or low) in order to start
         % mission. Also stores the index in the zone's active request list
-        function obj = Request6(t,pri, priFac, timeFac,zone,exp, cargoType, index)
+        function obj = Request6(t, priFac, timeFac,zone,exp, cargoType, index)
             obj.timeRequested = t;
-            obj.priority = pri;
+           
             obj.priFac = priFac;
             obj.timeFac = timeFac;
             obj.status = 2;
@@ -32,6 +32,7 @@ classdef Request6 < handle
             obj.index = index;
             obj.timeElapsed = 0;
             obj.cargoType = cargoType; 
+            obj.priority=obj.getPriority();
         end
         
         % Mark a request as complete and remove it from the activeList.

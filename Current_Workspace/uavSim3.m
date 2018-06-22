@@ -38,7 +38,7 @@ pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km
 
 % Create the base object, and give it a single request.
 base = RequestZone6(baseLocation,'B','B','B','B', 'B');
-base.activeList=Request6('B','B','B','B',base,'B','B', 'B');
+base.activeList=Request6('B','B','B',base,'B','B', 'B');
 
 
 % Create the Request Zone objects and store them in an array

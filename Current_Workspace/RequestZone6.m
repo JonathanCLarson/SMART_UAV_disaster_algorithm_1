@@ -65,7 +65,7 @@ classdef RequestZone6 < handle
                 if(exprTime <= 1)
                     newHi = 1;
                 end
-                newreq = Request6(time,priority, obj.manager.priFac,obj.manager.timeFac, obj,exprTime,'X',length(obj.activeList)+1);
+                newreq = Request6(time, obj.manager.priFac,obj.manager.timeFac, obj,exprTime,'X',length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
                 x1=rand;
                 
@@ -75,7 +75,7 @@ classdef RequestZone6 < handle
                 if(exprTime <= 1)
                     newHi = 1;
                 end
-                newreq = Request6(time,priority, obj.manager.priFac,obj.manager.timeFac, obj,exprTime,'Y',length(obj.activeList)+1);
+                newreq = Request6(time, obj.manager.priFac,obj.manager.timeFac, obj,exprTime,'Y',length(obj.activeList)+1);
                 obj.activeList(newreq.index) = newreq;
                 y1=rand;
             end
@@ -86,10 +86,12 @@ classdef RequestZone6 < handle
             while (p <= length(obj.activeList))
                 if(obj.activeList(p).status > 0)
                     obj.activeList(p).refresh(time);
+                else
+                    obj.remove(obj.activeList(p).index);
                 end
                 if (n == length(obj.activeList))
                 p = p + 1;
-                else 
+                else
                     n = length(obj.activeList);
                 end
             end
@@ -148,22 +150,22 @@ classdef RequestZone6 < handle
             for j = 1:length(obj.activeList)
                 P(j, :) = [obj.activeList(j).priority, j];  
             end
-              sortedP = sortrows(P, 1);
-                for c = 1: length(obj.activeList)
-                sortedRequests(c) = obj.activeList(sortedP(c, 2)); 
+            sortedP = sortrows(P, 1);
+            for c = 1: length(obj.activeList)
+                sortedRequests(c) = obj.activeList(sortedP(c, 2));
                 sortedRequests(c).index=c;
                 
-                end
-                if isempty(sortedRequests)
-                    requests=sortedRequests;
+            end
+            if isempty(sortedRequests)
+                requests=sortedRequests;
+            else
+                obj.activeList=sortedRequests;
+                if(numUAV<length(sortedRequests))
+                    requests = sortedRequests(1:numUAV);
                 else
-                    obj.activeList=sortedRequests;
-                    if(numUAV<length(sortedRequests))
-                        requests = sortedRequests(1:numUAV);
-                    else
-                        requests=sortedRequests;
-                    end
-                end    
+                    requests=sortedRequests;
+                end
+            end
         end
         %% Find the expiration time for a given request
         function exprTime = getExpire(obj, type)

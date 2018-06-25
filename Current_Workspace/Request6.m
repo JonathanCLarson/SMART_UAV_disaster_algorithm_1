@@ -41,7 +41,9 @@ classdef Request6 < handle
             obj.timeElapsed = time-obj.timeRequested;
             obj.zone.completed = obj.zone.completed + 1;
             obj.zone.waitTime = obj.zone.waitTime+obj.timeElapsed;
-            obj.index = 0;
+            obj.index = 'completed';
+            obj.status = 0;
+            obj.priFac = time;
 
         end
         

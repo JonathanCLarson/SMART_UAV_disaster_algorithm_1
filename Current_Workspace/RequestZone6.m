@@ -87,6 +87,7 @@ classdef RequestZone6 < handle
                 if(obj.activeList(p).status > 0)
                     obj.activeList(p).refresh(time);
                 else
+                    disp('Old request found')
                     obj.remove(obj.activeList(p).index);
                 end
                 if (n == length(obj.activeList))
@@ -114,16 +115,16 @@ classdef RequestZone6 < handle
                     obj.activeList(c) = obj.activeList(c+1);
                     obj.activeList(c).index = c;
                end
-                    obj.activeList = obj.activeList(1:n-1);
-                elseif(n<=1)
+               obj.activeList = obj.activeList(1:n-1);
+            elseif(n<=1)
                 % Remove the only element in a list
-                   obj.activeList = Request6.empty;
-                elseif(index == n)
+                obj.activeList = Request6.empty;
+            elseif(index == n)
                 % Remove the last element(if necessary)
-                    obj.activeList=obj.activeList(1:n-1);
-            
-            end               
-        end               
+                obj.activeList=obj.activeList(1:n-1);
+                
+            end
+        end
         % Function to return the number of unassigned requests
         function c = getUnassigned(obj)
             c = 0;
@@ -153,6 +154,9 @@ classdef RequestZone6 < handle
             sortedP = sortrows(P, 1);
             for c = 1: length(obj.activeList)
                 sortedRequests(c) = obj.activeList(sortedP(c, 2));
+                if sortedRequests(c).status<2 || sortedRequests(c).index<1
+                    disp('OLD REQUEST FOUND')
+                end
                 sortedRequests(c).index=c;
                 
             end

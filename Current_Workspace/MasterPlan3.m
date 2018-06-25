@@ -25,7 +25,7 @@ base = [578,398];                   % For bigger PR map
 
 
 numZones = 13;                      % The number of request zones
-duration = 12;                       % STANDARD: 8 The duration of the simulation in hours
+duration = 30;                       % STANDARD: 8 The duration of the simulation in hours
 km2pixRatio = 1.609/90;             % The ratio for converting kilometers to pixels (90 for map 2, 73 for Guatemala)
 uav = [3, 40, 2, 35];               % STANDARD: [3,40,2,35] UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
 uavTest=uav;                        % For testing
@@ -206,7 +206,6 @@ title('High Priority Wait Time Distribution')
 xlabel('Completed requests')
 ylabel('Frequency of result')
 f=f+2;
-%     
 
 
 %% Cargo capacity simulations

@@ -157,7 +157,8 @@ classdef Manager6 < handle
             obj.highReqs = requestList;
             if (~isempty(requestList))
                 % Assign UAVs if there are requests
-                  leftoverUAVs =Manager6.chooseRequests(requestList,UAVs);
+                  Manager6.chooseRequests(requestList,UAVs);
+                  
             else
                 % If no requests, send all drones to the base
                 for c=1:length(UAVs)
@@ -173,6 +174,7 @@ classdef Manager6 < handle
                     %disp(obj.uavList(c).base.activeList)
                     UAVs(c).returnToBase;
                 end
+                
                 % Have drones at the base wait for the next time step
                  
                 if Distance(UAVs(c).position,UAVs(c).request.zone.position)<.1 
@@ -189,13 +191,20 @@ classdef Manager6 < handle
                         % location instantly deliver and remove request
                         % from active list
                         UAVs(c).request.zone.remove(UAVs(c).request.index);
-                        UAVs(c).request.status = 0;
                         UAVs(c).deliver();
                         
                     end
                 end
             end  
-            
+            for l = 1:length(obj.uavList)-1
+                for k = 1:length(obj.uavList)-l
+                    if obj.uavList(l).request.index ~= 'B'
+                        if obj.uavList(l).request.exprTime == obj.uavList(l+k).request.exprTime
+                            disp('Disney is the AntiChrist')
+                        end
+                    end
+                end
+            end
         end        
 %            activeArray=cell(length(obj.requestZones),1);
 %            for j = 1:length(obj.requestZones)
@@ -219,12 +228,13 @@ classdef Manager6 < handle
             uavCell = cell(length(cargos),2);
             reqCell=cell(length(cargos),2);
             % Initialize cells
-            for c=1:length(uavCell)
+            for c=1:length(uavCell(:,1))
                 uavCell{c,1} = UAVDrone6.empty;   % UAV 
                 reqCell{c,1} = Request6.empty;    % Request array
             end
-            % Sort UAVs by cargo using a cell array where each cell
-            % corresponds to a cargo type
+            % Sort UAVs by cargo using a cell array where each row
+            % corresponds to a cargo type. The first column stores UAVs,
+            % and the second stores the indexes in the uavList
             for c=1:length(cargos)
                 for k=1:length(uavList)
                     if contains(uavList(k).cargo, cargos(c))
@@ -290,14 +300,14 @@ classdef Manager6 < handle
                     break;
                 end
             end
-               
             
-                % Initialize empty arrays
-                unAssigUAV=UAVDrone6.empty; % Stores the UAV's that haven't been given requests yet
-                hdArray=[]; % Array of humanitarian distances to compare
-%                 reqArray=Request6.empty; % Array of requests for which the current UAV minimizes the HD
-                assignedIndex=[]; % Stores the index of requests that have been assigned to UAV's
-                listIndex = []; % Stores the index in requestList that corresponds to each element in reqArray
+            
+            % Initialize empty arrays
+            unAssigUAV=UAVDrone6.empty; % Stores the UAV's that haven't been given requests yet
+            hdArray=[]; % Array of humanitarian distances to compare
+            %   reqArray=Request6.empty; % Array of requests for which the current UAV minimizes the HD
+            assignedIndex=[]; % Stores the index of requests that have been assigned to UAV's
+            listIndex = []; % Stores the index in requestList that corresponds to each element in reqArray
             if cargoTest == 1
                 % FIND OPTIMUM ASSIGNMENTS
                 % If only 1 UAV needs to be assigned, just find the minimum of
@@ -332,19 +342,7 @@ classdef Manager6 < handle
                 %   then choose the best request for each UAV to service
                 else
                     for u=1:length(uavList)
-    %                     for i=1:length(index)
-    %                         if index(i)==u
-    %                             % Build an array of the requests for which the 
-    %                             %   current UAV is the closest and the HD between
-    %                             %   that request and the UAV
-    %                             reqArray(length(reqArray)+1)=requestList(i); % Request object array
-    %                             % Calculate Humanitarian Distances
-    %                             hdArray(length(hdArray)+1)=HumanitarianDistance(requestList(i),uavList(u));
-    %                             %hdArray(length(hdArray)+1)=Distance(requestList(i).zone.position,uavList(u).position);
-    %                             listIndex(length(listIndex)+1)=i;
-    %                         end
-    %                     
-    %                     end
+   
                         % If no requests, the UAV is unassigned
                         if isempty(reqMatches{u,1})
                             unAssigUAV(length(unAssigUAV)+1)=uavList(u);
@@ -356,7 +354,7 @@ classdef Manager6 < handle
                             % Determine if the UAV can reach its request
                             % before it expires
                             if Manager6.checkTime(uavList(u),requestList(reqMatches{u,2}(bestFit)))
-
+                                % Make sure the UAV has enough charge
                                 if(Manager6.checkRange(uavList(u), requestList(reqMatches{u,2}(bestFit))))
                                     % Check for redirected UAV's
                                     if(~isempty(uavList(u).request)&& uavList(u).request.zone.ID~=requestList(reqMatches{u,2}(bestFit)).zone.ID)
@@ -387,19 +385,20 @@ classdef Manager6 < handle
                     unAssigReq = requestList; % Array to store the unassigned requests
 
                     % Remove assigned requests from the unassigned array
-                    for c=1:length(assignedIndex)
-                        for k=assignedIndex(c)+1:length(unAssigReq)
+                    if length(requestList)==1 && ~isempty(assignedIndex)
+                        unAssigReq = Request6.empty;
+                    else
+                        for c=1:length(assignedIndex)
+                            for k=assignedIndex(c)+1:length(unAssigReq)
                                 unAssigReq(k-1)=unAssigReq(k);
+                            end
+                            unAssigReq=unAssigReq(1:length(unAssigReq)-1);
                         end
-                        unAssigReq=unAssigReq(1:length(unAssigReq)-1);
                     end
-
                     % Call the chooseRequests function on the unassigned UAV's,
                     %   if there are still requests available
                     if(~isempty(unAssigUAV) && ~isempty(unAssigReq))
-
                         Manager6.chooseRequests(unAssigReq,unAssigUAV);
-
                     % Send extra UAV's to base if there are no more Requests
                     elseif(isempty(unAssigReq)&& ~isempty(unAssigUAV))                    
                         for c=1:length(unAssigUAV)
@@ -409,12 +408,30 @@ classdef Manager6 < handle
                             end
                             % Assign the request
                             unAssigUAV(c).returnToBase();
-
-
                         end
                     end
                 end
-            
+            else 
+                for c = 1:length(uavList)
+                    if ~isempty(uavList(c).request) && uavList(c).request.index ~= 'B'
+                        uavList(c).manager.numRedirect = uavList(c).manager.numRedirect+1;
+                    end
+                        uavList(c).returnToBase();
+                end
+                        
+            end
+            % Check for repeat requests
+            obj = uavList(1).manager;
+            for l = 1:length(obj.uavList)-1
+                for k = 1:length(obj.uavList)-l
+                    if ~isempty(obj.uavList(l).request)&& ~isempty(obj.uavList(l+k).request)
+                        if obj.uavList(l).request.index ~= 'B'
+                            if obj.uavList(l).request.exprTime == obj.uavList(l+k).request.exprTime
+                                disp('DISNEY IS THE ANTICHRIST') % if this pops up then this is proof that DISNEY IS THE ANTICHRIST
+                            end
+                        end
+                    end
+                end
             end
         end
         %% Additional Static Functions

@@ -84,6 +84,9 @@ classdef UAVDrone6 < handle
             if Distance(obj.position,obj.request.zone.position)>0.1
                 disp('UAV NOT AT REQUEST!')
             end
+            if obj.request.status<2
+                disp('REDUNDANT DELIVERY')
+            end
            
             % Refill if the drone is at the base
             if obj.request.index == 'B'                
@@ -139,8 +142,19 @@ classdef UAVDrone6 < handle
                 obj.manager.assign();
             end
                      
-            % Call assign function in the manager
-            
+            % Check if the request is still active
+            flag = 0; % binary value to allow loop to be continue as long as necessary
+            while flag == 0
+                if obj.request.status<1
+                    disp('Assigned to outdated request')
+                    if obj.request.index>0
+                        obj.request.zone.remove(obj.request.index);
+                    end
+                    obj.manager.assign;
+                else
+                    flag = 1;
+                end
+            end
             % Determine the drone's time to its new request.
             obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
             % Return to base if there is not enough cargo to complete the
@@ -148,16 +162,16 @@ classdef UAVDrone6 < handle
             obj.checkFuel();                  
         end   
           
-        % Check if the UAV can meet all of the zone's requests
-        function checkZone(obj,zone)
-                if (zone.numUnassigned <= obj.cargo)
-                    for i = 1:zone.numUnassigned
-                        zone.requestList(i).status = 1;
-                        obj.numAssigned = obj.numAssigned + 1;                        
-                    end
-                    zone.numUnassigned=zone.numUnassigned-obj.numAssigned;
-                end
-        end
+%         % Check if the UAV can meet all of the zone's requests
+%         function checkZone(obj,zone)
+%                 if (zone.numUnassigned <= obj.cargo)
+%                     for i = 1:zone.numUnassigned
+%                         zone.requestList(i).status = 1;
+%                         obj.numAssigned = obj.numAssigned + 1;                        
+%                     end
+%                     zone.numUnassigned=zone.numUnassigned-obj.numAssigned;
+%                 end
+%         end
         
         % Function to send the UAV back to the base if it is too low on
         % charge
@@ -301,9 +315,8 @@ classdef UAVDrone6 < handle
                     if(obj.request.index ~= 'B')
                         if obj.request.status<1
                             disp('Already completed or expired request')
-                        end
-                        obj.request.status = 0;
-                        
+                            obj.manager.assign();
+                        end                       
                         obj.rangeLeft = obj.rangeLeft - obj.speed/12;
                         obj.request.zone.remove(obj.request.index);
                         obj.request.index = -10;
@@ -316,7 +329,7 @@ classdef UAVDrone6 < handle
                     % and plot the results
                     if obj.request.status<1
                         disp('Redirecting from completed or expired request')
-                        
+                        obj.manager.assign();
                     end
                     obj.position=newPos;
 %                     plot(obj.position(1),obj.position(2),'k.')

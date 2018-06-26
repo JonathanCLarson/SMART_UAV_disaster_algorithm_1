@@ -116,8 +116,6 @@ classdef UAVDrone6 < handle
                     if (length(obj.cargo)==1)
                         obj.cargo = char.empty;
                         % Remove delivered item from cargo (first 'H')
-                    elseif index(1)==1
-                        obj.cargo = obj.cargo(2:length(obj.cargo));
                     else
                         obj.cargo = horzcat(obj.cargo(1:index-1),obj.cargo(index+1:length(obj.cargo)));
                     end

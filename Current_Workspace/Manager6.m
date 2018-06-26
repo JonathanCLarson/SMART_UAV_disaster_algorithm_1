@@ -177,8 +177,7 @@ classdef Manager6 < handle
                 
                 % Have drones at the base wait for the next time step
                  
-                if Distance(UAVs(c).position,UAVs(c).request.zone.position)<.1 
-                    
+                if Distance(UAVs(c).position,UAVs(c).request.zone.position)<.1                    
                     
                     % Have drones at the base wait for the next time step
                     if UAVs(c).request.index == 'B'

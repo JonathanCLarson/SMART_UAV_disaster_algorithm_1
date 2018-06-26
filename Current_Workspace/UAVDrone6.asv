@@ -119,7 +119,7 @@ classdef UAVDrone6 < handle
                     elseif index(1)==1
                         obj.cargo = obj.cargo(2:length(obj.cargo));
                     else
-                        obj.cargo = horzcat(obj.cargo(1:index-1),obj.cargo(index+1:length(obj.cargo)));
+                        obj.cargo = horzcat(obj.cargo(1:index),obj.cargo(index+1:length(obj.cargo));
                     end
                 else
                     disp('Incorrect Delivery');                

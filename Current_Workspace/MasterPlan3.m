@@ -25,17 +25,18 @@ base = [578,398];                   % For bigger PR map
 
 
 numZones = 13;                      % The number of request zones
-duration = 12;                       % STANDARD: 8 The duration of the simulation in hours
+duration = 5;                      % STANDARD: 8 The duration of the simulation in hours
 km2pixRatio = 1.609/90;             % The ratio for converting kilometers to pixels (90 for map 2, 73 for Guatemala)
-uav = [3, 40, 4, 35];               % STANDARD: [3,40,2,35] UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
+uav = [3, 40, 2, 35];               % STANDARD: [3,40,2,35] UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
 uavTest=uav;                        % For testing
-% exprTime = .75*ones(numZones,1);    % How long it takes for the high priority request to expire (hours)
+% exprTime = .75*ones(numZones,1);  % How long it takes for the high priority request to expire (hours)
 exDev = (1/6) * ones(numZones, 1);  % The standard deviation of expiration times (hours)
-priFac = 100;                      % The priority factor by which low priority requests are reduced compared to high priority requests
-timeFac = 1;                     % Factor by which requests become more important over time (.95 -> 5% more important every hour)
+priFac = 100;                       % The priority factor by which low priority requests are reduced compared to high priority requests
+timeFac = 1;                        % Factor by which requests become more important over time (.95 -> 5% more important every hour)
 addedVal = 1;
-zonesYProb = .01*ones(numZones,1);  % Probability of a zone generating a new request on a given time step
-zonesXProb = .01*ones(numZones,1);  % Probability of a new request being high priority (per zone)
+zonesXProb = .02*ones(numZones,1);  % Probability of a new request being high priority (per zone)
+zonesYProb = .000015*ones(numZones,1);  % Probability of a zone generating a new request on a given time step
+
 exprTimeX = ones(numZones,1);
 exprTimeY = 3*ones(numZones,1);
 
@@ -80,10 +81,10 @@ color = [ 'b','k','m','g','y','c','r','w']; % The colors to mark the lines
 symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the graph
 
 %% Single Simulation  
-% [~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-% overall=writeManagers2(manager,'singleRun.xlsx');
-% [total] = analyze(manager);
-% disp(total)
+[~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+overall=writeManagers2(manager,'singleRun.xlsx');
+[total] = analyze(manager);
+disp(total)
 
 %% Number of UAVs
 % uavTestU=uav;
@@ -369,57 +370,61 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % hold off
 %% Simulation for number of requests
 % The simulation for the different probabilities of Y requests
-zonesR = zoneParam;              % zone matrix for testing
-uavTestR = uavTest;
-numTrials = 20;
-probsR= linspace(0.001, 0.03, 10); % The probability of a new request occuring
-numMetTestR = zeros(10,numTrials);       % Completed requests (per simulation)
-numExpTestR = zeros(10,numTrials);       % Expired requests (per simulation)
-completedR = zeros(4,5);         % Completed requests (average)
-expiredR = zeros(4,5);           % Expired requests (average)
-managers = Manager6.empty;
-n=1;
-% Adjust number of UAV's
-for c=1:4
-    uavTestR(1)=c;
-    % Change probability of a new request at each request zone.
-    for p = 1:10
-        % Apply probability to each request zone
-        for d = 1:numZones
-            zonesR(d,3) = probsR(p);
-            zonesR(d,4) = probsR(p);
-        end
-        % Run 20 simulations
-        for m=1:numTrials
-            [numMetTestR(p,m),numExpTestR(p,m), ~, ~, ~,managers(n)]=uavSim3(uavTestR, zonesR, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-            n=n+1;
-        end
-        % Find averages from simulations
-        expiredR(c,p)=mean(numExpTestR(p,:));
-        completedR(c,p) = mean(numMetTestR (p,:));
-    end
-    % plot results
-    figure(f)
-    plot(probsR,expiredR(c,:),[color(c),'-'],'Linewidth',2)
-    hold on
-    figure(f+1)
-    plot(probsR,completedR(c,:),[color(c),'-'],'Linewidth',2)
-    hold on
-end
-
-figure(f) % Expired
-
-xlabel('Probability of a new Y request')
-ylabel('Requests Expired')
-legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
-hold off
-figure(f+1) % Completed
-
-xlabel('Probability of a new Y request')
-ylabel('Requests Completed')
-legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
-hold off
-f=f+2;
+% zonesR = zoneParam;              % zone matrix for testing
+% uavTestR = uavTest;
+% numTrials = 20;
+% probsR= linspace(0.001, 0.05, 10); % The probability of a new request occuring
+% numMetTestR = zeros(10,numTrials);       % Completed requests (per simulation)
+% numExpTestR = zeros(10,numTrials);       % Expired requests (per simulation)
+% completedR = zeros(4,5);         % Completed requests (average)
+% expiredR = zeros(4,5);           % Expired requests (average)
+% managers = Manager6.empty;
+% n=1;
+% % Adjust number of UAV's
+% for c=1:4
+%     uavTestR(1)=c;
+%     % Change probability of a new request at each request zone.
+%     for p = 1:10
+%         % Apply probability to each request zone
+%         for d = 1:numZones
+%             zonesR(d,3) = probsR(p);
+%             zonesR(d,4) = probsR(p);
+%         end
+%         % Run 20 simulations
+%         for m=1:numTrials
+%             [numMetTestR(p,m),numExpTestR(p,m), ~, ~, ~,managers(n)]=uavSim3(uavTestR, zonesR, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+%             n=n+1;
+%         end
+%         % Find averages from simulations
+%         expiredR(c,p)=mean(numExpTestR(p,:));
+%         completedR(c,p) = mean(numMetTestR (p,:));
+%     end
+%     % plot results
+%     figure(f)
+%     plot(probsR,expiredR(c,:),[color(c),'-'],'Linewidth',2)
+%     hold on
+%     figure(f+1)
+%     plot(probsR,completedR(c,:),[color(c),'-'],'Linewidth',2)
+%     hold on
+% end
+% 
+% figure(f) % Expired
+% 
+% xlabel('Probability of a new request')
+% ylabel('Requests Expired')
+% legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
+% hold off
+% 
+% figure(f+1) % Completed
+% xlabel('Probability of a new Y request')
+% ylabel('Requests Completed')
+% legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
+% hold off
+% 
+% figure(f+2) % Number of requests
+% xlabel('Probability')
+% ylabel('NumReqs')
+% f=f+2;
 
 %% The simulation for the different probabilities of Y requests
 % zonesY = zoneParam;              % zone matrix for testing
@@ -470,33 +475,33 @@ f=f+2;
 % hold off
 % f=f+2;
 
-%% High Priority Request frequency simulation
+%% Type X Request frequency simulation
 % % Set parameters
-% uavTestH = uavTest;
+% uavTestX = uavTest;
 % zonesTest=zoneParam;
-% probsH = linspace(0.1,0.6, 10); % The probability of a new request occuring
-% numMetTestH = zeros(8,20);      % Completed requests (per simulation)
-% numExpTestH = zeros(8,20);       % Expired requests (per simulation)
-% completedH = zeros(4,5);        % Completed requests (average)
-% expiredH = zeros(4,5);          % Expired requests (average)
+% probsX = linspace(0.1,0.6, 10); % The probability of a new request occuring
+% numMetTestX = zeros(8,20);      % Completed requests (per simulation)
+% numExpTestX = zeros(8,20);       % Expired requests (per simulation)
+% completedX = zeros(4,5);        % Completed requests (average)
+% expiredX = zeros(4,5);          % Expired requests (average)
 % 
 % % Adjust number of UAV's
 % for c=1:4
-%     uavTestH(1)=c;
+%     uavTestX(1)=c;
 %     % Change probability of a high priority request at each request zone.
 %     for p = 1:10
 %         % Apply probability to each request zone
 %         for d = 1:numZones
 
-%             zonesTest(d,4)= probsH(p);
+%             zonesTest(d,4)= probsX(p);
 %         end
 %         % Run 20 simulations
 %         for m=1:20
-%             [numMetTestP(p,m), numExpTestP(p,m),~, ~, ~,~]=uavSim3(uavTestH, zonesTest, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+%             [numMetTestX(p,m), numExpTestX(p,m),~, ~, ~,~]=uavSim3(uavTestX, zonesTest, base, priFac,timeFac,addedVal, duration,km2pixRatio);
 %         end
 %         % Find averages from simulations
-%         expiredH(c,p)=mean(numExpTestP(p,:));
-%         completedH(c,p) = mean(numMetTestP (p,:));
+%         expiredX(c,p)=mean(numExpTestX(p,:));
+%         completedX(c,p) = mean(numMetTestX (p,:));
 %     end
 %     % plot results
 %     figure(f)

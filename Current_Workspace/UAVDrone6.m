@@ -190,7 +190,6 @@ classdef UAVDrone6 < handle
           % always have at least one high priority unit, but may have more
           % depending on the ratio of high priority requests to UAVs
         function refill(obj)
-            disp('Refilling')
             uavCargo = obj.manager.containedCargo;
             reqCargo='';
             % Determine which units of cargo to add
@@ -240,7 +239,6 @@ classdef UAVDrone6 < handle
                     end
                 end   
             end
-            disp(obj.cargo)
         end
           
         % Function to return the UAV to base

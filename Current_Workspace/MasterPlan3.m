@@ -25,7 +25,7 @@ base = [578,398];                   % For bigger PR map
 
 
 numZones = 13;                      % The number of request zones
-duration = 5;                      % STANDARD: 8 The duration of the simulation in hours
+duration = 12;                      % STANDARD: 8 The duration of the simulation in hours
 km2pixRatio = 1.609/90;             % The ratio for converting kilometers to pixels (90 for map 2, 73 for Guatemala)
 uav = [3, 40, 2, 35];               % STANDARD: [3,40,2,35] UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
 uavTest=uav;                        % For testing
@@ -34,8 +34,8 @@ exDev = (1/6) * ones(numZones, 1);  % The standard deviation of expiration times
 priFac = 100;                       % The priority factor by which low priority requests are reduced compared to high priority requests
 timeFac = 1;                        % Factor by which requests become more important over time (.95 -> 5% more important every hour)
 addedVal = 1;
-zonesXProb = .02*ones(numZones,1);  % Probability of a new request being high priority (per zone)
-zonesYProb = .000015*ones(numZones,1);  % Probability of a zone generating a new request on a given time step
+zonesXProb = .0035*ones(numZones,1);  % Probability of a new request being high priority (per zone) .
+zonesYProb = .012*ones(numZones,1);  % Probability of a zone generating a new request on a given time step: .012
 
 exprTimeX = ones(numZones,1);
 exprTimeY = 3*ones(numZones,1);
@@ -81,10 +81,10 @@ color = [ 'b','k','m','g','y','c','r','w']; % The colors to mark the lines
 symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the graph
 
 %% Single Simulation  
-[~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-overall=writeManagers2(manager,'singleRun.xlsx');
-[total] = analyze(manager);
-disp(total)
+% [~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+% overall=writeManagers2(manager,'singleRun.xlsx');
+% [total] = analyze(manager);
+% disp(total)
 
 %% Number of UAVs
 % uavTestU=uav;
@@ -185,28 +185,28 @@ disp(total)
 %% Multiple simulations    
 % The first simulation will be the standard simulation to collect managers 
 % Outputs spreadsheet with overall and zone-specific results
-% managerArray = Manager6.empty;
-% numMet = zeros(10, 1);
-% per = zeros(10, 1);
-% numExp = zeros(10, 1);
-% wait = zeros(10, 1);
-% waitHi = zeros(10, 1);
-% for c = 1:100
-%         [numMet(c),numExp(c),~, wait(c), waitHi(c), managerArray(c)] = uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-% end
-% [overallMat,zoneMat]=writeManagers2(managerArray,'testOutput.xlsx');
-% 
-% figure(f) % Expired
-% histogram(wait,10)
-% title('Wait Distribution')
-% xlabel('Wait time')
-% ylabel('Frequency of result')
-% figure(f+1) % Completed
-% histogram(waitHi,10)
-% title('High Priority Wait Time Distribution')
-% xlabel('Completed requests')
-% ylabel('Frequency of result')
-% f=f+2;
+managerArray = Manager6.empty;
+numMet = zeros(10, 1);
+per = zeros(10, 1);
+numExp = zeros(10, 1);
+wait = zeros(10, 1);
+waitHi = zeros(10, 1);
+for c = 1:100
+        [numMet(c),numExp(c),~, wait(c), waitHi(c), managerArray(c)] = uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+end
+[overallMat,zoneMat]=writeManagers2(managerArray,'testOutput.xlsx');
+
+figure(f) % Expired
+histogram(wait,10)
+title('Wait Distribution')
+xlabel('Wait time')
+ylabel('Frequency of result')
+figure(f+1) % Completed
+histogram(waitHi,10)
+title('High Priority Wait Time Distribution')
+xlabel('Completed requests')
+ylabel('Frequency of result')
+f=f+2;
 
 
 %% Cargo capacity simulations

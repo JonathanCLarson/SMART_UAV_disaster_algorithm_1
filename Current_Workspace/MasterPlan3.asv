@@ -369,41 +369,37 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % hold off
 %% Simulation for number of requests
 % The simulation for the different probabilities of Y requests
-zonesR = zoneParam;              % zone matrix for testing
-uavTestR = uavTest;
-numTrials = 20;
-probsR= linspace(0.001, 0.03, 10); % The probability of a new request occuring
-numMetTestR = zeros(10,numTrials);       % Completed requests (per simulation)
-numExpTestR = zeros(10,numTrials);       % Expired requests (per simulation)
-completedR = zeros(4,5);         % Completed requests (average)
-expiredR = zeros(4,5);           % Expired requests (average)
-managers = Manager6.empty;
-n=1;
+zonesY = zoneParam;              % zone matrix for testing
+uavTestY = uavTest;
+numTrials = 2;
+probsY= linspace(0.001, 0.03, 10); % The probability of a new request occuring
+numMetTestY = zeros(10,numTrials);       % Completed requests (per simulation)
+numExpTestY = zeros(10,numTrials);       % Expired requests (per simulation)
+completedY = zeros(4,5);         % Completed requests (average)
+expiredY = zeros(4,5);           % Expired requests (average)
 % Adjust number of UAV's
 for c=1:4
-    uavTestR(1)=c;
+    uavTestY(1)=c;
     % Change probability of a new request at each request zone.
     for p = 1:10
         % Apply probability to each request zone
         for d = 1:numZones
-            zonesR(d,3) = probsR(p);
-            zonesR(d,4) = probsR(p);
+            zonesY(d,4) = probsY(p);
         end
         % Run 20 simulations
         for m=1:numTrials
-            [numMetTestR(p,m),numExpTestR(p,m), ~, ~, ~,managers(n)]=uavSim3(uavTestR, zonesR, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-            n=n+1;
+            [numMetTestY(p,m),numExpTestY(p,m), ~, ~, ~,~]=uavSim3(uavTestY, zonesY, base, priFac,timeFac,addedVal, duration,km2pixRatio);
         end
         % Find averages from simulations
-        expiredR(c,p)=mean(numExpTestR(p,:));
-        completedR(c,p) = mean(numMetTestR (p,:));
+        expiredY(c,p)=mean(numExpTestY(p,:));
+        completedY(c,p) = mean(numMetTestY (p,:));
     end
     % plot results
     figure(f)
-    plot(probsR,expiredR(c,:),[color(c),'-'],'Linewidth',2)
+    plot(probsY,expiredY(c,:),[color(c),'-'],'Linewidth',2)
     hold on
     figure(f+1)
-    plot(probsR,completedR(c,:),[color(c),'-'],'Linewidth',2)
+    plot(probsY,completedY(c,:),[color(c),'-'],'Linewidth',2)
     hold on
 end
 
@@ -422,53 +418,53 @@ hold off
 f=f+2;
 
 %% The simulation for the different probabilities of Y requests
-% zonesY = zoneParam;              % zone matrix for testing
-% uavTestY = uavTest;
-% numTrials = 2;
-% probsY= linspace(0.001, 0.05, 10); % The probability of a new request occuring
-% numMetTestY = zeros(10,numTrials);       % Completed requests (per simulation)
-% numExpTestY = zeros(10,numTrials);       % Expired requests (per simulation)
-% completedY = zeros(4,5);         % Completed requests (average)
-% expiredY = zeros(4,5);           % Expired requests (average)
-% % Adjust number of UAV's
-% for c=1:4
-%     uavTestY(1)=c;
-%     % Change probability of a new request at each request zone.
-%     for p = 1:10
-%         % Apply probability to each request zone
-%         for d = 1:numZones
-%             zonesY(d,4) = probsY(p);
-%         end
-%         % Run 20 simulations
-%         for m=1:numTrials
-%             [numMetTestY(p,m),numExpTestY(p,m), ~, ~, ~,~]=uavSim3(uavTestY, zonesY, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-%         end
-%         % Find averages from simulations
-%         expiredY(c,p)=mean(numExpTestY(p,:));
-%         completedY(c,p) = mean(numMetTestY (p,:));
-%     end
-%     % plot results
-%     figure(f)
-%     plot(probsY,expiredY(c,:),[color(c),'-'],'Linewidth',2)
-%     hold on
-%     figure(f+1)
-%     plot(probsY,completedY(c,:),[color(c),'-'],'Linewidth',2)
-%     hold on
-% end
-% 
-% figure(f) % Expired
-% 
-% xlabel('Probability of a new Y request')
-% ylabel('Requests Expired')
-% legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
-% hold off
-% figure(f+1) % Completed
-% 
-% xlabel('Probability of a new Y request')
-% ylabel('Requests Completed')
-% legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
-% hold off
-% f=f+2;
+zonesY = zoneParam;              % zone matrix for testing
+uavTestY = uavTest;
+numTrials = 2;
+probsY= linspace(0.001, 0.05, 10); % The probability of a new request occuring
+numMetTestY = zeros(10,numTrials);       % Completed requests (per simulation)
+numExpTestY = zeros(10,numTrials);       % Expired requests (per simulation)
+completedY = zeros(4,5);         % Completed requests (average)
+expiredY = zeros(4,5);           % Expired requests (average)
+% Adjust number of UAV's
+for c=1:4
+    uavTestY(1)=c;
+    % Change probability of a new request at each request zone.
+    for p = 1:10
+        % Apply probability to each request zone
+        for d = 1:numZones
+            zonesY(d,4) = probsY(p);
+        end
+        % Run 20 simulations
+        for m=1:numTrials
+            [numMetTestY(p,m),numExpTestY(p,m), ~, ~, ~,~]=uavSim3(uavTestY, zonesY, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+        end
+        % Find averages from simulations
+        expiredY(c,p)=mean(numExpTestY(p,:));
+        completedY(c,p) = mean(numMetTestY (p,:));
+    end
+    % plot results
+    figure(f)
+    plot(probsY,expiredY(c,:),[color(c),'-'],'Linewidth',2)
+    hold on
+    figure(f+1)
+    plot(probsY,completedY(c,:),[color(c),'-'],'Linewidth',2)
+    hold on
+end
+
+figure(f) % Expired
+
+xlabel('Probability of a new Y request')
+ylabel('Requests Expired')
+legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
+hold off
+figure(f+1) % Completed
+
+xlabel('Probability of a new Y request')
+ylabel('Requests Completed')
+legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
+hold off
+f=f+2;
 
 %% High Priority Request frequency simulation
 % % Set parameters

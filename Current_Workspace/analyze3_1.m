@@ -8,20 +8,21 @@ function  [numComp, perComp, numExp, totAvgWait, XAvgWait,YAvgWait,totAvgWaitZ,X
     %% The loop to get the number of high priority requests, the unfinished requests,
     % and the total wait time
     numX = 0; % number of high priority requests generated
+    numY = 0;
     unfinished = 0; % number of unfinished requests
     waitTime = 0; % The total amount of time waited
+    waitX = 0;
+    waitY = 0;
     % Completed requests
     for c=1:length(manager.completedList)
         if(manager.completedList(c).cargoType == 'X')
             numX=numX+1;
-            
-        end
-        if (manager.completedList(c).status > 0)
-            unfinished = unfinished + 1;
+            waitX = waitX + 1;
         else
-            waitTime = waitTime + manager.completedList(c).timeElapsed;
+            numY = numY + 1;
+            waitY = waitY + 1;
         end
-        
+            waitTime = waitTime + manager.completedList(c).timeElapsed;        
     end
     % Expired requests
     for c=1:length(manager.expiredList)
@@ -45,8 +46,7 @@ function  [numComp, perComp, numExp, totAvgWait, XAvgWait,YAvgWait,totAvgWaitZ,X
             XWait = XWait+manager.completedList(c).timeElapsed;
             i=manager.completedList(c).zone.ID;
             zoneWaitX(i)=zoneWaitX(i)+manager.completedList(c).timeElapsed;
-            zoneCountX(i)=zoneCountX(i)+1;
-       
+            zoneCountX(i)=zoneCountX(i)+1;       
         else
             YReq(length(YReq)+1)=manager.completedList(c);
             YWait = YWait + manager.completedList(c).timeElapsed;

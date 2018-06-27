@@ -112,6 +112,40 @@ classdef Manager6 < handle
             end
         end
         
+        %% Get Request types
+        % Function to return the total number of X and Y requests
+        function [numX,numY] = getNumRequests(obj)
+            numX = 0;
+            numY = 0;
+            % count from completed requests
+            for c=1:length(obj.completedList)
+                if obj.completedList(c).cargoType == 'X'
+                    numX = numX+1;
+                else
+                    numY = numY + 1;
+                end
+            end
+            % count from expired
+            for c=1:length(obj.expiredList)
+                if obj.expiredList(c).cargoType == 'X'
+                    numX = numX+1;
+                else
+                    numY = numY + 1;
+                end
+            end
+            % count from active lists
+            for c=1:length(obj.requestZones)
+                for k=1:length(obj.requestZones(c).activeList)
+                    if obj.requestZones(c).activeList(k).cargoType == 'X'
+                        numX = numX + 1;
+                    else
+                        numY = numY + 1;
+                    end
+                end
+            end
+        end
+        
+        
         %% Assign Function
         % Assignment function, which can also set the status of the request 
         %   Output: the request assignment for the UAV
@@ -199,7 +233,7 @@ classdef Manager6 < handle
                 for k = 1:length(obj.uavList)-l
                     if obj.uavList(l).request.index ~= 'B'
                         if obj.uavList(l).request.exprTime == obj.uavList(l+k).request.exprTime
-                            disp('Disney is the AntiChrist')
+                            disp('Multiple UAVs assigned to the same request')
                         end
                     end
                 end
@@ -316,7 +350,7 @@ classdef Manager6 < handle
                     [~,bestFit]=min(reqMatches{1,1});
                     bestInd = reqMatches{1,2}(bestFit); % The best index for the request
                     if isempty(requestList(bestInd))
-                        disp('Hello there')
+                        disp('')
                     end
                     if (Manager6.checkTime(uavList(1),requestList(bestInd)))
                         if(Manager6.checkRange(uavList(1), requestList(bestInd)))
@@ -347,9 +381,6 @@ classdef Manager6 < handle
                             unAssigUAV(length(unAssigUAV)+1)=uavList(u);
                         else
                             [~,bestFit]=min(reqMatches{u,1}); % Find the optimum request for each UAV
-                            if isempty(requestList(reqMatches{u,2}(bestFit)))
-                                disp('Hello there')
-                            end
                             % Determine if the UAV can reach its request
                             % before it expires
                             if Manager6.checkTime(uavList(u),requestList(reqMatches{u,2}(bestFit)))
@@ -417,7 +448,7 @@ classdef Manager6 < handle
                     end
                         uavList(c).returnToBase();
                 end
-                        
+                
             end
             % Check for repeat requests
             obj = uavList(1).manager;
@@ -426,7 +457,7 @@ classdef Manager6 < handle
                     if ~isempty(obj.uavList(l).request)&& ~isempty(obj.uavList(l+k).request)
                         if obj.uavList(l).request.index ~= 'B'
                             if obj.uavList(l).request.exprTime == obj.uavList(l+k).request.exprTime
-                                disp('DISNEY IS THE ANTICHRIST') % if this pops up then this is proof that DISNEY IS THE ANTICHRIST
+                                disp('Multiple UAVs assigned to the same request') % if this pops up then this is proof that DISNEY                             end
                             end
                         end
                     end

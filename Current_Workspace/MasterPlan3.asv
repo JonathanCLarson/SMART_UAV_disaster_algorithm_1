@@ -420,9 +420,8 @@ probsR = zeros(4,10);           % Stores ratios
 numReqs = zeros(1,numTrials);
 numMetTestR = zeros(1,numTrials);       % Completed requests (per simulation)
 numExpTestR = zeros(1,numTrials);       % Expired requests (per simulation)
-completedR = zeros(4,10);         % Completed requests (average)
-expiredR = zeros(4,10);           % Expired requests (average)
-requestsR = zeros(4,10);
+completedR = zeros(4,5);         % Completed requests (average)
+expiredR = zeros(4,5);           % Expired requests (average)
 managers = Manager6.empty;
 n=1;
 % Adjust number of UAV's
@@ -440,12 +439,11 @@ for c=1:4
             [numMetTestR(m),numExpTestR(m), ~, ~, ~,managers(n)]=uavSim3(uavTestR, zonesR, base, priFac,timeFac,addedVal, duration,km2pixRatio);
             n=n+1;
             [xReq,yReq] = managers(n).getNumRequests();
-            numReqs(m)=xReq+yReq;
         end
         % Find averages from simulations
         expiredR(c,p)=mean(numExpTestR(p,:));
         completedR(c,p) = mean(numMetTestR (p,:));
-        requestsR(c,p) = mean(numReqs);
+        
     end
     % plot results
     figure(f)
@@ -482,9 +480,9 @@ f=f+2;
 % numMetTestY = zeros(numTrials,1);       % Completed requests (per simulation)
 % numExpTestY = zeros(numTrials,1);       % Expired requests (per simulation)
 % reqY = zeros(numTrials,1);
-% completedY = zeros(4,10);         % Completed requests (average)
-% expiredY = zeros(4,10);           % Expired requests (average)
-% requestsY = zeros(4,10);
+% completedY = zeros(4,5);         % Completed requests (average)
+% expiredY = zeros(4,5);           % Expired requests (average)
+% requestsY = zeros(4,5);
 % % Adjust number of UAV's
 % for c=1:4
 %     uavTestY(1)=c;
@@ -534,9 +532,9 @@ f=f+2;
 % probsX = linspace(0.0001,0.01, 10);   % The probability of a new request occuring
 % numMetTestX = zeros(1,numTrials); % Completed requests (per simulation)
 % numExpTestX = zeros(1,numTrials); % Expired requests (per simulation)
-% completedX = zeros(4,10);          % Completed requests (average)
-% expiredX = zeros(4,10);            % Expired requests (average)
-% requestsX = zeros(4,10); 
+% completedX = zeros(4,5);          % Completed requests (average)
+% expiredX = zeros(4,5);            % Expired requests (average)
+% requestsX = zeros(4,5); 
 % 
 % % Adjust number of UAV's
 % for c=1:4

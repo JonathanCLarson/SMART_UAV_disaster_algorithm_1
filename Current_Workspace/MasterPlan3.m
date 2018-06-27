@@ -410,13 +410,13 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
 % hold off
 %% Simulation for number of requests
-% The simulation for the different probabilities of Y requests
+% The simulation for the different number of requests entered 
 zonesR = zoneParam;              % zone matrix for testing
 uavTestR = uavTest;
-numTrials = 2;
-standard = [0.012 0.0035];          % Standard probability values
-ratios= linspace(0.5, 0.2, 10); % The probability of a new request occuring
-probsR = zeros(4,10);           % Stores ratios
+numTrials = 20;
+standard = [0.0035 0.012];          % Standard probability values
+ratios= linspace(0.5, 2, 10); % The probability of a new request occuring
+probsR = cell(4,10);           % Stores ratios
 numReqs = zeros(1,numTrials);
 numMetTestR = zeros(1,numTrials);       % Completed requests (per simulation)
 numExpTestR = zeros(1,numTrials);       % Expired requests (per simulation)
@@ -430,48 +430,46 @@ for c=1:4
     uavTestR(1)=c;
     % Change probability of a new request at each request zone.
     for p = 1:10
-        probsR(c,p) = ratios(p).* standard;
+        probsR{c,p} = ratios(p).* standard;
         % Apply probability to each request zone
         for d = 1:numZones
-            zonesR(d,3:4) = probsR(c,p);            
+            zonesR(d,3:4) = probsR{c,p};            
         end
         % Run 20 simulations
         for m=1:numTrials
             [numMetTestR(m),numExpTestR(m), ~, ~, ~,managers(n)]=uavSim3(uavTestR, zonesR, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-            n=n+1;
+
             [xReq,yReq] = managers(n).getNumRequests();
             numReqs(m)=xReq+yReq;
+            n=n+1;
         end
         % Find averages from simulations
-        expiredR(c,p)=mean(numExpTestR(p,:));
-        completedR(c,p) = mean(numMetTestR (p,:));
+        expiredR(c,p)=mean(numExpTestR);
+        completedR(c,p) = mean(numMetTestR );
         requestsR(c,p) = mean(numReqs);
     end
     % plot results
     figure(f)
-    plot(probsR,expiredR(c,:),[color(c),'-'],'Linewidth',2)
+    plot(requestsR(c,:),expiredR(c,:),[color(c),'-'],'Linewidth',2)
     hold on
     figure(f+1)
-    plot(probsR,completedR(c,:),[color(c),'-'],'Linewidth',2)
+    plot(requestsR(c,:),completedR(c,:),[color(c),'-'],'Linewidth',2)
     hold on
 end
 
 figure(f) % Expired
 
-xlabel('Probability of a new request')
+xlabel('Number of requests')
 ylabel('Requests Expired')
 legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
 hold off
 
 figure(f+1) % Completed
-xlabel('Probability of a new Y request')
+xlabel('Number of requests')
 ylabel('Requests Completed')
 legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
 hold off
 
-figure(f+2) % Number of requests
-xlabel('Probability')
-ylabel('NumReqs')
 f=f+2;
 
 %% The simulation for the different probabilities of Y requests

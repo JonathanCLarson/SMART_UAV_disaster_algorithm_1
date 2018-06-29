@@ -81,10 +81,10 @@ color = [ 'b','k','m','g','y','c','r','w']; % The colors to mark the lines
 symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the graph
 
 %% Single Simulation  
-[~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+% [~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
 % overall=writeManagers2(manager,'singleRun.xlsx');
-[total] = analyze(manager);
-disp(total)
+% [total] = analyze(manager);
+% disp(total)
 
 %% Number of UAVs
 % uavTestU=uav;
@@ -138,50 +138,53 @@ disp(total)
 % f=f+4;
 
 %% Speed simulations
-% sNumEx = zeros(4,4);    % Matrix to store number of expired requests for cargo simulation
-% sCompleted = zeros(4,4);
-% uavTests = uavTest;     % UAV fleet property array for cargo simulation
-% zonesTestS = zoneParam; % Zone array for tests
-% sNumComp=zeros(20,1);
-% sNumExpr=zeros(20,1);
-% speeds = linspace(20, 100, 5);
-% figure(f)
-% hold on
-% % Vary the number of UAV's
-% ManagerS = Manager6.empty;
-% n = 1;
-% for c = 1:4
-%     uavTests(1) = c;
-%     % Vary the speed
-%     for a = 1:5
-%         uavTests(2) = speeds(a);
-%         for m = 1:20
-%             [sNumComp(m), sNumExpr(a,m), ~, ~, ~,ManagerS(n)]=uavSim3(uavTests, zonesTestS, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-%             n = n+1;
-%         end
-%         sNumEx(c,a) = mean(sNumExpr(a,:));
-%         sCompleted(c,a)=mean(sNumComp);
-%         
-%     end
-%     figure(f)
-%     plot(speeds,sNumEx(c,:), [color(c),'-'],'Linewidth',2)
-%     hold on
-%     figure(f+1)
-%     plot(speeds, sCompleted(c,:), [color(c),'-'], 'Linewidth',2)
-%     hold on
-% end
-% 
-% figure(f)
-% xlabel('Speed')
-% ylabel('Expired Requests')
-% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-% hold off
-% figure(f+1)
-% xlabel('Speed')
-% ylabel('Completed Requests')
-% legend('1 UAV', '2 UAVs', '3 UAVs', '4 UAVs')
-% hold off
-% f=f+2;
+sNumEx = zeros(4,4);    % Matrix to store number of expired requests for cargo simulation
+sCompleted = zeros(4,4);
+uavTests = uavTest;     % UAV fleet property array for cargo simulation
+zonesTestS = zoneParam; % Zone array for tests
+sNumComp=zeros(20,1);
+sNumExpr=zeros(20,1);
+sNumExpr
+speeds = linspace(20, 60, 5);
+figure(f)
+hold on
+% Vary the number of UAV's
+ManagerS = Manager6.empty;
+n = 1;
+for c = 1:4
+    uavTests(1) = c;
+    % Vary the speed
+    for a = 1:5
+        uavTests(2) = speeds(a);
+        for m = 1:20
+            [sNumComp(m), sNumExpr(m), perExp(m), ~, ~,ManagerS(n)]=uavSim3(uavTests, zonesTestS, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+            n = n+1;
+        end
+        sNumEx(c,a) = mean(sNumExpr);
+        sCompleted(c,a)=mean(sNumComp);
+        sPercent(c,a) = mean(perExp);
+        
+    end
+    figure(f)
+    plot(speeds,sNumEx(c,:), [color(c),'-'],'Linewidth',2)
+    hold on
+    figure(f+1)
+    plot(speeds, sCompleted(c,:), [color(c),'-'], 'Linewidth',2)
+    hold on
+end
+
+figure(f)
+xlabel('Speed')
+ylabel('Expired Requests')
+legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+hold off
+figure(f+1)
+xlabel('Speed')
+ylabel('Completed Requests')
+legend('1 UAV', '2 UAVs', '3 UAVs', '4 UAVs')
+hold off
+f=f+2;
+
 %% Multiple simulations    
 % The first simulation will be the standard simulation to collect managers 
 % Outputs spreadsheet with overall and zone-specific results
@@ -273,82 +276,82 @@ disp(total)
 % f=f+1;
 
 %% Range simulations
-rNumEx = zeros(1,20);    % Matrix to store number of expired requests for range simulation
-rNumComp = zeros(1,20);
-rPerEx = zeros(1,20);
-rNumRech = zeros(1,20);
-rNumRef = zeros(1,20);
-
-uavTestR = uavTest;         % UAV fleet property array for range simulation
-zonesTest = zoneParam;
-
-ranges = linspace(17,50,10);
-expiredR = zeros(4,length(ranges));
-completedR = zeros(4,length(ranges));
-percentR = zeros(4,length(ranges));
-% Recharges and refills at base
-rechargesR = zeros(4,length(ranges));
-refillsR = zeros(4,length(ranges));
-
-% Vary the number of UAV's
-for c = 1:4
-    uavTestR(1) = c;
-    % Vary the range
-    for a = 1:length(ranges)
-        uavTestR(4) = ranges(a);
-        for m = 1:20
-            [rNumComp(m),rNumEx(m), rPerEx(m), ~, ~,~,rNumRech(m),~,rNumRef(m),~]=uavSim3(uavTestR, zonesTest, base, priFac,timeFac,addedVal, duration,km2pixRatio);            
-        end
-        percentR(c,a) = mean(rPerEx);
-        expiredR(c,a) = mean(rNumEx);
-        completedR(c,a)=mean(rNumComp);
-        rechargesR(c,a)=mean(rNumRech);
-        refillsR(c,a)  =mean(rNumRef);  
-    end
-    figure(f)
-    plot(ranges,expiredR(c,:), [color(c),'-'],'Linewidth',2)
-    hold on
-    figure(f+1)
-    plot(ranges,completedR(c,:), [color(c),'-'],'Linewidth',2)
-    hold on
-    figure(f+2)
-    subplot(2,1,1)
-    plot(ranges,rechargesR(c,:), [color(c),'-'],'Linewidth',2)
-    hold on
-    subplot(2,1,2)
-    plot(ranges,refillsR(c,:), [color(c),'-'],'Linewidth',2)
-    hold on
-    figure(f+3)
-    plot(ranges,percentR(c,:), [color(c),'-'],'LineWidth',2)
-    hold on
-end
-figure(f)
-xlabel('Range')
-ylabel('Expired Requests')
-legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-hold off
-figure(f+1)
-xlabel('Range')
-ylabel('Completed Requests')
-legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-hold off
-figure(f+2)
-subplot(2,1,1)
-xlabel('Range')
-ylabel('Number of Recharges')
-legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-hold off
-subplot(2,1,2)
-xlabel('Range')
-ylabel('Number of Refills')
-legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-hold off
-figure(f+3)
-xlabel('Range')
-ylabel('Percent Expired')
-legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-hold off
-f=f+4;    
+% rNumEx = zeros(1,20);    % Matrix to store number of expired requests for range simulation
+% rNumComp = zeros(1,20);
+% rPerEx = zeros(1,20);
+% rNumRech = zeros(1,20);
+% rNumRef = zeros(1,20);
+% 
+% uavTestR = uavTest;         % UAV fleet property array for range simulation
+% zonesTest = zoneParam;
+% 
+% ranges = linspace(17,50,10);
+% expiredR = zeros(4,length(ranges));
+% completedR = zeros(4,length(ranges));
+% percentR = zeros(4,length(ranges));
+% % Recharges and refills at base
+% rechargesR = zeros(4,length(ranges));
+% refillsR = zeros(4,length(ranges));
+% 
+% % Vary the number of UAV's
+% for c = 1:4
+%     uavTestR(1) = c;
+%     % Vary the range
+%     for a = 1:length(ranges)
+%         uavTestR(4) = ranges(a);
+%         for m = 1:20
+%             [rNumComp(m),rNumEx(m), rPerEx(m), ~, ~,~,rNumRech(m),~,rNumRef(m),~]=uavSim3(uavTestR, zonesTest, base, priFac,timeFac,addedVal, duration,km2pixRatio);            
+%         end
+%         percentR(c,a) = mean(rPerEx);
+%         expiredR(c,a) = mean(rNumEx);
+%         completedR(c,a)=mean(rNumComp);
+%         rechargesR(c,a)=mean(rNumRech);
+%         refillsR(c,a)  =mean(rNumRef);  
+%     end
+%     figure(f)
+%     plot(ranges,expiredR(c,:), [color(c),'-'],'Linewidth',2)
+%     hold on
+%     figure(f+1)
+%     plot(ranges,completedR(c,:), [color(c),'-'],'Linewidth',2)
+%     hold on
+%     figure(f+2)
+%     subplot(2,1,1)
+%     plot(ranges,rechargesR(c,:), [color(c),'-'],'Linewidth',2)
+%     hold on
+%     subplot(2,1,2)
+%     plot(ranges,refillsR(c,:), [color(c),'-'],'Linewidth',2)
+%     hold on
+%     figure(f+3)
+%     plot(ranges,percentR(c,:), [color(c),'-'],'LineWidth',2)
+%     hold on
+% end
+% figure(f)
+% xlabel('Range')
+% ylabel('Expired Requests')
+% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+% hold off
+% figure(f+1)
+% xlabel('Range')
+% ylabel('Completed Requests')
+% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+% hold off
+% figure(f+2)
+% subplot(2,1,1)
+% xlabel('Range')
+% ylabel('Number of Recharges')
+% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+% hold off
+% subplot(2,1,2)
+% xlabel('Range')
+% ylabel('Number of Refills')
+% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+% hold off
+% figure(f+3)
+% xlabel('Range')
+% ylabel('Percent Expired')
+% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+% hold off
+% f=f+4;    
 
 %% The simulation for the different expiration times: X expiration time
 % eTime = zeros(4,8); % The time the requests expire

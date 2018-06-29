@@ -74,7 +74,7 @@ for c=1:60*duration
     manager.refresh(c/60);    
 end
 % Plot the base location
- % plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
+%  plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
 % Perform analysis and return results, as well as the manager object.
 [numComp, numExp,perExp, wait, waitX,recharges,extraCargo,refills,idleTime] = analyze2(manager);
 simManager=manager;

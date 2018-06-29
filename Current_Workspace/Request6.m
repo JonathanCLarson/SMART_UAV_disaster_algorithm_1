@@ -67,7 +67,11 @@ classdef Request6 < handle
         % Function to return the Request's current priority
         %   Exponential function based on time and priority factors
         function pri = getPriority(obj)
-            pri = obj.priFac * exp(-(obj.exprTime-obj.timeElapsed)./(2*obj.timeFac*log(2)));            
+            % Exponential
+            pri = obj.priFac * exp(-(obj.exprTime-obj.timeElapsed)./(2*obj.timeFac*log(2)));  
+            % Linear
+%             pri = obj.priFac - obj.timeFac*(obj.exprTime-obj.timeElapsed);
+            
         end
     end
     

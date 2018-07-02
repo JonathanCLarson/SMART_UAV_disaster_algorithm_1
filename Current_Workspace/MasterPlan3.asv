@@ -138,62 +138,62 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % f=f+4;
 
 %% Speed simulations
-% numTrials = 20;
-% sExpired =zeros(4,10);    % Matrix to store number of expired requests for cargo simulation
-% sCompleted = zeros(4,10);
-% sPercent = zeros(4,10);
-% uavTests = uavTest;     % UAV fleet property array for cargo simulation
-% zonesTestS = zoneParam; % Zone array for tests
-% sNumComp=zeros(10,numTrials);
-% sNumExpr = zeros(10,numTrials);
-% sPerExp = zeros(10,numTrials);
-% speeds = linspace(15, 60, 10);
-% 
-% % Vary the number of UAV's
-% ManagerS = Manager6.empty;
-% n = 1;
-% for c = 1:4
-%     uavTests(1) = c;
-%     % Vary the speed
-%     for a = 1:10
-%         uavTests(2) = speeds(a);
-%         for m = 1:numTrials
-%             [sNumComp(a,m), sNumExpr(a,m),sPerExp(a,m), ~, ~,ManagerS(n)]=uavSim3(uavTests, zonesTestS, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-%             n = n+1;
-%         end
-%         sExpired(c,a) = mean(sNumExpr(a,:));
-%         sCompleted(c,a)=mean(sNumComp(a,:));
-%         sPercent(c,a) = mean(sPerExp(a,:));
-%         
-%     end
-%     figure(f)
-%     plot(speeds,sExpired(c,:), [color(c),'-'],'Linewidth',2)
-%     hold on
-%     figure(f+1)
-%     plot(speeds, sCompleted(c,:), [color(c),'-'], 'Linewidth',2)
-%     hold on
-%     figure(f+2)
-%     plot(speeds,sPercent(c,:),[color(c),'-'],'Linewidth',2)
-%     hold on
-% end
-% 
-% figure(f)
-% xlabel('Speed')
-% ylabel('Expired Requests')
-% legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
-% hold off
-% figure(f+1)
-% xlabel('Speed')
-% ylabel('Completed Requests')
-% legend('1 UAV', '2 UAVs', '3 UAVs', '4 UAVs')
-% hold off
-% figure(f+2)
-% xlabel('Speed')
-% ylabel('Percent of Requests Expired')
-% legend('1 UAV', '2 UAVs', '3 UAVs', '4 UAVs')
-% hold off
-% f=f+2;
-% 
+numTrials = 3;
+sExpired =zeros(4,10);    % Matrix to store number of expired requests for cargo simulation
+sCompleted = zeros(4,10);
+sPercent = zeros(4,10);
+uavTests = uavTest;     % UAV fleet property array for cargo simulation
+zonesTestS = zoneParam; % Zone array for tests
+sNumComp=zeros(10,numTrials);
+sNumExpr = zeros(10,numTrials);
+sPerExp = zeros(10,numTrials);
+speeds = linspace(20, 60, 10);
+
+% Vary the number of UAV's
+ManagerS = Manager6.empty;
+n = 1;
+for c = 1:4
+    uavTests(1) = c;
+    % Vary the speed
+    for a = 1:5
+        uavTests(2) = speeds(a);
+        for m = 1:numTrials
+            [sNumComp(m), sNumExpr(m),sPerExp(m), ~, ~,ManagerS(n)]=uavSim3(uavTests, zonesTestS, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+            n = n+1;
+        end
+        sExpired(c,a) = mean(sNumExpr);
+        sCompleted(c,a)=mean(sNumComp);
+        sPercent(c,a) = mean(sPerExp);
+        
+    end
+    figure(f)
+    plot(speeds,sExpired(c,:), [color(c),'-'],'Linewidth',2)
+    hold on
+    figure(f+1)
+    plot(speeds, sCompleted(c,:), [color(c),'-'], 'Linewidth',2)
+    hold on
+    figure(f+2)
+    plot(speeds,sPercent(c,:),[color(c),'-'],'Linewidth',2)
+    hold on
+end
+
+figure(f)
+xlabel('Speed')
+ylabel('Expired Requests')
+legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
+hold off
+figure(f+1)
+xlabel('Speed')
+ylabel('Completed Requests')
+legend('1 UAV', '2 UAVs', '3 UAVs', '4 UAVs')
+hold off
+figure(f+2)
+xlabel('Speed')
+ylabel('Percent of Requests Expired')
+legend('1 UAV', '2 UAVs', '3 UAVs', '4 UAVs')
+hold off
+f=f+2;
+
 
 %% Multiple simulations    
 % The first simulation will be the standard simulation to collect managers 

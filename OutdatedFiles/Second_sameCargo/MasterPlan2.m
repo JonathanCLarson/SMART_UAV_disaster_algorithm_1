@@ -21,13 +21,13 @@ f=1; % figure counter
 % Parameters:
 % base = [130,285];                   % The [x,y] location of the base
 base = [578,398];                   % For bigger PR map
-% base = [1091,86];                   % Guatemala
+% base = [1091,86];                   % Guatemala volcanic eruption
 
 
 numZones = 13;                      % The number of request zones
-duration = 8;                       % The duration of the simulation in hours
+duration = 12;                      % The duration of the simulation in hours, 12 is standard
 km2pixRatio = 1.609/90;             % The ratio for converting kilometers to pixels (90 for map 2, 73 for Guatemala)
-uav = [2, 40, 2, 35];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
+uav = [3, 40, 2, 35];               % UAV fleet specifications: [number of UAV's, speed(km/h),cargo load (units), range (km)]
 uavTest=uav;                        % For testing
 exprTime = .75*ones(numZones,1);    % How long it takes for the high priority request to expire (hours)
 exDev = (1/6) * ones(numZones, 1);  % The standard deviation of expiration times (hours)

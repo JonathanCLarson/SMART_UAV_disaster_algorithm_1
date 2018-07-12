@@ -20,7 +20,7 @@ f=1; % figure counter
 
 % Parameters:
 % base = [130,285];                   % The [x,y] location of the base
-base = [578,398];                   % For bigger PR map
+base = [578,398];                   % For standard Puerto Rico map
 % base = [1091,86];                   % Guatemala
 
 

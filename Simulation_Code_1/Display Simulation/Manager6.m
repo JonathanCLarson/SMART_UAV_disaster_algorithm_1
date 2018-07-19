@@ -58,10 +58,10 @@ classdef Manager6 < handle
         % Input: index = the index of the lost UAV in the UAV list
         % POSTCONDITION: The designated UAV has been removed from the list
         % and no longer moves.
-        function crash(obj,index)
+        function byebye(obj,index)
             plot(obj.uavList(index).position(1),obj.uavList(index).position(2),'rp','MarkerFaceColor','r','MarkerSize',20)
 
-            disp("UAV "+index+" has crashed")
+            disp("UAV "+index+" IS DOWN!")
             obj.uavList(index).speed=0;
             % Remove the lost UAV from the UAV list
             if length(obj.uavList)<=1
@@ -107,7 +107,7 @@ classdef Manager6 < handle
                     disp(obj.uavList(c).rangeLeft)
                 end
 %                 if rand<obj.probCrash
-%                     obj.crash(c);
+%                     obj.byebye(c);
 %                 end
             end
         end
@@ -147,17 +147,13 @@ classdef Manager6 < handle
         
         
         %% Assign Function
-        % Assignment function, uses requests from all zones to determine a 
-        %   near-optimum combination of UAV assignments.
+        % Assignment function, which can also set the status of the request 
         %   Output: the request assignment for the UAV
         function assign(obj)
             % Create an array of UAV's that are available to be assigned
             UAVs = UAVDrone6.empty; % UAVs with only high priority cargo
             uavCargo = ''; % list of all the cargo stored by UAVs 
-            
-            % Create a list of all UAVs ready for a new assignment. UAVs
-            %   that have landed to perform a delivery or that are out of
-            %   cargo are not considered.
+            %lowUAVs = UAVDrone6.empty; % UAVs with only low priority cargo
             for c = 1:length(obj.uavList)
                 % Only use UAVs with cargo, separate UAVs by type of cargo
                 % available
@@ -172,13 +168,12 @@ classdef Manager6 < handle
                     
                 end
                 n = length(uavCargo);
-                % keep track of the cargo types in the available UAVs
                 uavCargo(n + 1:n + length(obj.uavList(c).cargo)) = obj.uavList(c).cargo;
             end
             obj.containedCargo = uavCargo;
             numDrones = length(UAVs);
             requestList = Request6.empty;
-            
+            %obj.activeHi=0; % Reset counter
             % Collect the highest priority requests from each zone, and
             %   store them in an array requestList
             for c = 1:length(obj.requestZones)
@@ -204,33 +199,36 @@ classdef Manager6 < handle
                     UAVs(c).returnToBase;
                 end
             end
-            
-            % Steps to handle special cases
+            % Send unassigned UAVs to the base
             for c=1:length(UAVs)
-                % Send unassigned UAVs to the base
-                if(isempty(UAVs(c).request))                    
+
+                if(isempty(UAVs(c).request))
+%                     disp('Empty request found')
+                    %disp(obj.uavList(c))
+                    %disp(obj.uavList(c).base.activeList)
                     UAVs(c).returnToBase;
                 end
-                % Special instructions for UAVs already at their
-                % destinations
+                
+                % Have drones at the base wait for the next time step
+                 
                 if Distance(UAVs(c).position,UAVs(c).request.zone.position)<.1                    
                     
                     % Have drones at the base wait for the next time step
-                    if UAVs(c).request.index == 'B'                       
+                    if UAVs(c).request.index == 'B'
+                       
+                       % disp(UAVs(c).position)
+                        %disp(UAVs(c).request.zone.position)
                         UAVs(c).idleCounter = 1;
                     else
                         % Have drones assigned to a request at their current
                         % location instantly deliver and remove request
                         % from active list
                         UAVs(c).request.zone.remove(UAVs(c).request.index);
-                        UAVs(c).deliver();                        
+                        UAVs(c).deliver();
+                        
                     end
                 end
             end  
-            
-            % Check through all UAVs to make sure that no two UAVs are
-            %   assigned to the same request (a safeguard against potential
-            %   errors)
             for l = 1:length(obj.uavList)-1
                 for k = 1:length(obj.uavList)-l
                     if obj.uavList(l).request.index ~= 'B'
@@ -241,7 +239,13 @@ classdef Manager6 < handle
                 end
             end
         end        
-
+%            activeArray=cell(length(obj.requestZones),1);
+%            for j = 1:length(obj.requestZones)
+%                 activeArray{j} = obj.requestZones(j).activeList;
+%            end
+%            nextRequest = Manager6.chooseRequest(activeArray,uav);
+%            request=nextRequest;    
+%         end
     end
 
     
@@ -309,6 +313,16 @@ classdef Manager6 < handle
                         reqMatches{uavCell{n,2}(index(r)),2}(size+1) =reqCell{n,2}(r);
                     end
                     
+%                 else
+%                     % If there are no requests and UAVs of this cargo type,
+%                     % send UAVs with this cargo type to base
+%                     for c=1:length(uavCell{n,2})
+%                         uavList(uavCell{n,2}(c)).returnToBase;
+%                         if uavList(uavCell{n,2}(c)).position==uavList(uavCell{n,2}(c)).base.position
+%                             uavList(uavCell{n,2}(c)).idleCounter = 1;
+%                         end
+%                     end
+%                 end
                 end
             end
             cargoTest = 0;
@@ -323,23 +337,22 @@ classdef Manager6 < handle
             
             % Initialize empty arrays
             unAssigUAV=UAVDrone6.empty; % Stores the UAV's that haven't been given requests yet
+            hdArray=[]; % Array of humanitarian distances to compare
+            %   reqArray=Request6.empty; % Array of requests for which the current UAV minimizes the HD
             assignedIndex=[]; % Stores the index of requests that have been assigned to UAV's
-            
+            listIndex = []; % Stores the index in requestList that corresponds to each element in reqArray
             if cargoTest == 1
                 % FIND OPTIMUM ASSIGNMENTS
-                
                 % If only 1 UAV needs to be assigned, just find the minimum of
                 %   the 1-D array of requests
-                if ((length(uavList) == 1))
-                    % Find the minimum HD and the corresponding request
+                if ((length(uavList) == 1))                
+                    % Assign the optimum to the UAV
                     [~,bestFit]=min(reqMatches{1,1});
-                    bestInd = reqMatches{1,2}(bestFit); 
+                    bestInd = reqMatches{1,2}(bestFit); % The best index for the request
                     if isempty(requestList(bestInd))
-                        disp('Index error')
+                        disp('')
                     end
-                    % Check if the UAV can reach the request before expiry
                     if (Manager6.checkTime(uavList(1),requestList(bestInd)))
-                        % Check that the UAV has enough remaining battery
                         if(Manager6.checkRange(uavList(1), requestList(bestInd)))
                             % Count redirected UAV's
                             if(~isempty(uavList(1).request)&& uavList(1).request.zone.ID~=requestList(bestInd).zone.ID&& uavList(1).request.index~='B')
@@ -347,13 +360,10 @@ classdef Manager6 < handle
                             end
                             uavList.request = requestList(bestInd);
                         else
-                            % If not enough battery left, UAV returns to base
+                            %disp('Not enough battery to reach')
                             uavList.returnToBase();
                         end
-                    else
-                        % If cannot reach in time, assign the UAV to another 
-                        % request and remove the original request from the
-                        % unassigned list 
+                    else % If cannot reach in time, assign to another request
                         unAssigReq = requestList;
                         for c=bestInd:length(requestList)-1
                            unAssigReq(c) = requestList(c+1);                           
@@ -365,6 +375,7 @@ classdef Manager6 < handle
                 %   then choose the best request for each UAV to service
                 else
                     for u=1:length(uavList)
+   
                         % If no requests, the UAV is unassigned
                         if isempty(reqMatches{u,1})
                             unAssigUAV(length(unAssigUAV)+1)=uavList(u);
@@ -385,11 +396,10 @@ classdef Manager6 < handle
                                     % reqMatches, bestFit item)
                                     assignedIndex(length(assignedIndex)+1)=reqMatches{u,2}(bestFit); 
                                 else
-                                    % If not enough battery
+
                                     uavList(u).returnToBase();
                                 end
-                            else
-                                % If the UAV cannot reach in time
+                            else % If the UAV cannot reach in time
                                 assignedIndex(length(assignedIndex)+1)=reqMatches{u,2}(bestFit); 
                                 unAssigUAV(length(unAssigUAV)+1)=uavList(u);
 %                                 disp('Cannot reach request')
@@ -408,7 +418,6 @@ classdef Manager6 < handle
                     if length(requestList)==1 && ~isempty(assignedIndex)
                         unAssigReq = Request6.empty;
                     else
-                        % Remove each assigned request, from back to front
                         for c=1:length(assignedIndex)
                             for k=assignedIndex(c)+1:length(unAssigReq)
                                 unAssigReq(k-1)=unAssigReq(k);
@@ -433,11 +442,8 @@ classdef Manager6 < handle
                     end
                 end
             else 
-                % If no valid UAV-Request matches are possible because of
-                % different cargo types, send UAVs to base
                 for c = 1:length(uavList)
                     if ~isempty(uavList(c).request) && uavList(c).request.index ~= 'B'
-                        % Count redirected UAVs
                         uavList(c).manager.numRedirect = uavList(c).manager.numRedirect+1;
                     end
                         uavList(c).returnToBase();
@@ -466,11 +472,8 @@ classdef Manager6 < handle
                 req2base = Distance(request.zone.position, uav.base.position);
                 canReach = (uav2req + req2base + landingFuel + uav.rangeBuffer <= uav.rangeLeft);
         end
-        % Function to determine if the UAV can reach the request in time.
-        % If the closest UAV cannot reach the request in time, that request will be
-        % removed from the assignment list so that other requests can be
-        % assigned. 
-        %   Output:  a logical value 
+        % Function to determine if the UAV can reach the request in time,
+        % returns a logical value
         function canReach = checkTime(uav,request)
             timeToReq = Distance(uav.position,request.zone.position)/uav.speed;
             timeLeft = request.exprTime-request.timeElapsed;

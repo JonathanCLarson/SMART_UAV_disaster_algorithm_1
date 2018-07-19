@@ -37,7 +37,6 @@ km2Pix = @(ft) ft/kmToPix;      % Anonymous function to convert km to pixels
 pix2km = @(pix) pix * km2px;    % Anonymous function to convert pixels to km 
 
 % Create the base object, and give it a single request.
-%   Unnecessary values set to 'B' for easy identification of the base
 base = RequestZone6(baseLocation,'B','B','B','B', 'B');
 base.activeList=Request6('B','B','B',base,'B','B', 'B');
 
@@ -75,7 +74,7 @@ for c=1:60*duration
     manager.refresh(c/60);    
 end
 % Plot the base location
-%  plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
+ plot(baseLocation(1),baseLocation(2),'ro','MarkerFaceColor','r')
 % Perform analysis and return results, as well as the manager object.
 [numComp, numExp,perExp, wait, waitX,recharges,extraCargo,refills,idleTime] = analyze2(manager);
 simManager=manager;

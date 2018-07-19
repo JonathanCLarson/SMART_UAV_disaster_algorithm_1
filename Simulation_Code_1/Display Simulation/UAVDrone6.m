@@ -102,7 +102,7 @@ classdef UAVDrone6 < handle
                 % by checking the priority of the requests
 %                 disp(""+obj.cargo+" " + obj.request.priority)
                 if obj.request.timeElapsed>obj.request.exprTime
-                    disp('Delivered after expiry')
+                    disp('Too Late :(')
                     disp(obj.request.exprTime-obj.request.timeElapsed)
                 end
                 if(contains(obj.cargo, obj.request.cargoType))
@@ -110,7 +110,7 @@ classdef UAVDrone6 < handle
                     if isempty(index)
                         % Check if UAV was sent to a request it did not have
                         % cargo to complete
-                        disp('Incorrect cargo delivery') 
+                        disp('Incorrect delivery') 
                     end
                     % If UAV delivers its last item, it is now empty
                     if (length(obj.cargo)==1)
@@ -120,7 +120,7 @@ classdef UAVDrone6 < handle
                         obj.cargo = horzcat(obj.cargo(1:index-1),obj.cargo(index+1:length(obj.cargo)));
                     end
                 else
-                    disp('Incorrect cargo delivery');                
+                    disp('Incorrect Delivery');                
                 end
 %                 disp(obj.cargo)
                       
@@ -267,18 +267,25 @@ classdef UAVDrone6 < handle
         %   Input: newTime = the time at which refresh is called
         function  refresh(obj,newTime)
             if obj.rangeLeft<=0
+                %disp('UAV out of fuel')
                 disp(obj.rangeLeft)
                
             end
             % Make the UAV wait, if necessary
             if(obj.idleCounter>0)
-                % Idle UAV                
+                % Idle UAV
+                
                 obj.time=newTime;
+                %disp(obj.position)
+                %disp(obj.request.zone.position)
                 
                 obj.idleCounter=obj.idleCounter-1;
+                %disp("Idle: " + obj.idleCounter)
                 obj.idleTotal = obj.idleTotal + 1;
                 
                 if(obj.idleCounter==0)
+                    %disp(obj.position)
+                    %disp(obj.request.zone.position)
                     obj.deliver();
                     
                 end                                           
@@ -290,12 +297,14 @@ classdef UAVDrone6 < handle
                 if(Distance(newPos,obj.request.zone.position)<0.1)
                     % Plots the path from the UAV to the request and
                     % updates the UAV at the time of delivery
-%                      plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+                     plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
 
                     obj.position=newPos;
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
                     obj.rangeLeft = obj.rangeLeft - (obj.speed * (newTime-obj.time));
                     obj.time = newTime;                    
+                    %disp(obj.position)
+                    %disp(obj.request.zone.position)
                     obj.idleCounter = 5;
                     if(obj.request.index ~= 'B')
                         if obj.request.status<1
@@ -307,8 +316,9 @@ classdef UAVDrone6 < handle
                         obj.request.index = -10;
                     end
                 else
+                    %hold on
                     % Plot the change in position
-%                     plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
+                    plot([obj.position(1),newPos(1)],[obj.position(2),newPos(2)], obj.color,'LineWidth',1.5)
                     % Move the UAV forward by updating its position and time
                     % and plot the results
                     if obj.request.status<1
@@ -316,7 +326,7 @@ classdef UAVDrone6 < handle
                         obj.manager.assign();
                     end
                     obj.position=newPos;
-%                     plot(obj.position(1),obj.position(2),'k.','MarkerSize',7)
+                    plot(obj.position(1),obj.position(2),'k.','MarkerSize',7)
                     obj.distTravelled =obj.distTravelled + obj.speed*(newTime-obj.time);
                     obj.timeToRequest = Distance(obj.position,obj.request.zone.position)/obj.speed;
                     obj.rangeLeft = obj.rangeLeft - (obj.speed * (newTime-obj.time));

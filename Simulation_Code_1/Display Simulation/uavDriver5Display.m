@@ -11,7 +11,7 @@ clear; format long;
 MAP=imread('Map2.png'); image(MAP);
 hold on
 base = [578,398];   % Location of the base (x,y) on the simulation map
-duration = 12;      % Duration of the simulation (hours)
+duration = 1;      % Duration of the simulation (hours)
 km2pixRatio = 1.609/90; % Number of pixels in one kilometer on the map (converted from miles)
 
 % UAV Parameters
@@ -48,9 +48,10 @@ zoneLocations = [276,715;
                  635 728];
 zoneParam = [zoneLocations,zonesXProb,zonesYProb,exprTimeX,exprTimeY]; 
 
-%% Run Simulation  
+%% Run Simulation
+% Run the simulation and display UAV paths
 [~, ~, ~, ~,~, manager]=uavSim3(uavVector, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-% Write an excel file and display a table of the results
+% Write an excel file and display a table of results
 overall=writeManagers2(manager,'simulationResult.xlsx');
 [total] = analyze(manager); 
 disp(total)

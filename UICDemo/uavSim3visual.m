@@ -74,7 +74,7 @@ uavArray=UAVDrone6.empty;
 %  hold on;
 % Simulate time steps for the duration of the simulation, each is 1 minute
 
-for c=1:60
+for c=1:duration
     manager.refresh(c/60);  
       pause(1)
     end

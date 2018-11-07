@@ -8,7 +8,8 @@ clear; format long;
 %% Parameters
 % General parameters
 base = [578,398];   % Location of the base (x,y) on the simulation map
-duration = 1/60;      % Duration of the simulation (hours)
+numsimulations=1;  % Number of simulations
+duration = 120;      % Number of minutes in each simulation (time step is 1 minute)
 km2pixRatio = 1.609/90; % Number of pixels in one kilometer on the map (converted from miles)
 
 % UAV Parameters
@@ -55,7 +56,7 @@ MAP=imread('Map2.png'); image(MAP);
 hold on
 plot(base(1,1),base(1,2),'ro','MarkerFaceColor','r')
 hold on
-for step=1:numhrs
+for step=1:numsimulations
 %% Run Simulation
 % Run the simulation and display UAV paths
 [~, ~, ~, ~,~, manager]=uavSim3visual(uavVector, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);

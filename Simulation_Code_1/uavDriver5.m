@@ -2,14 +2,14 @@
 % Test driver for the UAV simulation
 % Simulates the UAV over the desired map
 % Calls the UAVSim3 file to run a simulation
-%close all;
+close all;
 clear; format long;
 
 %% Parameters
 % General parameters
 % Read in map for background of graph, use file name of image for map.
-MAP=imread('Map2.png'); image(MAP);
-hold on
+% MAP=imread('Map2.png'); image(MAP); % Displays the area map
+
 base = [578,398];   % Location of the base (x,y) on the simulation map
 duration = 12;      % Duration of the simulation (hours)
 km2pixRatio = 1.609/90; % Number of pixels in one kilometer on the map (converted from miles)

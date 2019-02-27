@@ -11,7 +11,7 @@ clear; format long;
 MAP=imread('Map2.png'); image(MAP);
 hold on
 base = [578,398];   % Location of the base (x,y) on the simulation map
-duration = 1;      % Duration of the simulation (hours)
+duration = 6;      % Duration of the simulation (hours)
 km2pixRatio = 1.609/90; % Number of pixels in one kilometer on the map (converted from miles)
 
 % UAV Parameters

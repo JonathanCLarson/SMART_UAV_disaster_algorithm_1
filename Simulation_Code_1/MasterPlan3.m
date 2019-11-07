@@ -83,7 +83,7 @@ color = [ 'b','k','m','g','y','c','r','w']; % The colors to mark the lines
 symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the graph
 
 %% Single Simulation  
- [~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+%  [~, ~, ~, ~,~, manager]=uavSim3(uav, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
 % overall=writeManagers2(manager,'singleRun.xlsx');
 % [total] = analyze(manager);
 % disp(total)
@@ -125,7 +125,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 
 %% Number of UAVs
 % uavTestU=uav;
-% numTrials = 20;         % Number of trials
+% numTrials = 30;         % Number of trials
 % numUAVs=1:6;            % Range of fleet sizes
 % numExpU=zeros(1,numTrials);  % Initialize expired requests for each simulation
 % numCompU=zeros(1,numTrials);   % Initialize completed requests for each simulation
@@ -137,7 +137,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 %  
 % for c=1:length(numUAVs)
 %     uavTestU(1)=c;
-%     for m=1:20
+%     for m=1:30
 %              [numCompU(m), numExpU(m), perExp(m), ~, ~,managersU]=uavSim3(uavTestU, zoneParam, base, priFac,timeFac,addedVal, duration,km2pixRatio);
 %              % Find total number of requests
 %              numReq(m)=numExpU(m)+ numCompU(m); % Expired + Completed            
@@ -173,7 +173,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % f=f+4;
 
 %% Speed simulations
-% numTrials = 20;
+% numTrials = 30;
 % sExpired =zeros(4,10);    % Matrix to store number of expired requests for cargo simulation
 % sCompleted = zeros(4,10);
 % sPercent = zeros(4,10);
@@ -229,11 +229,11 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % hold off
 % f=f+2;
 % 
-
-
+% 
+% 
 
 %% Cargo capacity simulations
-% numTrials = 20;
+% numTrials = 30;
 % cNumEx = zeros(4,1);        % Average number of expired requests for cargo simulation
 % cCompleted = zeros(4,1);    % Average number of completed requests for cargo simulation
 % cLOLP = zeros(4,1);
@@ -241,8 +241,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % zonesTestC = zoneParam;     % Zone array for tests
 % cNumComp=zeros(numTrials,1);
 % cNumExpr=zeros(numTrials,1);
-% figure(f)
-% hold on
+% 
 % % Vary the number of UAV's
 % cargo=1:4;
 % for c = 1:4
@@ -259,10 +258,10 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 %         
 %     end
 %     figure(f)
-%     plot(cargo,cNumEx(c,:), [color(c),'.'],'MarkerSize',20)
+%     plot(cargo,cNumEx, [color(c),'.'],'MarkerSize',20)
 %     hold on
 %     figure(f+1)
-%     plot(cargo,cCompleted(c,:),[color(c),'.'],'MarkerSize',20)
+%     plot(cargo,cCompleted,[color(c),'.'],'MarkerSize',20)
 %     hold on
 %     figure(f+2)
 %     plot(cargo,cLOLP,[color(c),'.'],'MarkerSize',20)
@@ -291,7 +290,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % f=f+1;
 
 %% Range simulations
-% numTrials = 20;
+% numTrials = 30;
 % rNumEx = zeros(1,numTrials);    % Matrix to store number of expired requests for range simulation
 % rNumComp = zeros(1,numTrials);
 % rPerEx = zeros(1,numTrials);
@@ -370,7 +369,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % f=f+4;    
 
 %% The simulation for the different expiration times: X expiration time
-% numTrials = 20;
+% numTrials = 30;
 % eTime = zeros(4,8); % The time the requests expire
 % eNumEx = zeros(8,numTrials); % The number of expired requests for each trial (for this simulation
 % uavTeste = uavTest;
@@ -388,7 +387,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 %             testZones(g,5) = eTime(c,k);
 %         end
 %         % Run several trials
-%         for m=1:20
+%         for m=1:30
 %              [~,  eNumEx(k,m), ~, ~, ~,~]=uavSim3(uavTeste, testZones, base, priFac,timeFac,addedVal, duration,km2pixRatio);             
 %         end       
 %         expiredE(c,k) = mean(eNumEx(k,:));
@@ -402,7 +401,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
 % hold off
 %% The simulation for the different expiration times: Y expiration time
-% numTrials = 20;
+% numTrials = 30;
 % eTime = zeros(4,8); % The time the requests expire
 % eNumEx = zeros(8,numTrials); % The number of expired requests for each trial (for this simulation
 % uavTeste = uavTest;
@@ -434,10 +433,10 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs')
 % hold off
 %% Simulation for number of requests
-% The simulation for the different number of requests entered 
+% % The simulation for the different number of requests entered 
 % zonesR = zoneParam;              % zone matrix for testing
 % uavTestR = uavTest;
-% numTrials = 20;
+% numTrials = 30;
 % standard = [0.0035 0.012];          % Standard probability values
 % ratios= linspace(0.5, 2, 10); % The probability of a new request occuring
 % probsR = cell(4,10);           % Stores ratios
@@ -459,7 +458,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 %         for d = 1:numZones
 %             zonesR(d,3:4) = probsR{c,p};            
 %         end
-%         % Run 20 simulations
+%         % Run 30 simulations
 %         for m=1:numTrials
 %             [numMetTestR(m),numExpTestR(m), ~, ~, ~,managers(n)]=uavSim3(uavTestR, zonesR, base, priFac,timeFac,addedVal, duration,km2pixRatio);
 % 
@@ -499,7 +498,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 %% The simulation for the different probabilities of Y requests
 % zonesY = zoneParam;              % zone matrix for testing
 % uavTestY = uavTest;
-% numTrials = 20;
+% numTrials = 30;
 % probsY= linspace(0.0001, 0.03, 10); % The probability of a new request occuring
 % numMetTestY = zeros(numTrials,1);       % Completed requests (per simulation)
 % numExpTestY = zeros(numTrials,1);       % Expired requests (per simulation)
@@ -516,7 +515,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 %         for d = 1:numZones
 %             zonesY(d,4) = probsY(p);
 %         end
-%         % Run 20 simulations
+%         % Run 30 simulations
 %         for m=1:numTrials
 %             [numMetTestY(m),numExpTestY(m), ~, ~, ~,manager]=uavSim3(uavTestY, zonesY, base, priFac,timeFac,addedVal, duration,km2pixRatio);
 %             [~,reqY(m)] = manager.getNumRequests();
@@ -549,7 +548,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 
 %% Type X Request frequency simulation
 % % Set parameters
-% numTrials = 20;
+% numTrials = 30;
 % uavTestX = uavTest;
 % zonesTest=zoneParam;
 % reqX = zeros(1,numTrials);        % Number of X requests
@@ -569,7 +568,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 %         for d = 1:numZones
 %             zonesTest(d,3)= probsX(p);
 %         end
-%         % Run 20 simulations
+%         % Run 30 simulations
 %         for m=1:numTrials
 %             [numMetTestX(p,m), numExpTestX(p,m),~, ~, ~,manager]=uavSim3(uavTestX, zonesTest, base, priFac,timeFac,addedVal, duration,km2pixRatio);
 %             [reqX(m),~] = manager.getNumRequests();
@@ -604,64 +603,64 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % Change distribution of request types, and keep number of requests
 % approximately constant
 % Set parameters
-% numTrials = 20;
-% uavTestRat = uavTest;
-% zonesTest=zoneParam;
-% reqRat = zeros(1,numTrials);        % Number of X requests
-% totStandard = 0.0155;
-% probsRat = linspace(0.05,.95,20);   % The probability of a new request occuring
-% numMetTestRat = zeros(1,numTrials); % Completed requests (per simulation)
-% numExpTestRat = zeros(1,numTrials); % Expired requests (per simulation)
-% completedRat = zeros(4,20);          % Completed requests (average)
-% expiredRat = zeros(4,20);            % Expired requests (average)
-% requestsRat = zeros(4,20); 
-% 
-% % Adjust number of UAV's
-% for c=1:4
-%     uavTestRat(1)=c;
-%     % Change probability of a high priority request at each request zone.
-%     for p = 1:20
-%         propX = probsRat(p); % Proportion of X requests
-%         propY = 1-probsRat(p); % Proportion of Y requests
-%         % Apply probability to each request zone
-%         for d = 1:numZones
-%             zonesTest(d,3:4) = [propX*totStandard,propY*totStandard];
-%         end
-%         % Run simulations
-%         for m=1:numTrials
-%             [numMetTestRat(p,m), numExpTestRat(p,m),~, ~, ~,manager]=uavSim3(uavTestRat, zonesTest, base, priFac,timeFac,addedVal, duration,km2pixRatio);
-%             [numX,numY] = manager.getNumRequests();
-%             reqRat(m) = numX/(numX+numY);
-%         end
-%         % Find averages from simulations
-%         expiredRat(c,p)=mean(numExpTestRat(p,:));
-%         completedRat(c,p) = mean(numMetTestRat (p,:));
-%         requestsRat(c,p) = mean(reqRat);
-%     end
-%     % plot results
-%     figure(f)
-%     plot(requestsRat(c,:),expiredRat(c,:),[color(c),'-'],'Linewidth',2)
-%     hold on
-%     figure(f+1)
-%     plot(requestsRat(c,:),completedRat(c,:),[color(c),'-'],'Linewidth',2)
-%     hold on  
-% end
-% 
-% figure(f) % Expired
-% xlabel('Proportion of X Requests')
-% ylabel('Requests Expired')
-% legend('1 UAV','2 UAVs','3 UAV"s','4 UAVs','location','northwest')
-% hold off
-% figure(f+1) % Completed
-% xlabel('Proportion of X requests')
-% ylabel('Requests Completed')
-% legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
-% hold off
-% f=f+2;
+numTrials = 30;
+uavTestRat = uavTest;
+zonesTest=zoneParam;
+reqRat = zeros(1,numTrials);        % Number of X requests
+totStandard = 0.0155;
+probsRat = linspace(0.05,.95,30);   % The probability of a new request occuring
+numMetTestRat = zeros(1,numTrials); % Completed requests (per simulation)
+numExpTestRat = zeros(1,numTrials); % Expired requests (per simulation)
+completedRat = zeros(4,30);          % Completed requests (average)
+expiredRat = zeros(4,30);            % Expired requests (average)
+requestsRat = zeros(4,30); 
+
+% Adjust number of UAV's
+for c=1:4
+    uavTestRat(1)=c;
+    % Change probability of a high priority request at each request zone.
+    for p = 1:30
+        propX = probsRat(p); % Proportion of X requests
+        propY = 1-probsRat(p); % Proportion of Y requests
+        % Apply probability to each request zone
+        for d = 1:numZones
+            zonesTest(d,3:4) = [propX*totStandard,propY*totStandard];
+        end
+        % Run simulations
+        for m=1:numTrials
+            [numMetTestRat(p,m), numExpTestRat(p,m),~, ~, ~,manager]=uavSim3(uavTestRat, zonesTest, base, priFac,timeFac,addedVal, duration,km2pixRatio);
+            [numX,numY] = manager.getNumRequests();
+            reqRat(m) = numX/(numX+numY);
+        end
+        % Find averages from simulations
+        expiredRat(c,p)=mean(numExpTestRat(p,:));
+        completedRat(c,p) = mean(numMetTestRat (p,:));
+        requestsRat(c,p) = mean(reqRat);
+    end
+    % plot results
+    figure(f)
+    plot(requestsRat(c,:),expiredRat(c,:),[color(c),'-'],'Linewidth',2)
+    hold on
+    figure(f+1)
+    plot(requestsRat(c,:),completedRat(c,:),[color(c),'-'],'Linewidth',2)
+    hold on  
+end
+
+figure(f) % Expired
+xlabel('Proportion of X Requests')
+ylabel('Requests Expired')
+legend('1 UAV','2 UAVs','3 UAV"s','4 UAVs','location','northwest')
+hold off
+figure(f+1) % Completed
+xlabel('Proportion of X requests')
+ylabel('Requests Completed')
+legend('1 UAV','2 UAVs','3 UAVs','4 UAVs','location','northwest')
+hold off
+f=f+2;
 
 %% Duration Simulation (Simulate effect of longer simulations)
 % uavTestD = uavTest;
-% numTrials = 20;
+% numTrials = 30;
 % zonesTestD = zoneParam;         % Zone array to change for tests
 % NumCompD = zeros(1,numTrials);  % Completed request per duration simulation
 % NumExpriredD = zeros(1,numTrials); % Expired request per simulation
@@ -678,9 +677,9 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 %         for m = 1:numTrials     % Run several simulations
 %             [NumCompD(m), NumExpriredD(m), ~, ~, ~,~]=uavSim3(uavTestD, zonesTestD, base, priFac,timeFac, addedVal,durTest,km2pixRatio);
 %         end
-%         NumExD(c,a) = mean(NumExpriredD(a,:));
+%         NumExD(c,a) = mean(NumExpriredD);
 %         NumCompletedD(c,a) = mean(NumCompD);
-%         exPerHrD(c,a)=NumExD/durTest; % Average expired per hour
+%         exPerHrD(c,a)=NumExD(c,a)/durTest; % Average expired per hour
 %         comPerHrD(c,a)=NumCompletedD(c,a)/durTest; % Average completed per hour
 %         
 %     end
@@ -705,9 +704,10 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % legend('1 UAV','2 UAVs', '3 UAVs', '4 UAVs','location','northwest')
 % hold off
 % f=f+2;
+
 %% Priority Factor tests
 % 
-% numTrials = 20;
+% numTrials = 30;
 % priNumEx = zeros(1,numTrials); % The number of expired requests for each trial (for this simulation)
 % priNumComp = zeros(1,numTrials); % The number of Completed requests for each trial (for this simulation)
 % priWait=zeros(1,numTrials); % Wait time values
@@ -771,7 +771,7 @@ symbol = ['o','*','.','s','p','^','d','x','+']; % The symbols used to mark the g
 % f=f+4;
 
 %% Time factor tests
-% numTrials = 20;
+% numTrials = 30;
 % tNumEx = zeros(1,numTrials); % The number of expired requests for each trial (for this simulation)
 % tNumComp = zeros(1,numTrials); % The number of Completed requests for each trial (for this simulation)
 % tWait=zeros(1,numTrials); % Wait time values

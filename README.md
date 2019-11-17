@@ -1,5 +1,6 @@
 # SMART_UAV_disaster_algorithm_1
-Code for a single UAV object in a disaster relief fleet
+
+This is a MATLAB simulation of a UAV fleet being used for disaster relief. 
 
 The current working code, uploaded on 7/11/2018, can be found in the folder Simulation_Code_1.
 
